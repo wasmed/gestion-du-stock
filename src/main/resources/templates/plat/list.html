@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Liste des plats</title>
+</head>
+<body>
+<h1>Liste des plats</h1>
+<a th:href="@{/plats/form}">Ajouter un nouveau plat</a>
+<br/><br/>
+<table>
+    <thead>
+    <tr>
+        <th>Nom</th>
+        <th>Description</th>
+        <th>Prix</th>
+        <th>Catégorie</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="plat : ${plats}">
+        <td th:text="${plat.nom}"></td>
+        <td th:text="${plat.description}"></td>
+        <td th:text="${plat.prix}"></td>
+        <td th:text="${plat.categorie}"></td>
+        <td>
+            <a th:href="@{/plats/form(id=${plat.identifiant})}">Modifier</a>
+            <a th:href="@{/plats/delete/{id}(id=${plat.identifiant})}">Supprimer</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

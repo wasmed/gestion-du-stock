@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Gestion des Commandes</title>
+</head>
+<body>
+<h1>Gestion des Commandes</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Client</th>
+        <th>Serveur</th>
+        <th>État</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="commande : ${commandes}">
+        <td th:text="${commande.id}"></td>
+        <td th:text="${commande.client.nom}"></td>
+        <td th:text="${commande.serveur.nom}"></td>
+        <td th:text="${commande.etat}"></td>
+        <td>
+            <a th:href="@{/orders/details/{id}(id=${commande.id})}">Détails</a>
+
+            <span sec:authorize="hasRole('CHEF_CUISINIER')">
+                        <a th:href="@{/orders/prepare/{id}(id=${commande.id})}"
+                           th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_ATTENTE}">
+                            | Préparer
+                        </a>
+                    </span>
+
+            <span sec:authorize="hasRole('SERVEUR')">
+                        <a th:href="@{/orders/serve/{id}(id=${commande.id})}"
+                           th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_PREPARATION}">
+                            | Servir
+                        </a>
+                    </span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

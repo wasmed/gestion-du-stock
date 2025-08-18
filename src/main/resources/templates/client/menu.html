@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Menu du Restaurant</title>
+</head>
+<body>
+<h1>Notre Menu</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Nom</th>
+        <th>Description</th>
+        <th>Prix</th>
+        <th>Catégorie</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="plat : ${plats}">
+        <td th:text="${plat.nom}"></td>
+        <td th:text="${plat.description}"></td>
+        <td th:text="${plat.prix}"></td>
+        <td th:text="${plat.categorie}"></td>
+        <td>
+            <a th:href="@{/client/add-to-cart(platId=${plat.identifiant})}">Ajouter au panier</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

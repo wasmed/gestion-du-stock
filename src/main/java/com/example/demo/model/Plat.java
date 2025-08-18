@@ -1,0 +1,58 @@
+package com.example.demo.model;
+
+import jakarta.persistence.*;
+
+@Entity
+public class Plat {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long identifiant;
+
+    private String nom;
+    private String description;
+    private Double prix;
+
+    @Enumerated(EnumType.STRING)
+    private CategoriePlat categorie;
+
+    public Long getIdentifiant() {
+        return identifiant;
+    }
+
+    public void setIdentifiant(Long identifiant) {
+        this.identifiant = identifiant;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Double getPrix() {
+        return prix;
+    }
+
+    public void setPrix(Double prix) {
+        this.prix = prix;
+    }
+
+    public CategoriePlat getCategorie() {
+        return categorie;
+    }
+
+    public void setCategorie(CategoriePlat categorie) {
+        this.categorie = categorie;
+    }
+}

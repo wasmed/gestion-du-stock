@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Accueil</title>
+</head>
+<body>
+<h1>Bienvenue sur votre application !</h1>
+<p>Vous êtes connecté en tant que <span th:text="${#authentication.name}"></span>.</p>
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Se déconnecter</button>
+</form>
+</body>
+</html>

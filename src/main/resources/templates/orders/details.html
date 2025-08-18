@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Détails de la Commande</title>
+</head>
+<body>
+<h1>Détails de la Commande n°<span th:text="${commande.id}"></span></h1>
+<p><strong>Client:</strong> <span th:text="${commande.client.nom}"></span></p>
+<p><strong>Serveur:</strong> <span th:text="${commande.serveur.nom}"></span></p>
+<p><strong>État:</strong> <span th:text="${commande.etat}"></span></p>
+<p><strong>Montant Total:</strong> <span th:text="${commande.montantTotal}"></span> €</p>
+
+<h2>Plats commandés:</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Plat</th>
+        <th>Quantité</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="ligne : ${commande.lignesCommande}">
+        <td th:text="${ligne.plat.nom}"></td>
+        <td th:text="${ligne.quantite}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/orders}">Retour à la liste des commandes</a>
+</body>
+</html>

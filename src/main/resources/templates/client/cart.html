@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Mon Panier</title>
+</head>
+<body>
+<h1>Mon Panier</h1>
+<a th:href="@{/client/menu}">Retour au Menu</a>
+<table>
+    <thead>
+    <tr>
+        <th>Nom du plat</th>
+        <th>Prix</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="plat : ${cart}">
+        <td th:text="${plat.nom}"></td>
+        <td th:text="${plat.prix}"></td>
+    </tr>
+    </tbody>
+</table>
+<form th:action="@{/client/checkout}" method="post">
+    <button type="submit">Valider la commande</button>
+</form>
+</body>
+</html>
