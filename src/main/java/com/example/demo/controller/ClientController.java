@@ -97,4 +97,9 @@ public class ClientController {
 
         return "redirect:/client/confirmation"; // Ou vers une page de confirmation
     }
+
+    @GetMapping("/confirmation")
+    public String showConfirmationPage() {
+        return "client/confirmation"; // Renvoie la vue HTML
+    }
 }

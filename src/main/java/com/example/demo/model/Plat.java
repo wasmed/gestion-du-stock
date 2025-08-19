@@ -2,6 +2,8 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 public class Plat {
 
@@ -15,6 +17,9 @@ public class Plat {
 
     @Enumerated(EnumType.STRING)
     private CategoriePlat categorie;
+
+    @OneToMany(mappedBy = "plat")
+    private Set<PlatIngredient> platIngredients;
 
     public Long getIdentifiant() {
         return identifiant;
@@ -54,5 +59,13 @@ public class Plat {
 
     public void setCategorie(CategoriePlat categorie) {
         this.categorie = categorie;
+    }
+
+    public Set<PlatIngredient> getPlatIngredients() {
+        return platIngredients;
+    }
+
+    public void setPlatIngredients(Set<PlatIngredient> platIngredients) {
+        this.platIngredients = platIngredients;
     }
 }

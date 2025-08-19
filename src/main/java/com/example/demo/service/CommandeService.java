@@ -4,6 +4,7 @@ import com.example.demo.model.*;
 import com.example.demo.repository.CommandeRepository;
 import com.example.demo.repository.LigneCommandeRepository;
 import com.example.demo.repository.PlatRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,6 +63,7 @@ public class CommandeService {
         return commandeRepository.save(commande);
     }
 
+    @Transactional
     public Commande findCommandeById(Long id) {
         return commandeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Commande non trouvée"));
     }

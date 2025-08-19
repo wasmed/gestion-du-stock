@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.model.Commande;
 import com.example.demo.model.EtatCommande;
 import com.example.demo.service.CommandeService;
+import com.example.demo.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,9 @@ public class OrderManagementController {
 
     @Autowired
     private CommandeService commandeService;
+
+    @Autowired
+    private StockService stockService;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('SERVEUR', 'CHEF_CUISINIER', 'ADMIN')")
@@ -39,7 +43,13 @@ public class OrderManagementController {
     @GetMapping("/serve/{id}")
     @PreAuthorize("hasRole('SERVEUR')")
     public String serveOrder(@PathVariable Long id) {
-        commandeService.updateCommandeEtat(id, EtatCommande.SERVIE);
+        Commande commande = commandeService.findCommandeById(id);
+
+        commande.setEtat(EtatCommande.SERVIE);
+        commandeService.saveCommande(commande); // Enregistre l'état mis à jour
+
+        stockService.decrementStockForCommande(commande);
+
         return "redirect:/orders";
     }
 
