@@ -21,6 +21,9 @@ public class Plat {
     @OneToMany(mappedBy = "plat")
     private Set<PlatIngredient> platIngredients;
 
+    @ManyToMany(mappedBy = "plats")
+    private Set<Menu> menus;
+
     public Long getIdentifiant() {
         return identifiant;
     }
@@ -67,5 +70,13 @@ public class Plat {
 
     public void setPlatIngredients(Set<PlatIngredient> platIngredients) {
         this.platIngredients = platIngredients;
+    }
+
+    public Set<Menu> getMenus() {
+        return menus;
+    }
+
+    public void setMenus(Set<Menu> menus) {
+        this.menus = menus;
     }
 }

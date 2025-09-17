@@ -23,6 +23,10 @@ public class LigneCommande {
     @JoinColumn(name = "plat_id")
     private Plat plat;
 
+    @ManyToOne
+    @JoinColumn(name = "menu_id")
+    private Menu menu;
+
     public Long getIdentifiant() {
         return identifiant;
     }
@@ -61,5 +65,13 @@ public class LigneCommande {
 
     public void setPlat(Plat plat) {
         this.plat = plat;
+    }
+
+    public Menu getMenu() {
+        return menu;
+    }
+
+    public void setMenu(Menu menu) {
+        this.menu = menu;
     }
 }

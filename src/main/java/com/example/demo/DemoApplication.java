@@ -34,63 +34,118 @@ public class DemoApplication {
         System.out.println("Mot de passe haché SERVEUR: " + motDePasseHache3);
     }
 
-    /*@Bean
+    @Bean
     public CommandLineRunner dataLoader(
             UserRepository userRepository,
             PlatRepository platRepository,
             ProduitRepository produitRepository,
             StockProduitRepository stockProduitRepository,
             PlatIngredientRepository platIngredientRepository,
+            CommandeRepository commandeRepository,
+            LigneCommandeRepository ligneCommandeRepository,
+            TableRestaurantRepository tableRepository, // Ajoute cette injection
             PasswordEncoder passwordEncoder) {
         return args -> {
-            // ... (ton code existant pour les utilisateurs et les plats de test)
+            // 1. Charger les tables de test
+            if (tableRepository.count() == 0) {
+                // Créer et sauvegarder des tables
+                TableRestaurant table1 = new TableRestaurant();
+                table1.setNumeroTable(1);
+                tableRepository.save(table1);
 
-            // Créer des produits de test
-            Produit produitViande = new Produit();
-            produitViande.setNom("Boeuf Haché");
-            produitViande.setType(TypeProduit.VIANDE);
-            produitRepository.save(produitViande);
+                TableRestaurant table2 = new TableRestaurant();
+                table2.setNumeroTable(2);
+                tableRepository.save(table2);
 
-            Produit produitLegume = new Produit();
-            produitLegume.setNom("Tomate");
-            produitLegume.setType(TypeProduit.LEGUME);
-            produitRepository.save(produitLegume);
+                // ... et ainsi de suite pour les autres tables
+            }
 
-            // Créer le stock pour ces produits
-            StockProduit stockViande = new StockProduit();
-            stockViande.setProduit(produitViande);
-            stockViande.setStockActuel(50.0); // 50 kg
-            stockViande.setUnite("kg");
-            stockViande.setStockMinimum(10.0);
-            stockProduitRepository.save(stockViande);
+            // ... le reste de ton code pour les utilisateurs, plats, etc.
+        };
+    }
+   /* @Bean
+    public CommandLineRunner dataLoader(
+            UserRepository userRepository,
+            PlatRepository platRepository,
+            ProduitRepository produitRepository,
+            StockProduitRepository stockProduitRepository,
+            PlatIngredientRepository platIngredientRepository,
+            CommandeRepository commandeRepository,
+            LigneCommandeRepository ligneCommandeRepository,
+            PasswordEncoder passwordEncoder) {
+        return args -> {
+            // 1. Créer les utilisateurs de test
+            User client = new User();
+            client.setEmail("client@restaurant.com");
+            client.setNom("Client Test");
+            client.setMotDePasse(passwordEncoder.encode("motdepasse123"));
+            client.setRole(Role.CLIENT);
+            userRepository.save(client);
 
-            StockProduit stockLegume = new StockProduit();
-            stockLegume.setProduit(produitLegume);
-            stockLegume.setStockActuel(30.0); // 30 kg
-            stockLegume.setUnite("kg");
-            stockLegume.setStockMinimum(5.0);
-            stockProduitRepository.save(stockLegume);
+            User admin = new User();
+            admin.setEmail("admin@restaurant.com");
+            admin.setNom("Admin Test");
+            admin.setMotDePasse(passwordEncoder.encode("motdepasse1234"));
+            admin.setRole(Role.ADMIN);
+            userRepository.save(admin);
 
-            // Créer un plat de test et ses ingrédients
-            Plat platBurger = new Plat();
-            platBurger.setNom("Cheeseburger");
-            platBurger.setPrix(15.0);
-            platBurger.setCategorie(CategoriePlat.PLAT_PRINCIPAL);
-            platRepository.save(platBurger);
+            User chef = new User();
+            chef.setEmail("chef@restaurant.com");
+            chef.setNom("Chef Cuisinier Test");
+            chef.setMotDePasse(passwordEncoder.encode("motdepasse12345"));
+            chef.setRole(Role.CHEF_CUISINIER);
+            userRepository.save(chef);
 
-            PlatIngredient ingredientViande = new PlatIngredient();
-            ingredientViande.setPlat(platBurger);
-            ingredientViande.setProduit(produitViande);
-            ingredientViande.setQuantite(0.2); // 200g
-            ingredientViande.setUnite("kg");
-            platIngredientRepository.save(ingredientViande);
+            User serveur = new User();
+            serveur.setEmail("serveur@restaurant.com");
+            serveur.setNom("Serveur Test");
+            serveur.setMotDePasse(passwordEncoder.encode("motdepasse123456"));
+            serveur.setRole(Role.SERVEUR);
+            userRepository.save(serveur);
 
-            PlatIngredient ingredientLegume = new PlatIngredient();
-            ingredientLegume.setPlat(platBurger);
-            ingredientLegume.setProduit(produitLegume);
-            ingredientLegume.setQuantite(0.05); // 50g
-            ingredientLegume.setUnite("kg");
-            platIngredientRepository.save(ingredientLegume);
+            // 2. Créer les produits de test et le stock initial
+            Produit boeufHache = new Produit();
+            boeufHache.setNom("Boeuf Haché");
+            boeufHache.setType(TypeProduit.VIANDE);
+            produitRepository.save(boeufHache);
+
+            StockProduit stockBoeuf = new StockProduit();
+            stockBoeuf.setProduit(boeufHache);
+            stockBoeuf.setStockActuel(50.0);
+            stockBoeuf.setUnite("kg");
+            stockBoeuf.setStockMinimum(10.0);
+            stockProduitRepository.save(stockBoeuf);
+
+            // 3. Créer un plat de test qui utilise le stock
+            Plat cheeseburger = new Plat();
+            cheeseburger.setNom("Cheeseburger");
+            cheeseburger.setPrix(15.0);
+            cheeseburger.setCategorie(CategoriePlat.PLAT_PRINCIPAL);
+            platRepository.save(cheeseburger);
+
+            // 4. Lier le plat au produit (ingrédient)
+            PlatIngredient ingredientBoeuf = new PlatIngredient();
+            ingredientBoeuf.setPlat(cheeseburger);
+            ingredientBoeuf.setProduit(boeufHache);
+            ingredientBoeuf.setQuantite(0.2); // 200g
+            ingredientBoeuf.setUnite("kg");
+            platIngredientRepository.save(ingredientBoeuf);
+
+            // 5. Créer une commande de test pour le flux de décrémentation
+            Commande commandeTest = new Commande();
+            commandeTest.setClient(client);
+            commandeTest.setServeur(serveur);
+            commandeTest.setEtat(EtatCommande.EN_ATTENTE);
+            commandeTest.setDateHeure(LocalDateTime.now());
+            commandeTest.setMontantTotal(15.0);
+            commandeRepository.save(commandeTest);
+
+            LigneCommande ligneCommandeTest = new LigneCommande();
+            ligneCommandeTest.setCommande(commandeTest);
+            ligneCommandeTest.setPlat(cheeseburger);
+            ligneCommandeTest.setQuantite(1);
+            ligneCommandeTest.setTypeLigne(TypeLigneCommande.PLAT);
+            ligneCommandeRepository.save(ligneCommandeTest);
         };
     }*/
 }

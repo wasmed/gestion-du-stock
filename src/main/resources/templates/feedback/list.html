@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Liste des Feedbacks</title>
+</head>
+<body>
+<h1>Feedbacks des Clients</h1>
+<a th:href="@{/orders}">Retour au tableau de bord</a>
+<br/><br/>
+<table>
+    <thead>
+    <tr>
+        <th>Client</th>
+        <th>Note</th>
+        <th>Commentaire</th>
+        <th>Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="feedback : ${feedbacks}">
+        <td th:text="${feedback.client.nom}"></td>
+        <td th:text="${feedback.note}"></td>
+        <td th:text="${feedback.commentaire}"></td>
+        <td th:text="${feedback.dateSubmitted}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

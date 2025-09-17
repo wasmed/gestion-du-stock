@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class UserController {
     // Gère la soumission du formulaire d'inscription
     @PostMapping("/register")
     public String registerUser(@ModelAttribute User user) {
+        user.setRole(Role.CLIENT); // Assigne le rôle CLIENT par défaut
         userService.saveUser(user);
         return "redirect:/login"; // Redirige vers la page de connexion
     }

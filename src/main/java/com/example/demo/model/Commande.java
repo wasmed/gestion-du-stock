@@ -32,6 +32,13 @@ public class Commande {
     @OneToMany(mappedBy = "commande")
     private Set<LigneCommande> lignesCommande;
 
+    @OneToOne(mappedBy = "commande")
+    private Paiement paiement;
+
+    @ManyToOne
+    @JoinColumn(name = "table_id")
+    private TableRestaurant table;
+
     public Long getId() {
         return id;
     }
@@ -86,5 +93,21 @@ public class Commande {
 
     public void setLignesCommande(Set<LigneCommande> lignesCommande) {
         this.lignesCommande = lignesCommande;
+    }
+
+    public Paiement getPaiement() {
+        return paiement;
+    }
+
+    public void setPaiement(Paiement paiement) {
+        this.paiement = paiement;
+    }
+
+    public TableRestaurant getTable() {
+        return table;
+    }
+
+    public void setTable(TableRestaurant table) {
+        this.table = table;
     }
 }

@@ -1,9 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.model.*;
-import com.example.demo.repository.CommandeRepository;
-import com.example.demo.repository.LigneCommandeRepository;
-import com.example.demo.repository.PlatRepository;
+import com.example.demo.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,13 +13,24 @@ public class CommandeService {
 
     @Autowired
     private CommandeRepository commandeRepository;
-
+    @Autowired
+    private MenuRepository menuRepository;
     @Autowired
     private LigneCommandeRepository ligneCommandeRepository;
-
+    @Autowired
+    private TableRestaurantRepository tableRepository;
     @Autowired
     private PlatRepository platRepository;
 
+    public Commande createNewCommande(User client, User serveur,Long tableId) {
+        TableRestaurant table = tableRepository.findById(tableId).orElse(null);
+        Commande commande = new Commande();
+        commande.setClient(client);
+        commande.setServeur(serveur);
+        commande.setTable(table);
+        commande.setEtat(EtatCommande.EN_ATTENTE);
+        return commandeRepository.save(commande);
+    }
     public Commande createNewCommande(User client, User serveur) {
         Commande commande = new Commande();
         commande.setClient(client);
@@ -35,7 +44,19 @@ public class CommandeService {
         LigneCommande ligne = new LigneCommande();
         ligne.setCommande(commande);
         ligne.setQuantite(quantite);
-        // Ici, il faudrait aussi lier le plat à la ligne de commande, en fonction de ton implémentation
+        ligne.setPlat(plat); // Link the order line to the plat
+        ligne.setTypeLigne(TypeLigneCommande.PLAT); // Set the type to PLAT
+        ligneCommandeRepository.save(ligne);
+        return commande;
+    }
+
+    public Commande addMenuToCommande(Commande commande, Long menuId,int quantite) {
+        Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new IllegalArgumentException("Menu non trouvé"));
+        LigneCommande ligne = new LigneCommande();
+        ligne.setCommande(commande);
+        ligne.setQuantite(quantite);
+        ligne.setMenu(menu); // Link the order line to the menu
+        ligne.setTypeLigne(TypeLigneCommande.MENU); // Set the type to MENU
         ligneCommandeRepository.save(ligne);
         return commande;
     }
@@ -65,6 +86,26 @@ public class CommandeService {
 
     @Transactional
     public Commande findCommandeById(Long id) {
-        return commandeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Commande non trouvée"));
+        return commandeRepository.findByIdentifiantWithLignesCommande(id)
+                .orElseThrow(() -> new IllegalArgumentException("Commande non trouvée"));
+    }
+
+    public List<Commande> getCommandesEnCoursEtServies() {
+        return commandeRepository.findByEtatIn(List.of(EtatCommande.EN_ATTENTE, EtatCommande.EN_PREPARATION, EtatCommande.SERVIE));
+    }
+
+    public List<Commande> getCommandesEnAttenteEtEnPreparation() {
+        return commandeRepository.findByEtatIn(List.of(EtatCommande.EN_ATTENTE, EtatCommande.EN_PREPARATION));
+    }
+
+    @Transactional
+    public void deleteOrder(Long id) {
+        Commande commande = commandeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Commande non trouvée avec l'id: " + id));
+
+        // Supprimer d'abord les lignes de commande associées pour éviter les erreurs de contrainte de clé étrangère
+        ligneCommandeRepository.deleteAll(commande.getLignesCommande());
+
+        // Puis, supprimer la commande elle-même
+        commandeRepository.delete(commande);
     }
 }

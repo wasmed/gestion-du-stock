@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Créer une Commande</title>
+</head>
+<body>
+<h1>Créer une nouvelle Commande</h1>
+<form th:action="@{/orders/create}" method="post">
+    <div>
+        <label for="tableId">Sélectionner une table:</label>
+        <select id="tableId" name="tableId">
+            <option th:each="tableRestaurant : ${tables}" th:value="${tableRestaurant.identifiant}" th:text="${tableRestaurant.numeroTable}"></option>
+        </select>
+    </div>
+
+    <br/>
+    <h3>Sélectionner les plats:</h3>
+    <div th:each="plat : ${plats}">
+        <input type="checkbox" th:id="${'plat-' + plat.identifiant}" name="platIds" th:value="${plat.identifiant}" />
+        <label th:for="${'plat-' + plat.identifiant}" th:text="${plat.nom} + ' - ' + ${plat.prix} + ' €'"></label>
+    </div>
+
+    <br/>
+    <button type="submit">Valider la commande</button>
+</form>
+
+<a th:href="@{/orders}">Retour à la liste des commandes</a>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Tableau de bord Admin</title>
+</head>
+<body>
+<h1>Tableau de bord de l'Administrateur</h1>
+<p>Bienvenue, <span sec:authentication="name"></span> !</p>
+<a th:href="@{/logout}">Se déconnecter</a>
+<hr/>
+
+<h2>Gestion des Utilisateurs</h2>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nom</th>
+        <th>Email</th>
+        <th>Rôle</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${users}">
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.nom}"></td>
+        <td th:text="${user.email}"></td>
+        <td th:text="${user.role}"></td>
+    </tr>
+    </tbody>
+</table>
+<hr/>
+
+<h2>Gestion du Stock</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Produit</th>
+        <th>Stock Actuel</th>
+        <th>Unité</th>
+        <th>Stock Minimum</th>
+        <th>Statut</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="stock : ${stocks}">
+        <td th:text="${stock.produit.nom}"></td>
+        <td th:text="${stock.stockActuel}"></td>
+        <td th:text="${stock.unite}"></td>
+        <td th:text="${stock.stockMinimum}"></td>
+        <td>
+                    <span th:if="${stock.stockActuel < stock.stockMinimum}" style="color:red; font-weight:bold;">
+                        ALERTE ! Stock faible
+                    </span>
+            <span th:unless="${stock.stockActuel < stock.stockMinimum}">
+                        OK
+                    </span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<a th:href="@{/stock/edit-form}">Gérer le stock</a>
+<hr/>
+
+<h2>Feedbacks des Clients</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Client</th>
+        <th>Note</th>
+        <th>Commentaire</th>
+        <th>Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="feedback : ${feedbacks}">
+        <td th:text="${feedback.client.nom}"></td>
+        <td th:text="${feedback.note}"></td>
+        <td th:text="${feedback.commentaire}"></td>
+        <td th:text="${feedback.dateSubmitted}"></td>
+    </tr>
+    </tbody>
+</table>
+<a th:href="@{/feedback/list}">Voir tous les feedbacks</a>
+</body>
+</html>

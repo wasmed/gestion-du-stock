@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Paiement de la Commande</title>
+</head>
+<body>
+<h1>Paiement de la commande n°<span th:text="${commande.id}"></span></h1>
+<p>Montant total : <strong th:text="${commande.montantTotal}"></strong> €</p>
+
+<form th:action="@{/paiement/process}" method="post">
+    <input type="hidden" name="commandeId" th:value="${commande.identifiant}" />
+
+    <div>
+        <label for="pourboire">Pourboire (facultatif):</label>
+        <input type="number" step="0.01" id="pourboire" name="pourboire" value="0.00" /> €
+    </div>
+
+    <div>
+        <label for="modePaiement">Mode de paiement :</label>
+        <select id="modePaiement" name="modePaiement">
+            <option th:each="mode : ${T(com.example.demo.model.ModePaiement).values()}"
+                    th:value="${mode}" th:text="${mode}">
+            </option>
+        </select>
+    </div>
+
+    <button type="submit">Valider le paiement</button>
+</form>
+</body>
+</html>

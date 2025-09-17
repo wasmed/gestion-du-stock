@@ -5,12 +5,15 @@
 </head>
 <body>
 <h1>Gestion des Commandes</h1>
+<a sec:authorize="hasRole('SERVEUR')" th:href="@{/orders/create}">Créer une nouvelle commande</a>
+<br/><br/>
 <table>
     <thead>
     <tr>
         <th>ID</th>
         <th>Client</th>
         <th>Serveur</th>
+        <th>Table</th>
         <th>État</th>
         <th>Actions</th>
     </tr>
@@ -18,8 +21,9 @@
     <tbody>
     <tr th:each="commande : ${commandes}">
         <td th:text="${commande.id}"></td>
-        <td th:text="${commande.client.nom}"></td>
-        <td th:text="${commande.serveur.nom}"></td>
+        <td th:text="${commande.client != null ? commande.client.nom : 'Non spécifié'}"></td>
+        <td th:text="${commande.serveur != null ? commande.serveur.nom : 'Non spécifié'}"></td>
+        <td th:text="${commande.table != null ? commande.table.numeroTable : 'Non assignée'}"></td>
         <td th:text="${commande.etat}"></td>
         <td>
             <a th:href="@{/orders/details/{id}(id=${commande.id})}">Détails</a>
@@ -35,6 +39,21 @@
                         <a th:href="@{/orders/serve/{id}(id=${commande.id})}"
                            th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_PREPARATION}">
                             | Servir
+                        </a>
+                        <a th:href="@{/paiement/form/{id}(id=${commande.id})}"
+                           th:if="${commande.etat == T(com.example.demo.model.EtatCommande).SERVIE}">
+                            | Paiement
+                        </a>
+                    </span>
+
+            <span sec:authorize="hasRole('SERVEUR')">
+                        <a th:href="@{/orders/edit/{id}(id=${commande.id})}"
+                           th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_ATTENTE}">
+                            | Modifier
+                        </a>
+                        <a th:href="@{/orders/delete/{id}(id=${commande.id})}"
+                           th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_ATTENTE}">
+                            | Supprimer
                         </a>
                     </span>
         </td>
