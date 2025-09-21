@@ -19,6 +19,11 @@ public class Feedback {
     @JoinColumn(name = "client_id")
     private User client;
 
+    @OneToOne
+    @JoinColumn(name = "commande_id", unique = true) // Crée une colonne "commande_id"
+    private Commande commande;
+
+
     private LocalDateTime dateSubmitted;
 
     // Getters and Setters
@@ -60,5 +65,13 @@ public class Feedback {
 
     public void setDateSubmitted(LocalDateTime dateSubmitted) {
         this.dateSubmitted = dateSubmitted;
+    }
+
+    public Commande getCommande() {
+        return commande;
+    }
+
+    public void setCommande(Commande commande) {
+        this.commande = commande;
     }
 }

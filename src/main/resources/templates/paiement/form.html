@@ -8,7 +8,7 @@
 <p>Montant total : <strong th:text="${commande.montantTotal}"></strong> €</p>
 
 <form th:action="@{/paiement/process}" method="post">
-    <input type="hidden" name="commandeId" th:value="${commande.identifiant}" />
+    <input type="hidden" name="commandeId" th:value="${commande.id}" />
 
     <div>
         <label for="pourboire">Pourboire (facultatif):</label>

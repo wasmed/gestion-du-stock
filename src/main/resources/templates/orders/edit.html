@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Modifier la Commande</title>
+</head>
+<body>
+<h1>Modifier la Commande n°<span th:text="${commande.id}"></span></h1>
+<p><strong>État actuel:</strong> <span th:text="${commande.etat}"></span></p>
+
+<form th:action="@{/orders/edit/{id}(id=${commande.id})}" method="post">
+    <div>
+        <label for="tableId">Modifier la table:</label>
+        <select id="tableId" name="tableId" required>
+            <option th:each="table : ${tables}"
+                    th:value="${table.identifiant}"
+                    th:text="${'Table ' + table.numeroTable}"
+                    th:selected="${table.identifiant == commande.table.identifiant}">
+            </option>
+        </select>
+    </div>
+
+    <br/>
+    <h3>Modifier le contenu de la commande:</h3>
+
+    <div th:each="plat : ${plats}">
+        <input type="checkbox" th:id="${'plat-' + plat.identifiant}" name="platIds" th:value="${plat.identifiant}"
+               th:checked="${commande.lignesCommande.?[typeLigne == T(com.example.demo.model.TypeLigneCommande).PLAT && plat.identifiant == #this.plat.identifiant].size() > 0}"/>
+        <label th:for="${'plat-' + plat.identifiant}" th:text="${plat.nom}"></label>
+    </div>
+
+    <div th:each="menu : ${menus}">
+        <input type="checkbox" th:id="${'menu-' + menu.id}" name="menuIds" th:value="${menu.id}"
+               th:checked="${commande.lignesCommande.?[typeLigne == T(com.example.demo.model.TypeLigneCommande).MENU && menu.id == #this.menu.id].size() > 0}"/>
+        <label th:for="${'menu-' + menu.id}" th:text="${menu.nom}"></label>
+    </div>
+
+    <br/>
+    <button type="submit">Sauvegarder les modifications</button>
+</form>
+<a th:href="@{/orders}">Annuler et retourner</a>
+</body>
+</html>

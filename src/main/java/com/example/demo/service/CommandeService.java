@@ -12,6 +12,8 @@ import java.util.List;
 public class CommandeService {
 
     @Autowired
+    private ConsommationStockRepository consommationStockRepository;
+    @Autowired
     private CommandeRepository commandeRepository;
     @Autowired
     private MenuRepository menuRepository;
@@ -21,6 +23,15 @@ public class CommandeService {
     private TableRestaurantRepository tableRepository;
     @Autowired
     private PlatRepository platRepository;
+
+    public ConsommationStock createConsommation(LigneCommande ligneCommande, Produit produit, FormatProduit formatProduit, Double quantiteUtilisee) {
+        ConsommationStock consommation = new ConsommationStock();
+        consommation.setLigneCommande(ligneCommande);
+        consommation.setProduit(produit);
+        consommation.setFormatProduit(formatProduit);
+        consommation.setQuantiteUtilisee(quantiteUtilisee);
+        return consommationStockRepository.save(consommation);
+    }
 
     public Commande createNewCommande(User client, User serveur,Long tableId) {
         TableRestaurant table = tableRepository.findById(tableId).orElse(null);

@@ -21,8 +21,8 @@
     <tbody>
     <tr th:each="commande : ${commandes}">
         <td th:text="${commande.id}"></td>
-        <td th:text="${commande.client != null ? commande.client.nom : 'Non spécifié'}"></td>
-        <td th:text="${commande.serveur != null ? commande.serveur.nom : 'Non spécifié'}"></td>
+        <td th:text="${commande.client != null ? commande.client.fullName : 'Non spécifié'}"></td>
+        <td th:text="${commande.serveur != null ? commande.serveur.fullName : 'Non spécifié'}"></td>
         <td th:text="${commande.table != null ? commande.table.numeroTable : 'Non assignée'}"></td>
         <td th:text="${commande.etat}"></td>
         <td>

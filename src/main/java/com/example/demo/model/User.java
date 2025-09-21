@@ -1,7 +1,7 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+
 
 
 import java.util.Set;
@@ -14,12 +14,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nom;
+    private String fullName;
 
     @Column(unique = true)
     private String email;
 
-    private String motDePasse;
+    private String password;
 
 
     @Enumerated(EnumType.STRING)
@@ -39,14 +39,6 @@ public class User {
         this.id = id;
     }
 
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -55,12 +47,20 @@ public class User {
         this.email = email;
     }
 
-    public String getMotDePasse() {
-        return motDePasse;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setMotDePasse(String motDePasse) {
-        this.motDePasse = motDePasse;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Role getRole() {

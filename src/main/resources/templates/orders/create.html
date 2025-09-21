@@ -5,11 +5,28 @@
 </head>
 <body>
 <h1>Créer une nouvelle Commande</h1>
+
+<form th:action="@{/orders/create}" method="get">
+    <div>
+        <label for="nombrePersonne">Nombre de personnes:</label>
+        <input type="number" id="nombrePersonne" name="nombrePersonne" min="1" required th:value="${nombrePersonne}"/>
+    </div>
+    <button type="submit">Rechercher une table</button>
+</form>
+
+<hr/>
+
 <form th:action="@{/orders/create}" method="post">
+
+    <div>
+        <label for="clientEmail">Email du Client (laisser vide pour un invité)</label>
+        <input type="email" id="clientEmail" name="clientEmail" placeholder="exemple@email.com" />
+    </div>
+
     <div>
         <label for="tableId">Sélectionner une table:</label>
-        <select id="tableId" name="tableId">
-            <option th:each="tableRestaurant : ${tables}" th:value="${tableRestaurant.identifiant}" th:text="${tableRestaurant.numeroTable}"></option>
+        <select id="tableId" name="tableId" required>
+            <option th:each="table : ${tables}" th:value="${table.identifiant}" th:text="${'Table ' + table.numeroTable + ' (' + table.nombrePersonne + ' places)'}"></option>
         </select>
     </div>
 
@@ -21,9 +38,14 @@
     </div>
 
     <br/>
+    <h3>Sélectionner les menus:</h3>
+    <div th:each="menu : ${menus}">
+        <input type="checkbox" th:id="${'menu-' + menu.id}" name="menuIds" th:value="${menu.id}" />
+        <label th:for="${'menu-' + menu.id}" th:text="${menu.nom} + ' - ' + ${menu.prix} + ' €'"></label>
+    </div>
+
+    <br/>
     <button type="submit">Valider la commande</button>
 </form>
-
-<a th:href="@{/orders}">Retour à la liste des commandes</a>
 </body>
 </html>

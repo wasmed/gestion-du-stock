@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.*;
+import com.example.demo.repository.CommandeRepository;
 import com.example.demo.service.CommandeService;
 import com.example.demo.service.MenuService;
 import com.example.demo.service.PlatService;
@@ -11,7 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -26,13 +26,15 @@ public class ClientController {
 
     @Autowired
     private PlatService platService;
-
+    @Autowired
+    private CommandeRepository commandeRepository;
     @Autowired
     private CommandeService commandeService;
     @Autowired
     private MenuService menuService;
     @Autowired
     private UserService userService;
+
 
     @GetMapping("/menu")
     public String showMenu(Model model) {
@@ -44,24 +46,53 @@ public class ClientController {
     }
 
     @GetMapping("/add-to-cart")
-    public String addPlatToCart(@RequestParam Long platId, HttpSession session) {
-        // Logique simplifiée : ajouter le plat au panier en session
-        Plat plat = platService.findPlatById(platId);
-        List<Plat> cart = (List<Plat>) session.getAttribute("cart");
-        if (cart == null) {
-            cart = new ArrayList<>();
-        }
-        cart.add(plat);
-        session.setAttribute("cart", cart);
+    public String addToCart(@RequestParam(required = false)Long platId,
+                            @RequestParam(required = false) Long menuId,HttpSession session) {
+        if (platId != null) {
+            // Gérer la liste des plats
+            List<Plat> cartPlats = (List<Plat>) session.getAttribute("cartPlats");
+            if (cartPlats == null) {
+                cartPlats = new ArrayList<>();
+            }
+            Plat plat = platService.findPlatById(platId); // Assure-toi d'avoir cette méthode
+            cartPlats.add(plat);
+            session.setAttribute("cartPlats", cartPlats);
 
-        return "redirect:/client/menu"; // Redirige vers le menu
+        } else if (menuId != null) {
+            // Gérer la liste des menus
+            List<Menu> cartMenus = (List<Menu>) session.getAttribute("cartMenus");
+            if (cartMenus == null) {
+                cartMenus = new ArrayList<>();
+            }
+            Menu menu = menuService.findMenuById(menuId);
+            cartMenus.add(menu);
+            session.setAttribute("cartMenus", cartMenus);
+        }
+
+        return "redirect:/client/menu";
     }
 
     @GetMapping("/cart")
     public String showCart(HttpSession session, Model model) {
-        List<Plat> cart = (List<Plat>) session.getAttribute("cart");
-        model.addAttribute("cart", cart != null ? cart : new ArrayList<>());
-        return "client/cart"; // Renvoie vers client/cart.html
+        List<Plat> cartPlats = (List<Plat>) session.getAttribute("cartPlats");
+        List<Menu> cartMenus = (List<Menu>) session.getAttribute("cartMenus");
+
+        model.addAttribute("cartPlats", cartPlats != null ? cartPlats : new ArrayList<>());
+        model.addAttribute("cartMenus", cartMenus != null ? cartMenus : new ArrayList<>());
+
+        return "client/cart";
+    }
+
+    @GetMapping("/historique")
+    @PreAuthorize("hasRole('CLIENT')")
+    public String showHistorique(Model model, Principal principal) {
+        // On récupère le client connecté
+        User client = userService.findUserByEmail(principal.getName());
+        // On cherche toutes ses commandes
+        List<Commande> commandesDuClient = commandeRepository.findByClientIdOrderByDateHeureDesc(client.getId());
+
+        model.addAttribute("commandes", commandesDuClient);
+        return "client/historique"; // Chemin vers la nouvelle vue
     }
 
 }

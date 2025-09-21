@@ -1,17 +1,18 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.Commande;
+import com.example.demo.model.EtatCommande;
 import com.example.demo.model.Feedback;
 import com.example.demo.model.User;
+import com.example.demo.service.CommandeService;
 import com.example.demo.service.FeedbackService;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -25,30 +26,69 @@ public class FeedbackController {
     private FeedbackService feedbackService;
 
     @Autowired
+    private CommandeService commandeService;
+
+    @Autowired
     private UserService userService;
 
-    // Show the feedback form for clients
-    @GetMapping("/create")
+    @GetMapping("/laisser-avis")
     @PreAuthorize("hasRole('CLIENT')")
-    public String showFeedbackForm(Model model) {
+    public String showFeedbackForm(@RequestParam Long commandeId, Model model, Principal principal, RedirectAttributes redirectAttributes) {
+
+        Commande commande = commandeService.findCommandeById(commandeId);
+
+        // --- SÉCURITÉ ET VÉRIFICATIONS IMPORTANTES ---
+        // 1. Vérifier que la commande appartient bien au client connecté
+        if (!commande.getClient().getEmail().equals(principal.getName())) {
+            redirectAttributes.addFlashAttribute("error", "Accès non autorisé à cette commande.");
+            return "redirect:/historique"; // On le renvoie à son historique
+        }
+
+        // 2. Vérifier que la commande n'a pas déjà un feedback
+        if (commande.getFeedBack() != null) {
+            redirectAttributes.addFlashAttribute("error", "Vous avez déjà laissé un avis pour cette commande.");
+            return "redirect:/historique";
+        }
+
+        // 3. (Optionnel) Vérifier que la commande est bien dans un état "final" (ex: PAYEE)
+        if (commande.getEtat() != EtatCommande.PAYEE) {
+            redirectAttributes.addFlashAttribute("error", "Vous ne pouvez laisser un avis que pour une commande payée.");
+            return "redirect:/historique";
+        }
+
+        // Si tout est bon, on prépare le modèle pour la vue
         model.addAttribute("feedback", new Feedback());
-        return "feedback/create";
+        model.addAttribute("commande", commande);
+        return "feedback/formulaire"; // Le chemin vers ta nouvelle vue
     }
 
-    // Process the feedback submission
-    @PostMapping("/create")
+    // L'ANCIENNE MÉTHODE POST /create EST REMPLACÉE PAR CELLE-CI :
+    /**
+     * Traite la soumission du formulaire de feedback.
+     */
+    @PostMapping("/sauvegarder")
     @PreAuthorize("hasRole('CLIENT')")
-    public String submitFeedback(@ModelAttribute Feedback feedback, Principal principal) {
-        User client = userService.findUserByEmail(principal.getName());
-        feedback.setClient(client);
+    public String submitFeedback(@RequestParam Long commandeId,
+                                 @RequestParam int note,
+                                 @RequestParam String commentaire,
+                                 Principal principal,
+                                 RedirectAttributes redirectAttributes) {
 
-        // Ajoute la date et l'heure actuelles
-        feedback.setDateSubmitted(LocalDateTime.now());
+        // On refait les vérifications de sécurité par précaution
+        Commande commande = commandeService.findCommandeById(commandeId);
+        if (!commande.getClient().getEmail().equals(principal.getName())) {
+            return "redirect:/error"; // Page d'erreur générique
+        }
 
-        feedbackService.saveFeedback(feedback);
-        return "redirect:/client/menu";
+        try {
+            feedbackService.createFeedback(commande, note, commentaire);
+            redirectAttributes.addFlashAttribute("success", "Merci ! Votre avis a bien été enregistré.");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+
+        return "redirect:/historique"; // Redirige vers l'historique avec un message de succès/erreur
     }
-
     // Show the list of feedbacks for admins
     @GetMapping("/list")
     @PreAuthorize("hasRole('ADMIN')")

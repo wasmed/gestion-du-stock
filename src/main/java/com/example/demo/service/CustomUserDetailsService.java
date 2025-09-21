@@ -28,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         //    Pour l'instant, on peut utiliser l'implémentation par défaut de Spring Security
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())
-                .password(user.getMotDePasse())
+                .password(user.getPassword())
                 .roles(user.getRole().name()) // Convertir le rôle en String
                 .build();
     }

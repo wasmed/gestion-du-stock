@@ -3,11 +3,11 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 
 @Entity
-public class PlatIngredient {
+public class Ingredient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long identifiant;
 
     private Double quantite;
     private String unite;
@@ -20,12 +20,12 @@ public class PlatIngredient {
     @JoinColumn(name = "produit_id")
     private Produit produit;
 
-    public Long getId() {
-        return id;
+    public Long getIdentifiant() {
+        return identifiant;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdentifiant(Long identifiant) {
+        this.identifiant = identifiant;
     }
 
     public Double getQuantite() {
@@ -44,19 +44,19 @@ public class PlatIngredient {
         this.unite = unite;
     }
 
-    public Plat getPlat() {
-        return plat;
-    }
-
-    public void setPlat(Plat plat) {
-        this.plat = plat;
-    }
-
     public Produit getProduit() {
         return produit;
     }
 
     public void setProduit(Produit produit) {
         this.produit = produit;
+    }
+
+    public Plat getPlat() {
+        return plat;
+    }
+
+    public void setPlat(Plat plat) {
+        this.plat = plat;
     }
 }

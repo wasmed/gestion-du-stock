@@ -5,6 +5,10 @@
 </head>
 <body>
 <h1>Notre Menu</h1>
+<a th:href="@{/client/cart}">Voir mon panier</a>
+<br/><br/>
+
+<h2>Plats Individuels</h2>
 <table>
     <thead>
     <tr>
@@ -23,6 +27,28 @@
         <td th:text="${plat.categorie}"></td>
         <td>
             <a th:href="@{/client/add-to-cart(platId=${plat.identifiant})}">Ajouter au panier</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>Menus</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Nom du menu</th>
+        <th>Description</th>
+        <th>Prix</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="menu : ${menus}">
+        <td th:text="${menu.nom}"></td>
+        <td th:text="${menu.description}"></td>
+        <td th:text="${menu.prix}"></td>
+        <td>
+            <a th:href="@{/client/add-to-cart(menuId=${menu.id})}">Ajouter au panier</a>
         </td>
     </tr>
     </tbody>

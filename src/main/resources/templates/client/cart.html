@@ -6,20 +6,48 @@
 <body>
 <h1>Mon Panier</h1>
 <a th:href="@{/client/menu}">Retour au Menu</a>
-<table>
-    <thead>
-    <tr>
-        <th>Nom du plat</th>
-        <th>Prix</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="plat : ${cart}">
-        <td th:text="${plat.nom}"></td>
-        <td th:text="${plat.prix}"></td>
-    </tr>
-    </tbody>
-</table>
+
+<div th:if="${cartPlats != null && !cartPlats.isEmpty()}">
+    <h2>Plats</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Nom du plat</th>
+            <th>Prix</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="plat : ${cartPlats}">
+            <td th:text="${plat.nom}"></td>
+            <td th:text="${plat.prix}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:if="${cartMenus != null && !cartMenus.isEmpty()}">
+    <h2>Menus</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Nom du menu</th>
+            <th>Prix</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="menu : ${cartMenus}">
+            <td th:text="${menu.nom}"></td>
+            <td th:text="${menu.prix}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<p th:if="${(cartPlats == null || cartPlats.isEmpty()) && (cartMenus == null || cartMenus.isEmpty())}">
+    Votre panier est vide.
+</p>
+
+<hr/>
 <p>Pour valider la commande, veuillez appeler un serveur.</p>
 </body>
 </html>

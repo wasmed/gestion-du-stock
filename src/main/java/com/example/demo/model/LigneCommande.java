@@ -2,6 +2,9 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 public class LigneCommande {
 
@@ -26,6 +29,9 @@ public class LigneCommande {
     @ManyToOne
     @JoinColumn(name = "menu_id")
     private Menu menu;
+
+    @OneToMany(mappedBy = "ligneCommande", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ConsommationStock> consommations = new HashSet<>();
 
     public Long getIdentifiant() {
         return identifiant;
@@ -73,5 +79,13 @@ public class LigneCommande {
 
     public void setMenu(Menu menu) {
         this.menu = menu;
+    }
+
+    public Set<ConsommationStock> getConsommations() {
+        return consommations;
+    }
+
+    public void setConsommations(Set<ConsommationStock> consommations) {
+        this.consommations = consommations;
     }
 }

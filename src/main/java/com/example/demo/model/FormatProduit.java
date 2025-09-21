@@ -6,15 +6,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class TableRestaurant {
+public class FormatProduit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long identifiant;
 
-    private Integer numeroTable;
-
-    private Integer nombrePersonne;
+    private String nom;
+    private Double quantite;
 
     public Long getIdentifiant() {
         return identifiant;
@@ -24,21 +23,19 @@ public class TableRestaurant {
         this.identifiant = identifiant;
     }
 
-    public Integer getNumeroTable() {
-        return numeroTable;
+    public String getNom() {
+        return nom;
     }
 
-    public void setNumeroTable(Integer numeroTable) {
-        this.numeroTable = numeroTable;
+    public void setNom(String nom) {
+        this.nom = nom;
     }
 
-    public Integer getNombrePersonne() {
-        return nombrePersonne;
+    public Double getQuantite() {
+        return quantite;
     }
 
-    public void setNombrePersonne(Integer nombrePersonne) {
-        this.nombrePersonne = nombrePersonne;
+    public void setQuantite(Double quantite) {
+        this.quantite = quantite;
     }
-
-
 }

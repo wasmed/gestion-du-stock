@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Mon Historique</title>
+</head>
+<body>
+<h1>Historique de mes commandes</h1>
+<div th:if="${param.feedbackReussi}">
+    <p style="color:green;">Merci, votre avis a été enregistré !</p>
+</div>
+<div th:if="${param.feedbackDejaDonne}">
+    <p style="color:red;">Vous avez déjà donné un avis pour cette commande.</p>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>Numéro</th>
+        <th>Date</th>
+        <th>Montant</th>
+        <th>État</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="commande : ${commandes}">
+        <td th:text="${commande.id}"></td>
+        <td th:text="${#temporals.format(commande.dateHeure, 'dd/MM/yyyy HH:mm')}"></td>
+        <td th:text="${commande.montantTotal} + ' €'"></td>
+        <td th:text="${commande.etat}"></td>
+        <td>
+            <a th:if="${commande.etat == T(com.example.demo.model.EtatCommande).PAYEE && commande.feedBack == null}"
+               th:href="@{/feedback/laisser-avis(commandeId=${commande.id})}">
+                Laisser un avis
+            </a>
+            <span th:if="${commande.feedBack != null}">Avis déjà donné</span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<a th:href="@{/client/menu}">Retour au menu</a>
+</body>
+</html>

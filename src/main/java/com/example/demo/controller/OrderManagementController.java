@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.*;
-import com.example.demo.repository.TableRestaurantRepository;
+import com.example.demo.repository.*;
 import com.example.demo.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +20,8 @@ public class OrderManagementController {
     @Autowired
     private MenuService menuService;
     @Autowired
+    private LigneCommandeRepository ligneCommandeRepository;
+    @Autowired
     private CommandeService commandeService;
     @Autowired
     private PlatService platService;
@@ -27,6 +29,7 @@ public class OrderManagementController {
     private TableRestaurantRepository tableRepository;
     @Autowired
     private StockService stockService;
+
 
     @GetMapping
     @PreAuthorize("hasAnyRole('SERVEUR', 'CHEF_CUISINIER', 'ADMIN')")
@@ -55,9 +58,13 @@ public class OrderManagementController {
     @PreAuthorize("hasRole('SERVEUR')")
     public String serveOrder(@PathVariable Long id) {
         Commande commande = commandeService.findCommandeById(id);
-        stockService.decrementStockForCommande(commande);
-        commande.setEtat(EtatCommande.SERVIE);
-        commandeService.saveCommande(commande);
+
+        if (commande != null && commande.getEtat() == EtatCommande.EN_PREPARATION) {
+            stockService.processStockDecrementForCommande(commande);
+
+            commande.setEtat(EtatCommande.SERVIE);
+            commandeService.saveCommande(commande);
+        }
 
         return "redirect:/orders";
     }
@@ -74,12 +81,20 @@ public class OrderManagementController {
 
     @GetMapping("/create")
     @PreAuthorize("hasRole('SERVEUR')")
-    public String showCreateOrderForm(Model model) {
-        List<TableRestaurant> tables = tableRepository.findAll();
+    public String showCreateOrderForm(@RequestParam(required = false) Integer nombrePersonne,Model model) {
+        List<TableRestaurant> tables;
+        if (nombrePersonne != null && nombrePersonne > 0) {
+            tables = tableRepository.findByNombrePersonneGreaterThanEqual(nombrePersonne);
+        } else {
+            tables = tableRepository.findAll();
+        }
         List<Plat> plats = platService.findAllPlats();
         List<User> clients = userService.findByRole(Role.CLIENT);
+        List<Menu> menus = menuService.findAllMenus();
         model.addAttribute("tables", tables);
+        model.addAttribute("nombrePersonne", nombrePersonne);
         model.addAttribute("plats", plats);
+        model.addAttribute("menus", menus);
         model.addAttribute("clients", clients);
         return "orders/create";
     }
@@ -89,10 +104,27 @@ public class OrderManagementController {
     public String createOrder(@RequestParam Long tableId,
                               @RequestParam(name = "platIds", required = false) List<Long> platIds,
                               @RequestParam(name = "menuIds", required = false) List<Long> menuIds,
-                              @RequestParam Long clientId,
+                              @RequestParam(name = "clientEmail", required = false) String clientEmail,
                               Principal principal) {
         User serveur = userService.findUserByEmail(principal.getName());
-        User client = userService.findUserById(clientId);
+        User client ;
+        if (clientEmail != null && !clientEmail.trim().isEmpty()) {
+            // 1. Le serveur a saisi un email, on essaie de trouver le client.
+            User foundClient = userService.findUserByEmail(clientEmail);
+
+            if (foundClient != null) {
+                client = foundClient;
+            } else {
+                client = userService.findUserByEmail("guest@restaurant.com");
+            }
+        } else {
+            client = userService.findUserByEmail("guest@restaurant.com");
+        }
+
+        if (client == null) {
+            throw new RuntimeException("Le compte client 'guest@restaurant.com' est introuvable.");
+        }
+
         Commande commande = commandeService.createNewCommande(client, serveur, tableId);
 
         double montantTotal = 0;
@@ -121,6 +153,63 @@ public class OrderManagementController {
 
         // Mise à jour du montant total de la commande et sauvegarde
         commande.setMontantTotal(montantTotal);
+        commandeService.saveCommande(commande);
+
+        return "redirect:/orders";
+    }
+
+    @PostMapping("/edit/{id}")
+    @PreAuthorize("hasRole('SERVEUR')")
+    public String editOrder(@PathVariable Long id,
+                            @RequestParam Long tableId,
+                            @RequestParam(name = "platIds", required = false) List<Long> platIds,
+                            @RequestParam(name = "menuIds", required = false) List<Long> menuIds,
+                            Principal principal) {
+
+        Commande commande = commandeService.findCommandeById(id);
+        double montantTotal = 0;
+        // 1. Supprimer les anciennes lignes
+        ligneCommandeRepository.deleteAll(commande.getLignesCommande());
+        commande.getLignesCommande().clear();
+
+        // 2. Ajouter les nouvelles lignes de commande
+        if (platIds != null) {
+            for (Long platId : platIds) {
+                Plat plat = platService.findPlatById(platId);
+                LigneCommande ligne = new LigneCommande();
+                ligne.setCommande(commande);
+                ligne.setPlat(plat);
+                ligne.setQuantite(1); // Gérer la quantité si nécessaire
+                ligne.setTypeLigne(TypeLigneCommande.PLAT);
+                montantTotal += plat.getPrix();
+                ligneCommandeRepository.save(ligne);
+                commande.getLignesCommande().add(ligne); // <-- LA LIGNE CLÉ À AJOUTER
+            }
+        }
+
+        if (menuIds != null) {
+            for (Long menuId : menuIds) {
+                Menu menu = menuService.findMenuById(menuId);
+                LigneCommande ligne = new LigneCommande();
+                ligne.setCommande(commande);
+                ligne.setMenu(menu);
+                ligne.setQuantite(1); // Gérer la quantité si nécessaire
+                ligne.setTypeLigne(TypeLigneCommande.MENU);
+                montantTotal += menu.getPrix();
+                ligneCommandeRepository.save(ligne);
+                commande.getLignesCommande().add(ligne); // <-- LA LIGNE CLÉ À AJOUTER
+            }
+        }
+
+        // 3. Mettre à jour la table
+        // Attention : la méthode est peut-être findById et non findByIdentifiant
+        TableRestaurant table = tableRepository.findById(tableId).orElse(null);
+        if (table != null) {
+            commande.setTable(table);
+        }
+
+        commande.setMontantTotal(montantTotal);
+        // 4. Sauvegarder la commande mise à jour
         commandeService.saveCommande(commande);
 
         return "redirect:/orders";

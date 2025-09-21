@@ -36,8 +36,8 @@
     <tr>
         <th>Produit</th>
         <th>Stock Actuel</th>
-        <th>Unité</th>
         <th>Stock Minimum</th>
+        <th>Unité</th>
         <th>Statut</th>
     </tr>
     </thead>
@@ -45,8 +45,8 @@
     <tr th:each="stock : ${stocks}">
         <td th:text="${stock.produit.nom}"></td>
         <td th:text="${stock.stockActuel}"></td>
-        <td th:text="${stock.unite}"></td>
         <td th:text="${stock.stockMinimum}"></td>
+        <td th:text="${stock.unite}"></td>
         <td>
                     <span th:if="${stock.stockActuel < stock.stockMinimum}" style="color:red; font-weight:bold;">
                         ALERTE ! Stock faible

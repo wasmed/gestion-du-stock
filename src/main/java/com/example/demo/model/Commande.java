@@ -39,6 +39,9 @@ public class Commande {
     @JoinColumn(name = "table_id")
     private TableRestaurant table;
 
+    @OneToOne(mappedBy = "commande", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Feedback feedBack;
+
     public Long getId() {
         return id;
     }
@@ -109,5 +112,13 @@ public class Commande {
 
     public void setTable(TableRestaurant table) {
         this.table = table;
+    }
+
+    public Feedback getFeedBack() {
+        return feedBack;
+    }
+
+    public void setFeedBack(Feedback feedBack) {
+        this.feedBack = feedBack;
     }
 }

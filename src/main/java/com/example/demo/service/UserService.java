@@ -21,7 +21,7 @@ public class UserService {
     public User saveUser(User user) {
 
             // Hacher le mot de passe avant de le sauvegarder
-        user.setMotDePasse(passwordEncoder.encode(user.getMotDePasse()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
             // On définit un rôle par défaut pour les nouveaux utilisateurs
             // user.setRole(ROLE.CLIENT); // Par exemple, si tu as une classe ROLE
 

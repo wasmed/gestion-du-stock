@@ -5,6 +5,7 @@
 </head>
 <body>
 <h2>Page de connexion</h2>
+
 <form th:action="@{/login}" method="post">
     <div>
         <label for="username">Email:</label>
@@ -16,5 +17,14 @@
     </div>
     <button type="submit">Se connecter</button>
 </form>
+
+<hr/>
+
+<div>
+    <p>Pas encore de compte ? <a th:href="@{/register}">Inscrivez-vous ici</a></p>
+
+    <p>Ou <a th:href="@{/client/menu}">consultez le menu sans vous connecter</a>.</p>
+</div>
+
 </body>
 </html>

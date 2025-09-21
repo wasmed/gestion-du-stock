@@ -1,7 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.model.*;
-import com.example.demo.repository.PlatIngredientRepository;
+import com.example.demo.repository.ConsommationStockRepository;
+import com.example.demo.repository.IngredientRepository;
 import com.example.demo.repository.StockProduitRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,52 +10,78 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class StockService {
 
     @Autowired
-    private PlatIngredientRepository platIngredientRepository;
+    private StockProduitRepository stockProduitRepository;
+    @Autowired
+    private IngredientRepository ingredientRepository; // Inject the new repository
 
     @Autowired
-    private StockProduitRepository stockProduitRepository;
+    private ConsommationStockRepository consommationStockRepository;
 
     @Transactional
-    public void decrementStockForCommande(Commande commande) {
+    public void processStockDecrementForCommande(Commande commande) {
         Set<LigneCommande> lignesCommande = commande.getLignesCommande();
         if (lignesCommande != null && !lignesCommande.isEmpty()) {
             for (LigneCommande ligne : lignesCommande) {
                 if (ligne.getTypeLigne() == TypeLigneCommande.PLAT) {
-                    decrementStockForPlat(ligne.getPlat(), ligne.getQuantite());
+                    processStockForPlat(ligne.getPlat(), ligne);
                 } else if (ligne.getTypeLigne() == TypeLigneCommande.MENU) {
-                    decrementStockForMenu(ligne.getMenu(), ligne.getQuantite());
+                    processStockForMenu(ligne.getMenu(), ligne);
                 }
             }
         }
     }
 
-    private void decrementStockForPlat(Plat plat, int quantiteLigne) {
-        List<PlatIngredient> ingredients = platIngredientRepository.findByPlat(plat);
-        for (PlatIngredient platIngredient : ingredients) {
-            StockProduit stock = stockProduitRepository.findByProduit(platIngredient.getProduit());
+    private void processStockForPlat(Plat plat, LigneCommande ligneCommande) {
+        List<Ingredient> ingredients = ingredientRepository.findByPlat(plat);
+        for (Ingredient ingredient : ingredients) {
+            StockProduit stock = stockProduitRepository.findByProduit(ingredient.getProduit());
             if (stock != null) {
-                double nouveauStock = stock.getStockActuel() - (platIngredient.getQuantite() * quantiteLigne);
-                stock.setStockActuel(nouveauStock);
+                double quantiteAUtiliser = ingredient.getQuantite() * ligneCommande.getQuantite();
+
+                // Création d'un enregistrement ConsommationStock pour l'historique
+                ConsommationStock consommation = new ConsommationStock();
+                consommation.setLigneCommande(ligneCommande);
+                consommation.setProduit(ingredient.getProduit());
+
+                consommation.setQuantiteUtilisee(quantiteAUtiliser);
+                consommationStockRepository.save(consommation);
+
+                // Décrémentation effective du stock
+                stock.setStockActuel(stock.getStockActuel() - quantiteAUtiliser);
                 stockProduitRepository.save(stock);
             } else {
-                // Log an alert if a product is not in stock
-                System.err.println("ALERTE: Stock pour le produit " + platIngredient.getProduit().getNom() + " non trouvé.");
+                System.err.println("ALERTE: Stock pour le produit " + ingredient.getProduit().getNom() + " non trouvé.");
             }
         }
     }
 
-    private void decrementStockForMenu(Menu menu, int quantiteMenu) {
+    private void processStockForMenu(Menu menu, LigneCommande ligneCommande) {
         for (Plat plat : menu.getPlats()) {
-            decrementStockForPlat(plat, quantiteMenu);
+            processStockForPlat(plat, ligneCommande);
         }
     }
 
     public List<StockProduit> findAllStocks() {
         return stockProduitRepository.findAll();
+    }
+
+    public StockProduit findStockById(Long id) {
+        return stockProduitRepository.findById(id).orElse(null);
+    }
+
+    public StockProduit saveStock(StockProduit stockProduit) {
+        return stockProduitRepository.save(stockProduit);
+    }
+
+    public List<StockProduit> findLowStocks() {
+        return stockProduitRepository.findAll().stream()
+                .filter(stock -> stock.getStockActuel() < stock.getStockMinimum())
+                .collect(Collectors.toList());
     }
 }

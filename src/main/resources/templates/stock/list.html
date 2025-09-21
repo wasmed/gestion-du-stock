@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Gestion du Stock</title>
+</head>
+<body>
+<h1>Gestion du Stock</h1>
+<a th:href="@{/stock/low-stock-alert}">Voir les alertes de stock faible</a>
+<br/><br/>
+<table>
+    <thead>
+    <tr>
+        <th>Produit</th>
+        <th>Stock Actuel</th>
+        <th>Stock Minimum</th>
+        <th>Unité</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="stock : ${stocks}">
+        <td th:text="${stock.produit.nom}"></td>
+        <td th:text="${stock.stockActuel}"></td>
+        <td th:text="${stock.stockMinimum}"></td>
+        <td th:text="${stock.unite}"></td>
+        <td>
+            <a th:href="@{/stock/edit/{id}(id=${stock.id})}">Mettre à jour</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -18,8 +19,8 @@ public class Plat {
     @Enumerated(EnumType.STRING)
     private CategoriePlat categorie;
 
-    @OneToMany(mappedBy = "plat")
-    private Set<PlatIngredient> platIngredients;
+    @OneToMany(mappedBy = "plat", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Ingredient> ingredients = new HashSet<>();
 
     @ManyToMany(mappedBy = "plats")
     private Set<Menu> menus;
@@ -64,19 +65,19 @@ public class Plat {
         this.categorie = categorie;
     }
 
-    public Set<PlatIngredient> getPlatIngredients() {
-        return platIngredients;
-    }
-
-    public void setPlatIngredients(Set<PlatIngredient> platIngredients) {
-        this.platIngredients = platIngredients;
-    }
-
     public Set<Menu> getMenus() {
         return menus;
     }
 
     public void setMenus(Set<Menu> menus) {
         this.menus = menus;
+    }
+
+    public Set<Ingredient> getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(Set<Ingredient> ingredients) {
+        this.ingredients = ingredients;
     }
 }

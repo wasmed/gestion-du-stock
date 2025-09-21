@@ -5,27 +5,26 @@
 </head>
 <body>
 <h1>Détails de la Commande n°<span th:text="${commande.id}"></span></h1>
-<p><strong>Client:</strong> <span th:text="${commande.client.nom}"></span></p>
-<p><strong>Serveur:</strong> <span th:text="${commande.serveur.nom}"></span></p>
-<p><strong>État:</strong> <span th:text="${commande.etat}"></span></p>
-<p><strong>Montant Total:</strong> <span th:text="${commande.montantTotal}"></span> €</p>
-
-<h2>Plats commandés:</h2>
+<hr/>
+<h2>Contenu de la commande:</h2>
 <table>
     <thead>
     <tr>
-        <th>Plat</th>
+        <th>Article</th>
         <th>Quantité</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="ligne : ${commande.lignesCommande}">
-        <td th:text="${ligne.plat.nom}"></td>
+        <td>
+            <span th:if="${ligne.typeLigne == T(com.example.demo.model.TypeLigneCommande).PLAT}" th:text="${ligne.plat.nom}"></span>
+            <span th:if="${ligne.typeLigne == T(com.example.demo.model.TypeLigneCommande).MENU}" th:text="${ligne.menu.nom}"></span>
+        </td>
         <td th:text="${ligne.quantite}"></td>
     </tr>
     </tbody>
 </table>
-
+<hr/>
 <a th:href="@{/orders}">Retour à la liste des commandes</a>
 </body>
 </html>
