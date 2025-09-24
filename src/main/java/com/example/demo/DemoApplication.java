@@ -10,6 +10,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 @SpringBootApplication
 public class DemoApplication {
@@ -34,14 +37,15 @@ public class DemoApplication {
         System.out.println("Mot de passe haché SERVEUR: " + motDePasseHache3);
     }
 
-
+/*
     @Bean
     public CommandLineRunner dataLoader(
             UserRepository userRepository,
+            MenuRepository menuRepository,
             PlatRepository platRepository,
             ProduitRepository produitRepository,
             StockProduitRepository stockProduitRepository,
-            CommandeRepository commandeRepository,
+            FormatProduitRepository formatProduitRepository,
             LigneCommandeRepository ligneCommandeRepository,
             IngredientRepository ingredientRepository,
             TableRestaurantRepository tableRepository,
@@ -67,36 +71,178 @@ public class DemoApplication {
                 table3.setNombrePersonne(6);
                 tableRepository.save(table3);
             }
+            // =================================================================
+            // 0. CREATE PRODUCT FORMATS (The different packaging/units)
+            // =================================================================
+            FormatProduit formatKg = new FormatProduit();
+            formatKg.setNom("Kilogramme");
+            formatKg.setQuantite(1.0);
 
-            // Créer les plats et le stock si la table est vide
-            if (platRepository.count() == 0) {
-                Plat plat1 = new Plat();
-                plat1.setNom("Pizza Margherita");
-                plat1.setPrix(10.50);
-                plat1.setCategorie(CategoriePlat.PLAT_PRINCIPAL);
-                platRepository.save(plat1);
+            FormatProduit formatUnite = new FormatProduit();
+            formatUnite.setNom("Unité");
+            formatUnite.setQuantite(1.0);
 
-                Produit produit1 = new Produit();
-                produit1.setNom("Farine");
-                produitRepository.save(produit1);
+            FormatProduit formatBouteille50cl = new FormatProduit();
+            formatBouteille50cl.setNom("Bouteille 50cl");
+            formatBouteille50cl.setQuantite(0.5);
 
-                StockProduit stock1 = new StockProduit();
-                stock1.setProduit(produit1);
-                stock1.setStockActuel(50.0);
-                stock1.setStockMinimum(10.0);
-                stock1.setUnite("kg");
-                stockProduitRepository.save(stock1);
+            FormatProduit formatCanette33cl = new FormatProduit();
+            formatCanette33cl.setNom("Canette 33cl");
+            formatCanette33cl.setQuantite(0.33);
 
-                // NOUVELLE LOGIQUE : Création d'un INGREDIENT qui fait le lien
-                Ingredient ingredient1 = new Ingredient();
-                ingredient1.setPlat(plat1);
-                ingredient1.setProduit(produit1);
-                ingredient1.setQuantite(0.5);
-                ingredient1.setUnite("kg");
-                ingredientRepository.save(ingredient1);
-            }
+            formatProduitRepository.saveAll(Arrays.asList(formatKg, formatUnite, formatBouteille50cl, formatCanette33cl));
+
+            // =================================================================
+            // 1. CREATE PRODUCTS (The description of the item)
+            // =================================================================
+            Produit tomate = new Produit();
+            tomate.setNom("Tomate");
+            tomate.setType(TypeProduit.LEGUME);
+
+            Produit salade = new Produit();
+            salade.setNom("Salade Laitue");
+            salade.setType(TypeProduit.LEGUME);
+
+            Produit patePizza = new Produit();
+            patePizza.setNom("Pâte à Pizza");
+            patePizza.setType(TypeProduit.BOULANGERIE);
+
+            Produit mozzarella = new Produit();
+            mozzarella.setNom("Mozzarella");
+            mozzarella.setType(TypeProduit.CREMERIE);
+
+            Produit eauPlateProduit = new Produit();
+            eauPlateProduit.setNom("Eau Plate 50cl");
+            eauPlateProduit.setType(TypeProduit.BOISSON);
+
+            Produit chocolatNoir = new Produit();
+            chocolatNoir.setNom("Chocolat Noir 70%");
+            chocolatNoir.setType(TypeProduit.DESSERT);
+
+            // Save all products first to get their IDs
+            List<Produit> produits = Arrays.asList(tomate, salade, patePizza, mozzarella, eauPlateProduit, chocolatNoir);
+            produitRepository.saveAll(produits);
+
+            // =================================================================
+            // 2. CREATE THE STOCK ASSOCIATED WITH EACH PRODUCT
+            // =================================================================
+            StockProduit stockTomate = new StockProduit();
+            stockTomate.setProduit(tomate);
+            stockTomate.setStockActuel(50.0);
+            stockTomate.setStockMinimum(10.0);
+            stockTomate.setUnite("kg");
+
+            StockProduit stockSalade = new StockProduit();
+            stockSalade.setProduit(salade);
+            stockSalade.setStockActuel(20.0);
+            stockSalade.setStockMinimum(5.0);
+            stockSalade.setUnite("kg");
+
+            StockProduit stockPatePizza = new StockProduit();
+            stockPatePizza.setProduit(patePizza);
+            stockPatePizza.setStockActuel(20.0);
+            stockPatePizza.setStockMinimum(4.0);
+            stockPatePizza.setUnite("kg");
+
+            StockProduit stockMozzarella = new StockProduit();
+            stockMozzarella.setProduit(mozzarella);
+            stockMozzarella.setStockActuel(15.0);
+            stockMozzarella.setStockMinimum(3.0);
+            stockMozzarella.setUnite("kg");
+
+            StockProduit stockEau = new StockProduit();
+            stockEau.setProduit(eauPlateProduit);
+            stockEau.setStockActuel(100.0);
+            stockEau.setStockMinimum(24.0);
+            stockEau.setUnite("bouteille");
+
+            StockProduit stockChocolat = new StockProduit();
+            stockChocolat.setProduit(chocolatNoir);
+            stockChocolat.setStockActuel(10.0);
+            stockChocolat.setStockMinimum(2.0);
+            stockChocolat.setUnite("kg");
+
+            List<StockProduit> stocks = Arrays.asList(stockTomate, stockSalade, stockPatePizza, stockMozzarella, stockEau, stockChocolat);
+            stockProduitRepository.saveAll(stocks);
+
+            // =================================================================
+            // 3. CREATE DISHES (which use the products as ingredients)
+            // =================================================================
+            Plat saladeVerte = new Plat();
+            saladeVerte.setNom("Salade Verte Simple");
+            saladeVerte.setDescription("Une salade fraîche de saison.");
+            saladeVerte.setPrix(7.50);
+            saladeVerte.setCategorie(CategoriePlat.ENTREE);
+            platRepository.save(saladeVerte);
+
+            Ingredient ingSalade = new Ingredient();
+            ingSalade.setPlat(saladeVerte);
+            ingSalade.setProduit(salade);
+            ingSalade.setQuantite(0.150);
+            ingSalade.setUnite("kg");
+            ingredientRepository.save(ingSalade);
+
+            Ingredient ingTomateSalade = new Ingredient();
+            ingTomateSalade.setPlat(saladeVerte);
+            ingTomateSalade.setProduit(tomate);
+            ingTomateSalade.setQuantite(0.080);
+            ingTomateSalade.setUnite("kg");
+            ingredientRepository.save(ingTomateSalade);
+
+            Plat pizzaMargherita = new Plat();
+            pizzaMargherita.setNom("Pizza Margherita");
+            pizzaMargherita.setDescription("Sauce tomate, mozzarella fondante et basilic frais.");
+            pizzaMargherita.setPrix(12.00);
+            pizzaMargherita.setCategorie(CategoriePlat.PLAT_PRINCIPAL);
+            platRepository.save(pizzaMargherita);
+
+            Ingredient ingPate = new Ingredient();
+            ingPate.setPlat(pizzaMargherita);
+            ingPate.setProduit(patePizza);
+            ingPate.setQuantite(0.250);
+            ingPate.setUnite("kg");
+            ingredientRepository.save(ingPate);
+
+            Ingredient ingMozzaPizza = new Ingredient();
+            ingMozzaPizza.setPlat(pizzaMargherita);
+            ingMozzaPizza.setProduit(mozzarella);
+            ingMozzaPizza.setQuantite(0.120);
+            ingMozzaPizza.setUnite("kg");
+            ingredientRepository.save(ingMozzaPizza);
+
+            Ingredient ingTomatePizza = new Ingredient();
+            ingTomatePizza.setPlat(pizzaMargherita);
+            ingTomatePizza.setProduit(tomate);
+            ingTomatePizza.setQuantite(0.100);
+            ingTomatePizza.setUnite("kg");
+            ingredientRepository.save(ingTomatePizza);
+
+            Plat boissonEau = new Plat();
+            boissonEau.setNom("Eau Plate");
+            boissonEau.setDescription("Bouteille de 50cl.");
+            boissonEau.setPrix(3.00);
+            boissonEau.setCategorie(CategoriePlat.BOISSON);
+            platRepository.save(boissonEau);
+
+            Ingredient ingEau = new Ingredient();
+            ingEau.setPlat(boissonEau);
+            ingEau.setProduit(eauPlateProduit);
+            ingEau.setQuantite(1.0);
+            ingEau.setUnite("bouteille");
+            ingredientRepository.save(ingEau);
+
+            // =================================================================
+            // 4. CREATE MENUS (which group dishes)
+            // =================================================================
+            Menu menuDuJour = new Menu();
+            menuDuJour.setNom("Menu du Jour");
+            menuDuJour.setDescription("L'essentiel de notre cuisine.");
+            menuDuJour.setPrix(24.00);
+            menuDuJour.setPlats(new HashSet<>(Arrays.asList(saladeVerte, pizzaMargherita)));
+            menuRepository.save(menuDuJour);
+
 
         };
-    }
+    }*/
 }
 

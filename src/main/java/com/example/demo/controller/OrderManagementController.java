@@ -8,9 +8,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/orders")
@@ -30,14 +33,28 @@ public class OrderManagementController {
     @Autowired
     private StockService stockService;
 
-
     @GetMapping
-    @PreAuthorize("hasAnyRole('SERVEUR', 'CHEF_CUISINIER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('SERVEUR', 'ADMIN')")
     public String listOrders(Model model) {
+        List<TableRestaurant> toutesLesTables = tableRepository.findAll();
+        model.addAttribute("toutesLesTables", toutesLesTables);
+
+        // 2. On récupère les commandes en cours
         List<Commande> commandesEnCours = commandeService.getCommandesEnCoursEtServies();
-        model.addAttribute("commandes", commandesEnCours);
-        return "orders/list";
+
+        // 3. On groupe les commandes par leur objet TableRestaurant
+        Map<TableRestaurant, List<Commande>> commandesParTable = commandesEnCours.stream()
+                .filter(c -> c.getTable() != null)
+                .collect(Collectors.groupingBy(Commande::getTable));
+
+        model.addAttribute("commandesParTable", commandesParTable);
+
+        // 4. On envoie aussi la liste des tables qui ont des commandes (pour faciliter l'affichage)
+        model.addAttribute("tablesOccupees", commandesParTable.keySet());
+
+        return "serveur/dashboard";
     }
+
 
     @GetMapping("/details/{id}")
     @PreAuthorize("hasAnyRole('SERVEUR', 'CHEF_CUISINIER', 'ADMIN')")
@@ -51,7 +68,7 @@ public class OrderManagementController {
     @PreAuthorize("hasRole('CHEF_CUISINIER')")
     public String prepareOrder(@PathVariable Long id) {
         commandeService.updateCommandeEtat(id, EtatCommande.EN_PREPARATION);
-        return "redirect:/orders";
+        return "redirect:/orders/chef-dashboard";
     }
 
     @GetMapping("/serve/{id}")
@@ -59,7 +76,7 @@ public class OrderManagementController {
     public String serveOrder(@PathVariable Long id) {
         Commande commande = commandeService.findCommandeById(id);
 
-        if (commande != null && commande.getEtat() == EtatCommande.EN_PREPARATION) {
+        if (commande != null && commande.getEtat() == EtatCommande.PREPARATION_TERMINEE) {
             stockService.processStockDecrementForCommande(commande);
 
             commande.setEtat(EtatCommande.SERVIE);
@@ -82,21 +99,29 @@ public class OrderManagementController {
     @GetMapping("/create")
     @PreAuthorize("hasRole('SERVEUR')")
     public String showCreateOrderForm(@RequestParam(required = false) Integer nombrePersonne,Model model) {
-        List<TableRestaurant> tables;
+        List<TableRestaurant> tablesDisponibles;
         if (nombrePersonne != null && nombrePersonne > 0) {
-            tables = tableRepository.findByNombrePersonneGreaterThanEqual(nombrePersonne);
+            tablesDisponibles = tableRepository.findByStatutAndNombrePersonneGreaterThanEqual(StatutTable.LIBRE, nombrePersonne);
         } else {
-            tables = tableRepository.findAll();
+            tablesDisponibles = tableRepository.findByStatut(StatutTable.LIBRE);
         }
         List<Plat> plats = platService.findAllPlats();
+
+        Map<Boolean, List<Plat>> platsPartitionnes = plats.stream()
+                .collect(Collectors.partitioningBy(plat -> plat.getCategorie() == CategoriePlat.BOISSON));
+
+        List<Plat> boissons = platsPartitionnes.get(true);
+        List<Plat> platsCuisines = platsPartitionnes.get(false);
         List<User> clients = userService.findByRole(Role.CLIENT);
         List<Menu> menus = menuService.findAllMenus();
-        model.addAttribute("tables", tables);
+
+        model.addAttribute("tables", tablesDisponibles);
         model.addAttribute("nombrePersonne", nombrePersonne);
-        model.addAttribute("plats", plats);
+        model.addAttribute("platsCuisines", platsCuisines); // Nouvelle variable
+        model.addAttribute("boissons", boissons);
         model.addAttribute("menus", menus);
         model.addAttribute("clients", clients);
-        return "orders/create";
+        return "serveur/formulaire-commande";
     }
 
     @PostMapping("/create")
@@ -115,14 +140,14 @@ public class OrderManagementController {
             if (foundClient != null) {
                 client = foundClient;
             } else {
-                client = userService.findUserByEmail("guest@restaurant.com");
+                client = userService.findUserByEmail("guest@resto.com");
             }
         } else {
-            client = userService.findUserByEmail("guest@restaurant.com");
+            client = userService.findUserByEmail("guest@resto.com");
         }
 
         if (client == null) {
-            throw new RuntimeException("Le compte client 'guest@restaurant.com' est introuvable.");
+            throw new RuntimeException("Le compte client 'guest@resto.com' est introuvable.");
         }
 
         Commande commande = commandeService.createNewCommande(client, serveur, tableId);
@@ -150,14 +175,69 @@ public class OrderManagementController {
                 }
             }
         }
-
+        TableRestaurant table = tableRepository.findById(tableId).orElse(null);
+        if (table != null) {
+            // ON MET LA TABLE EN STATUT OCCUPÉE
+            table.setStatut(StatutTable.OCCUPEE);
+            tableRepository.save(table);
+        }
         // Mise à jour du montant total de la commande et sauvegarde
         commande.setMontantTotal(montantTotal);
+        commande.setTable(table);
         commandeService.saveCommande(commande);
 
         return "redirect:/orders";
     }
 
+    @GetMapping("/pay/{id}")
+    @PreAuthorize("hasRole('SERVEUR')")
+    public String payOrder(@PathVariable Long id) {
+        Commande commande = commandeService.updateCommandeEtat(id, EtatCommande.PAYEE);
+
+        // Si la commande a bien été payée, on libère la table
+        if (commande != null && commande.getEtat() == EtatCommande.PAYEE) {
+            TableRestaurant table = commande.getTable();
+            if (table != null) {
+                table.setStatut(StatutTable.LIBRE);
+                tableRepository.save(table);
+            }
+        }
+        return "redirect:/orders";
+    }
+
+    @GetMapping("/finish-preparation/{id}")
+    @PreAuthorize("hasRole('CHEF_CUISINIER')")
+    public String finishPreparation(@PathVariable Long id) {
+        commandeService.updateCommandeEtat(id, EtatCommande.PREPARATION_TERMINEE);
+        // On redirige le chef vers son propre tableau de bord
+        return "redirect:/orders/chef-dashboard";
+    }
+    @GetMapping("/edit/{id}")
+    @PreAuthorize("hasRole('SERVEUR')")
+    public String showEditOrderForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Commande commande = commandeService.findCommandeById(id);
+
+        if (commande.getEtat() != EtatCommande.EN_ATTENTE) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Impossible de modifier une commande déjà en préparation.");
+            return "redirect:/orders";
+        }
+
+        // --- LOGIQUE MISE À JOUR POUR PRÉPARER TOUTES LES LISTES ---
+        List<Plat> tousLesPlats = platService.findAllPlats();
+        Map<Boolean, List<Plat>> platsPartitionnes = tousLesPlats.stream()
+                .collect(Collectors.partitioningBy(plat -> plat.getCategorie() == CategoriePlat.BOISSON));
+
+        List<Plat> boissons = platsPartitionnes.get(true);
+        List<Plat> platsCuisines = platsPartitionnes.get(false);
+
+        model.addAttribute("commande", commande);
+        model.addAttribute("tables", tableRepository.findAll());
+        model.addAttribute("platsCuisines", platsCuisines); // Envoie la liste de plats cuisinés
+        model.addAttribute("boissons", boissons);           // Envoie la liste de boissons
+        model.addAttribute("menus", menuService.findAllMenus()); // Envoie la liste des menus
+
+        return "serveur/formulaire-modification";
+    }
     @PostMapping("/edit/{id}")
     @PreAuthorize("hasRole('SERVEUR')")
     public String editOrder(@PathVariable Long id,

@@ -27,13 +27,13 @@ public class UserService {
 
             return userRepository.save(user);
         }
-
     public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email).orElse(null);
     }
-    public List<User> findAllUsers() {return userRepository.findAll();
+    public List<User> findAllUsers() {return userRepository.findAll();}
+    public List<User> findAllClients() {
+        return userRepository.findByRole(Role.CLIENT);
     }
-
 
     public List<User> findByRole(Role role) {
         return userRepository.findByRole(role);

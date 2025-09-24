@@ -12,7 +12,11 @@ public class Produit {
     private String nom;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     private TypeProduit type;
+
+    @OneToOne(mappedBy = "produit", cascade = CascadeType.ALL, orphanRemoval = true)
+    private StockProduit stockProduit;
 
     public Long getId() {
         return id;
@@ -36,5 +40,13 @@ public class Produit {
 
     public void setType(TypeProduit type) {
         this.type = type;
+    }
+
+    public StockProduit getStockProduit() {
+        return stockProduit;
+    }
+
+    public void setStockProduit(StockProduit stockProduit) {
+        this.stockProduit = stockProduit;
     }
 }

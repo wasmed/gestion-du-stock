@@ -1,9 +1,6 @@
 package com.example.demo.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class TableRestaurant {
@@ -16,6 +13,12 @@ public class TableRestaurant {
 
     private Integer nombrePersonne;
 
+    @Enumerated(EnumType.STRING)
+    private StatutTable statut;
+
+    public TableRestaurant() {
+        this.statut = StatutTable.LIBRE;
+    }
     public Long getIdentifiant() {
         return identifiant;
     }
@@ -40,5 +43,11 @@ public class TableRestaurant {
         this.nombrePersonne = nombrePersonne;
     }
 
+    public StatutTable getStatut() {
+        return statut;
+    }
 
+    public void setStatut(StatutTable statut) {
+        this.statut = statut;
+    }
 }

@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Produit;
 import com.example.demo.model.StockProduit;
+import com.example.demo.repository.StockProduitRepository;
 import com.example.demo.service.ProduitService;
 import com.example.demo.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +20,27 @@ public class StockController {
 
     @Autowired
     private StockService stockService;
-
+    @Autowired
+    private StockProduitRepository stockProduitRepository;
     @Autowired
     private ProduitService produitService;
 
-    @GetMapping
+    @GetMapping("/list")
     public String listStock(Model model) {
         List<StockProduit> stocks = stockService.findAllStocks();
         model.addAttribute("stocks", stocks);
         return "stock/list";
+    }
+
+    @PostMapping("/add")
+    public String addStock(@RequestParam Long stockId, @RequestParam Double quantiteAjoutee) {
+        StockProduit stockProduit = stockProduitRepository.findById(stockId)
+                .orElseThrow(() -> new IllegalArgumentException("Stock non trouvé pour l'ID: " + stockId));
+
+        stockProduit.setStockActuel(stockProduit.getStockActuel() + quantiteAjoutee);
+        stockProduitRepository.save(stockProduit);
+
+        return "redirect:/stock/list";
     }
 
     @GetMapping("/edit/{id}")

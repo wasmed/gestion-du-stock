@@ -6,7 +6,10 @@ public enum TypeProduit {
     POISSON,
     LEGUME,
     FRUIT,
-    EPICE,
+    CREMERIE,        // Pour fromage, oeuf, mascarpone...
+    BOULANGERIE,     // Pour pain, pâte à pizza...
+    EPICERIE_SECHE,  // Pour sucre, épices, café en grains..
     GLACE,
-    BOISSON
+    BOISSON,
+    DESSERT
 }

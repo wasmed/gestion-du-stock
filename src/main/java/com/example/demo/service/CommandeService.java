@@ -102,21 +102,42 @@ public class CommandeService {
     }
 
     public List<Commande> getCommandesEnCoursEtServies() {
-        return commandeRepository.findByEtatIn(List.of(EtatCommande.EN_ATTENTE, EtatCommande.EN_PREPARATION, EtatCommande.SERVIE));
+        List<EtatCommande> etats = List.of(
+                EtatCommande.EN_ATTENTE,
+                EtatCommande.EN_PREPARATION,
+                EtatCommande.PREPARATION_TERMINEE,
+                EtatCommande.SERVIE
+        );
+        // On appelle la nouvelle méthode du repository
+        return commandeRepository.findByEtatInWithDetails(etats);
     }
 
     public List<Commande> getCommandesEnAttenteEtEnPreparation() {
-        return commandeRepository.findByEtatIn(List.of(EtatCommande.EN_ATTENTE, EtatCommande.EN_PREPARATION));
+        List<EtatCommande> etats = List.of(
+                EtatCommande.EN_ATTENTE,
+                EtatCommande.EN_PREPARATION
+        );
+        // On utilise la méthode optimisée pour charger les détails
+        return commandeRepository.findByEtatInWithDetails(etats);
     }
+
+    public List<Commande> findCommandesByClientWithDetails(User client) {
+        return commandeRepository.findByClientWithLignesCommande(client);
+    }
+
+
 
     @Transactional
     public void deleteOrder(Long id) {
-        Commande commande = commandeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Commande non trouvée avec l'id: " + id));
+        Commande commande = commandeRepository.findById(id).orElse(null);
+        if (commande != null) {
+            TableRestaurant table = commande.getTable();
+            commandeRepository.delete(commande);
 
-        // Supprimer d'abord les lignes de commande associées pour éviter les erreurs de contrainte de clé étrangère
-        ligneCommandeRepository.deleteAll(commande.getLignesCommande());
-
-        // Puis, supprimer la commande elle-même
-        commandeRepository.delete(commande);
+            if (table != null) {
+                table.setStatut(StatutTable.LIBRE);
+                tableRepository.save(table);
+            }
+        }
     }
 }

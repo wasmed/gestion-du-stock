@@ -33,6 +33,7 @@ public class LigneCommande {
     @OneToMany(mappedBy = "ligneCommande", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ConsommationStock> consommations = new HashSet<>();
 
+
     public Long getIdentifiant() {
         return identifiant;
     }

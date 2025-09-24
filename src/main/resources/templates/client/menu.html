@@ -1,57 +1,106 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Menu du Restaurant</title>
+    <title>Notre Menu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body { background-color: #f8f9fa; }
+        .category-nav .list-group-item {
+            border: none;
+            background-color: transparent;
+            font-weight: 500;
+        }
+        .category-nav .list-group-item.active {
+            font-weight: bold;
+            color: #000;
+        }
+        .card { transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,.12); }
+    </style>
 </head>
 <body>
-<h1>Notre Menu</h1>
-<a th:href="@{/client/cart}">Voir mon panier</a>
-<br/><br/>
+<div th:replace="~{fragments/navbar :: nav}"></div>
 
-<h2>Plats Individuels</h2>
-<table>
-    <thead>
-    <tr>
-        <th>Nom</th>
-        <th>Description</th>
-        <th>Prix</th>
-        <th>Catégorie</th>
-        <th>Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="plat : ${plats}">
-        <td th:text="${plat.nom}"></td>
-        <td th:text="${plat.description}"></td>
-        <td th:text="${plat.prix}"></td>
-        <td th:text="${plat.categorie}"></td>
-        <td>
-            <a th:href="@{/client/add-to-cart(platId=${plat.identifiant})}">Ajouter au panier</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Colonne de gauche : Navigation par catégorie -->
+        <div class="col-lg-3">
+            <div class="sticky-top pt-3">
+                <h4>Catégories</h4>
+                <ul class="list-group category-nav">
+                    <!-- Lien pour les menus -->
+                    <li th:if="${!menus.isEmpty()}">
+                        <a class="list-group-item list-group-item-action" href="#menus-section">Nos Menus</a>
+                    </li>
+                    <!-- Liens pour chaque catégorie de plat -->
+                    <li th:each="entry : ${platsParCategorie}">
+                        <a class="list-group-item list-group-item-action" th:href="'#categorie-' + ${entry.key.name()}"
+                           th:text="${#strings.capitalizeWords(#strings.toLowerCase(entry.key.name().replace('_', ' ')))}">
+                            Catégorie
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
 
-<h2>Menus</h2>
-<table>
-    <thead>
-    <tr>
-        <th>Nom du menu</th>
-        <th>Description</th>
-        <th>Prix</th>
-        <th>Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="menu : ${menus}">
-        <td th:text="${menu.nom}"></td>
-        <td th:text="${menu.description}"></td>
-        <td th:text="${menu.prix}"></td>
-        <td>
-            <a th:href="@{/client/add-to-cart(menuId=${menu.id})}">Ajouter au panier</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+        <!-- Colonne de droite : Contenu du menu -->
+        <div class="col-lg-9">
+            <h1 class="mb-4">Notre Carte</h1>
+
+            <!-- Section pour les Menus -->
+            <div th:if="${!menus.isEmpty()}" id="menus-section">
+                <h2 class="border-bottom pb-2 mb-3">Nos Menus</h2>
+                <div class="row">
+                    <div class="col-md-6 col-lg-4 mb-4" th:each="menu : ${menus}">
+                        <div class="card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title" th:text="${menu.nom}">Nom du Menu</h5>
+                                <p class="card-text text-muted" th:text="${menu.description}">Description.</p>
+                                <h6 class="card-subtitle mb-2 fw-bold" th:text="${#numbers.formatDecimal(menu.prix, 1, 2, 'COMMA')} + ' €'">Prix</h6>
+                                <div class="mt-auto" sec:authorize="hasRole('CLIENT')">
+                                    <a th:href="@{/client/add-to-cart(menuId=${menu.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-cart-plus"></i> Ajouter
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-5">
+            </div>
+
+            <!-- Section pour chaque catégorie de Plat -->
+            <div th:each="entry : ${platsParCategorie}">
+                <h2 class="border-bottom pb-2 mb-3" th:id="'categorie-' + ${entry.key.name()}"
+                    th:text="${#strings.capitalizeWords(#strings.toLowerCase(entry.key.name().replace('_', ' ')))}">
+                    Nom Catégorie
+                </h2>
+                <div class="row">
+                    <!-- Carte pour chaque plat dans la catégorie -->
+                    <div class="col-md-6 col-lg-4 mb-4" th:each="plat : ${entry.value}">
+                        <div class="card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title" th:text="${plat.nom}">Nom du Plat</h5>
+                                <p class="card-text text-muted flex-grow-1" th:text="${plat.description}">Description du plat.</p>
+                                <h6 class="card-subtitle mb-2 fw-bold" th:text="${#numbers.formatDecimal(plat.prix, 1, 2, 'COMMA')} + ' €'">Prix</h6>
+                                <div class="mt-auto" sec:authorize="hasRole('CLIENT')">
+                                    <a th:href="@{/client/add-to-cart(platId=${plat.identifiant})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-cart-plus"></i> Ajouter
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message si le menu est vide -->
+            <div th:if="${platsParCategorie.isEmpty() and menus.isEmpty()}" class="alert alert-info">
+                Notre carte est en cours de préparation. Revenez bientôt !
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

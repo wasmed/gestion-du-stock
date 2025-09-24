@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -18,18 +20,18 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         // 1. Chercher l'utilisateur dans la base de données par son email
         //    Tu devras créer cette méthode dans ton UserRepository
-        User user = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findByEmail(email);
 
-        if (user == null) {
+        if (user.isEmpty()) {
             throw new UsernameNotFoundException("Utilisateur non trouvé avec l'email : " + email);
         }
 
         // 2. Construire un objet UserDetails à partir des données de l'utilisateur
         //    Pour l'instant, on peut utiliser l'implémentation par défaut de Spring Security
         return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail())
-                .password(user.getPassword())
-                .roles(user.getRole().name()) // Convertir le rôle en String
+                .username(user.get().getEmail())
+                .password(user.get().getPassword())
+                .roles(user.get().getRole().name()) // Convertir le rôle en String
                 .build();
     }
 }

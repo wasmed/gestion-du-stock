@@ -19,13 +19,17 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
 
-        if (roles.contains("ADMIN")) {
+        if (roles.contains("ROLE_ADMIN")) {
             response.sendRedirect("/admin/dashboard");
-        } else if (roles.contains("CHEF_CUISINIER")) {
+        } else if (roles.contains("ROLE_CHEF_CUISINIER")) {
             response.sendRedirect("/orders/chef-dashboard");
-        } else if (roles.contains("SERVEUR")) {
+        } else if (roles.contains("ROLE_SERVEUR")) {
             response.sendRedirect("/orders");
+        } else if (roles.contains("ROLE_CLIENT")) {
+
+            response.sendRedirect("/client/dashboard");
         } else {
+
             response.sendRedirect("/");
         }
     }

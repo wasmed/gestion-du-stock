@@ -3,8 +3,10 @@ package com.example.demo.service;
 import com.example.demo.model.*;
 import com.example.demo.repository.PaiementRepository;
 import com.example.demo.repository.PourboireRepository;
+import com.example.demo.repository.TableRestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +18,8 @@ public class PaiementService {
 
     @Autowired
     private PourboireRepository pourboireRepository;
-
+    @Autowired
+    private TableRestaurantRepository tableRepository;
     @Autowired
     private CommandeService commandeService;
 
@@ -28,20 +31,27 @@ public class PaiementService {
         return pourboireRepository.save(pourboire);
     }
 
-    public void processPayment(Long commandeId, Double montantPourboire,ModePaiement modePaiement) {
+    @Transactional
+    public void processPayment(Long commandeId, Double montantPourboire, ModePaiement modePaiement) {
+        // 1. On récupère la commande
         Commande commande = commandeService.findCommandeById(commandeId);
 
-        // Créer un nouvel objet Paiement
+        // Sécurité : on ne paie pas une commande déjà payée
+        if (commande.getEtat() == EtatCommande.PAYEE) {
+            return; // Ou lancer une exception
+        }
+
+        // 2. Créer le nouvel objet Paiement
         Paiement paiement = new Paiement();
         paiement.setCommande(commande);
-        paiement.setMontant(commande.getMontantTotal()); // Le montant est le total de la commande
-        paiement.setServeur(commande.getServeur()); // Le serveur est celui qui a validé la commande
+        paiement.setMontant(commande.getMontantTotal());
+        paiement.setServeur(commande.getServeur());
         paiement.setDatePaiement(LocalDateTime.now());
-        Paiement savedPaiement = savePaiement(paiement);
         paiement.setStatut(StatutPaiement.PAYE);
         paiement.setModePaiement(modePaiement);
+        Paiement savedPaiement = savePaiement(paiement);
 
-        // Gérer le pourboire s'il y en a un
+        // 3. Gérer le pourboire s'il y en a un
         if (montantPourboire != null && montantPourboire > 0) {
             Pourboire pourboire = new Pourboire();
             pourboire.setMontant(montantPourboire);
@@ -49,8 +59,14 @@ public class PaiementService {
             savePourboire(pourboire);
         }
 
-        // Mise à jour de l'état de la commande à PAYEE
-        commande.setEtat(EtatCommande.PAYEE);
-        commandeService.saveCommande(commande);
+        // 4. Mettre à jour l'état de la commande via le service approprié
+        commandeService.updateCommandeEtat(commandeId, EtatCommande.PAYEE);
+
+        // 5. Libérer la table
+        TableRestaurant table = commande.getTable();
+        if (table != null) {
+            table.setStatut(StatutTable.LIBRE);
+            tableRepository.save(table);
+        }
     }
 }

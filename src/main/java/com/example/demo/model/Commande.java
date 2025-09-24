@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -29,9 +30,6 @@ public class Commande {
     @JoinColumn(name = "client_id")
     private User client;
 
-    @OneToMany(mappedBy = "commande")
-    private Set<LigneCommande> lignesCommande;
-
     @OneToOne(mappedBy = "commande")
     private Paiement paiement;
 
@@ -41,6 +39,9 @@ public class Commande {
 
     @OneToOne(mappedBy = "commande", cascade = CascadeType.ALL, orphanRemoval = true)
     private Feedback feedBack;
+
+    @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<LigneCommande> lignesCommande = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -121,4 +122,6 @@ public class Commande {
     public void setFeedBack(Feedback feedBack) {
         this.feedBack = feedBack;
     }
+
+
 }
