@@ -93,11 +93,11 @@ public class DataLoader implements CommandLineRunner {
 
         TableRestaurant table3 = new TableRestaurant();
         table3.setNumeroTable(3);
-        table3.setNombrePersonne(4);
+        table3.setNombrePersonne(6);
 
         TableRestaurant table4 = new TableRestaurant();
         table4.setNumeroTable(4);
-        table4.setNombrePersonne(6);
+        table4.setNombrePersonne(8);
 
         tableRepository.saveAll(Arrays.asList(table1, table2, table3, table4));
         System.out.println("Tables created.");
