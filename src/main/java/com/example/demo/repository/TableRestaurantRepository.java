@@ -5,6 +5,7 @@ package com.example.demo.repository;
 import com.example.demo.model.StatutTable;
 import com.example.demo.model.TableRestaurant;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,6 +15,9 @@ import java.util.Optional;
 public interface TableRestaurantRepository  extends JpaRepository<TableRestaurant, Long> {
     List<TableRestaurant> findByNombrePersonneGreaterThanEqual(Integer nombrePersonne);
     TableRestaurant findByIdentifiant(Long identifiant);
+
+    @Query("SELECT MAX(t.numeroTable) FROM TableRestaurant t")
+    Integer findMaxNumeroTable();
 
     // Cherche les tables libres
     List<TableRestaurant> findByStatut(StatutTable statut);

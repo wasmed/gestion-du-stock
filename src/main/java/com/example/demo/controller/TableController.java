@@ -34,7 +34,15 @@ public class TableController {
     }
 
     @PostMapping("/save")
-    public String saveTable(@ModelAttribute TableRestaurant table, RedirectAttributes redirectAttributes) {
+    public String saveTable(@ModelAttribute TableRestaurant table, Model model, RedirectAttributes redirectAttributes) {
+        if (table.getIdentifiant() == null) {
+            Integer maxNumero = tableRepository.findMaxNumeroTable();
+            if (maxNumero != null && table.getNumeroTable() <= maxNumero) {
+                model.addAttribute("errorMessage", "Le numéro de la table doit être supérieur au maximum existant (" + maxNumero + ").");
+                model.addAttribute("statuts", StatutTable.values());
+                return "admin/table-form";
+            }
+        }
         tableRepository.save(table);
         redirectAttributes.addFlashAttribute("successMessage", "Table enregistrée avec succès !");
         return "redirect:/admin/tables";
