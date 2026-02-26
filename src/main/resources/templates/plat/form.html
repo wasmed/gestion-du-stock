@@ -1,52 +1,77 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Formulaire du plat</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{admin/layout :: layout(~{::div})}">
 <body>
-<h1>Formulaire du plat</h1>
-<form th:action="@{/plats/save}" th:object="${plat}" method="post">
-    <input type="hidden" th:field="*{identifiant}" />
-    <div>
-        <label>Nom:</label>
-        <input type="text" th:field="*{nom}" required />
-    </div>
-    <div>
-        <label>Description:</label>
-        <textarea th:field="*{description}" required></textarea>
-    </div>
-    <div>
-        <label>Prix:</label>
-        <input type="number" step="0.01" th:field="*{prix}" required />
-    </div>
-    <div>
-        <label>Catégorie:</label>
-        <select th:field="*{categorie}">
-            <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
-        </select>
+<div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 th:text="${plat.identifiant == null ? 'Nouveau Plat' : 'Modifier le Plat'}">Nouveau Plat</h2>
+        <a th:href="@{/plats}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Retour
+        </a>
     </div>
 
-    <h3>Ingrédients</h3>
-    <div th:each="ingredient, stat : *{ingredients}">
-        <input type="hidden" th:field="*{ingredients[__${stat.index}__].identifiant}" />
-        <div>
-            <label>Produit:</label>
-            <select th:field="*{ingredients[__${stat.index}__].produit}">
-                <option th:each="produit : ${produits}" th:value="${produit.identifiant}" th:text="${produit.nom}"></option>
-            </select>
-        </div>
-        <div>
-            <label>Quantité:</label>
-            <input type="number" th:field="*{ingredients[__${stat.index}__].quantite}" required />
-        </div>
-        <div>
-            <label>Unité:</label>
-            <input type="text" th:field="*{ingredients[__${stat.index}__].unite}" required />
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <form th:action="@{/plats/save}" th:object="${plat}" method="post">
+                        <input type="hidden" th:field="*{identifiant}" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Nom</label>
+                            <input type="text" class="form-control" th:field="*{nom}" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" th:field="*{description}" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Prix (€)</label>
+                            <input type="number" step="0.01" class="form-control" th:field="*{prix}" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Catégorie</label>
+                            <select class="form-select" th:field="*{categorie}">
+                                <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
+                            </select>
+                        </div>
+
+                        <h4 class="mt-4 mb-3">Ingrédients</h4>
+                        <div class="alert alert-info" th:if="${#lists.isEmpty(plat.ingredients)}">
+                            Aucun ingrédient associé.
+                        </div>
+                        <div th:each="ingredient, stat : *{ingredients}" class="card mb-3 bg-light">
+                            <div class="card-body">
+                                <input type="hidden" th:field="*{ingredients[__${stat.index}__].identifiant}" />
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Produit</label>
+                                        <select class="form-select" th:field="*{ingredients[__${stat.index}__].produit}">
+                                            <option th:each="produit : ${produits}" th:value="${produit.identifiant}" th:text="${produit.nom}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Quantité</label>
+                                        <input type="number" class="form-control" th:field="*{ingredients[__${stat.index}__].quantite}" required />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Unité</label>
+                                        <input type="text" class="form-control" th:field="*{ingredients[__${stat.index}__].unite}" required />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Sauvegarder</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-
-    <button type="submit">Sauvegarder</button>
-</form>
-<a th:href="@{/plats}">Retour à la liste</a>
+</div>
 </body>
 </html>

@@ -1,26 +1,46 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Mettre à jour le Stock</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{admin/layout :: layout(~{::div})}">
 <body>
-<h1>Mettre à jour le Stock pour <span th:text="${stock.produit.nom}"></span></h1>
-<form th:action="@{/stock/edit}" th:object="${stock}" method="post">
-    <input type="hidden" th:field="*{id}" />
-    <input type="hidden" th:field="*{produit.id}" />
-    <div>
-        <label for="stockActuel">Stock Actuel:</label>
-        <input type="number" id="stockActuel" th:field="*{stockActuel}" required />
+<div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Mettre à jour le Stock</h2>
+        <a th:href="@{/stock/list}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Retour
+        </a>
     </div>
-    <div>
-        <label for="stockMinimum">Stock Minimum:</label>
-        <input type="number" id="stockMinimum" th:field="*{stockMinimum}" required />
+
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Produit: <span th:text="${stock.produit.nom}"></span></h4>
+                    <form th:action="@{/stock/edit}" th:object="${stock}" method="post">
+                        <input type="hidden" th:field="*{id}" />
+                        <input type="hidden" th:field="*{produit.id}" />
+
+                        <div class="mb-3">
+                            <label for="stockActuel" class="form-label">Stock Actuel</label>
+                            <input type="number" class="form-control" id="stockActuel" th:field="*{stockActuel}" required step="0.01">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="stockMinimum" class="form-label">Stock Minimum</label>
+                            <input type="number" class="form-control" id="stockMinimum" th:field="*{stockMinimum}" required step="0.01">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="unite" class="form-label">Unité</label>
+                            <input type="text" class="form-control" id="unite" th:field="*{unite}" required>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Sauvegarder</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <div>
-        <label for="unite">Unité:</label>
-        <input type="text" id="unite" th:field="*{unite}" required />
-    </div>
-    <button type="submit">Sauvegarder</button>
-</form>
+</div>
 </body>
 </html>
