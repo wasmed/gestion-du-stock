@@ -18,6 +18,7 @@ public class Commande {
     private LocalDateTime dateHeure;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     private EtatCommande etat;
 
     private Double montantTotal;
