@@ -9,6 +9,7 @@ public class TableRestaurant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long identifiant;
 
+    @Column(unique = true)
     private Integer numeroTable;
 
     private Integer nombrePersonne;

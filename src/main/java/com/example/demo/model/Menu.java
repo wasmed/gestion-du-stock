@@ -17,6 +17,8 @@ public class Menu {
     private String description;
     private Double prix;
 
+    private String image;
+
     @ManyToMany
     @JoinTable(
             name = "menu_plat",
@@ -56,6 +58,14 @@ public class Menu {
 
     public void setPrix(Double prix) {
         this.prix = prix;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public Set<Plat> getPlats() {
