@@ -1,67 +1,92 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Tableau de Bord du Chef</title>
+    <title>Cuisine | Chef Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <!-- Optionnel : Rechargement automatique de la page toutes les 30 secondes -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <meta http-equiv="refresh" content="30">
+    <style>
+        .chef-card {
+            border-left: 5px solid transparent;
+        }
+        .chef-card.en-attente {
+            border-left-color: #dc3545;
+            background-color: #fff8f8;
+        }
+        .chef-card.en-prepa {
+            border-left-color: #ffc107;
+            background-color: #fffef0;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="~{fragments/navbar :: nav}"></div>
 
-<div class="container mt-4">
-    <!-- ========================================================== -->
-    <!--     LA SECTION DU HAUT A ÉTÉ MISE À JOUR                   -->
-    <!-- ========================================================== -->
-    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-5 page-header pb-3 border-bottom">
         <div>
-            <h1>Commandes à Préparer</h1>
-            <span class="text-muted">Vue d'ensemble des commandes en cuisine</span>
+            <h1 class="fw-bold mb-1">Cuisine</h1>
+            <p class="text-muted mb-0">Gestion des commandes en cours de préparation.</p>
         </div>
-        <div>
-            <a th:href="@{/stock/list}" class="btn btn-secondary">
-                <i class="bi bi-box-seam"></i> Gérer les Stocks
-            </a>
-        </div>
+        <a th:href="@{/stock/list}" class="btn btn-secondary btn-modern shadow-sm">
+            <i class="bi bi-box-seam me-2"></i> Gérer Stocks
+        </a>
     </div>
 
-    <div th:if="${commandes.isEmpty()}">
-        <p class="text-muted">Aucune commande à préparer pour le moment.</p>
+    <div th:if="${commandes.isEmpty()}" class="text-center py-5">
+        <i class="bi bi-check-circle display-1 text-success opacity-50 mb-3"></i>
+        <h3 class="fw-light">Tout est calme en cuisine.</h3>
+        <p class="text-muted">En attente de nouvelles commandes...</p>
     </div>
 
-    <div class="row">
-        <!-- On boucle sur chaque commande à préparer -->
-        <div th:each="commande : ${commandes}" class="col-md-6 col-lg-4 mb-4">
-            <div class="card h-100 shadow-sm" th:classappend="${commande.etat.toString() == 'EN_ATTENTE' ? 'border-danger' : 'border-warning'}">
-                <div class="card-header d-flex justify-content-between">
-                    <strong>Commande #<span th:text="${commande.id}"></span> (Table <span th:text="${commande.table.numeroTable}"></span>)</strong>
-                    <span class="badge" th:classappend="${commande.etat.toString() == 'EN_ATTENTE' ? 'bg-danger' : 'bg-warning text-dark'}" th:text="${commande.etat.toString().replace('_', ' ')}"></span>
+    <div class="row g-4">
+        <div th:each="commande : ${commandes}" class="col-md-6 col-lg-4 col-xl-3">
+            <div class="card card-modern shadow-sm border-0 chef-card h-100"
+                 th:classappend="${commande.etat.toString() == 'EN_ATTENTE' ? 'en-attente' : 'en-prepa'}">
+
+                <div class="card-header bg-transparent border-bottom-0 pb-0 pt-3 px-3 d-flex justify-content-between align-items-center">
+                    <span class="badge rounded-pill px-3 py-2 fw-normal"
+                          th:classappend="${commande.etat.toString() == 'EN_ATTENTE' ? 'bg-danger' : 'bg-warning text-dark'}"
+                          th:text="${commande.etat.toString() == 'EN_ATTENTE' ? 'À FAIRE' : 'EN COURS'}">Statut</span>
+                    <span class="fw-bold fs-5 text-dark">#<span th:text="${commande.id}"></span></span>
                 </div>
-                <div class="card-body">
-                    <ul class="list-unstyled">
-                        <li th:each="ligne : ${commande.lignesCommande}">
-                            <i class="bi bi-dot"></i>
-                            <strong th:text="${ligne.quantite} + 'x '"></strong>
-                            <span th:if="${ligne.plat != null}" th:text="${ligne.plat.nom}"></span>
-                            <span th:if="${ligne.menu != null}" th:text="${ligne.menu.nom}"></span>
+
+                <div class="card-body px-3 pt-2">
+                    <h5 class="fw-bold mb-3 text-secondary">Table <span th:text="${commande.table.numeroTable}"></span></h5>
+
+                    <ul class="list-group list-group-flush rounded border-0">
+                        <li th:each="ligne : ${commande.lignesCommande}" class="list-group-item bg-transparent px-0 border-light d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge bg-secondary me-2 rounded-circle" style="width: 25px; height: 25px; display: inline-flex; align-items: center; justify-content: center;" th:text="${ligne.quantite}">1</span>
+                                <span class="fw-bold" th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}">Plat</span>
+                            </div>
+                            <!-- Icon for visual check -->
+                            <i class="bi bi-dash-lg text-muted opacity-25"></i>
                         </li>
                     </ul>
                 </div>
-                <div class="card-footer text-end">
-                    <!-- Le bouton "Préparer" n'apparaît que si la commande est EN ATTENTE -->
-                    <a th:if="${commande.etat.toString() == 'EN_ATTENTE'}" th:href="@{/orders/prepare/{id}(id=${commande.id})}" class="btn btn-primary btn-sm">
-                        <i class="bi bi-play-circle"></i> Commencer la Préparation
-                    </a>
 
-                    <!-- Le bouton "Terminer" n'apparaît que si la commande est EN PREPARATION -->
-                    <a th:if="${commande.etat.toString() == 'EN_PREPARATION'}" th:href="@{/orders/finish-preparation/{id}(id=${commande.id})}" class="btn btn-success btn-sm">
-                        <i class="bi bi-check-all"></i> Préparation Terminée
-                    </a>
+                <div class="card-footer bg-transparent border-top-0 pb-3 px-3">
+                    <div class="d-grid gap-2">
+                        <a th:if="${commande.etat.toString() == 'EN_ATTENTE'}"
+                           th:href="@{/orders/prepare/{id}(id=${commande.id})}"
+                           class="btn btn-primary shadow-sm btn-lg fw-bold">
+                            <i class="bi bi-fire me-2"></i> Lancer
+                        </a>
+
+                        <a th:if="${commande.etat.toString() == 'EN_PREPARATION'}"
+                           th:href="@{/orders/finish-preparation/{id}(id=${commande.id})}"
+                           class="btn btn-success shadow-sm btn-lg fw-bold text-white">
+                            <i class="bi bi-check-lg me-2"></i> Terminer
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -19,13 +19,13 @@ public class DataLoader implements CommandLineRunner {
     private final IngredientRepository ingredientRepository;
     private final FormatProduitRepository formatProduitRepository;
     private final StockProduitRepository stockProduitRepository;
-    private final UserRepository userRepository; // <-- DEPENDENCY ADDED
-    private final TableRestaurantRepository tableRepository; // <-- DEPENDENCY ADDED
+    private final UserRepository userRepository;
+    private final TableRestaurantRepository tableRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DataLoader(PlatRepository platRepository, MenuRepository menuRepository,
                       ProduitRepository produitRepository, IngredientRepository ingredientRepository,
-                      FormatProduitRepository formatProduitRepository,StockProduitRepository stockProduitRepository,UserRepository userRepository, TableRestaurantRepository tableRepository, PasswordEncoder passwordEncoder) { // <-- DÉPENDANCE AJOUTÉE
+                      FormatProduitRepository formatProduitRepository,StockProduitRepository stockProduitRepository,UserRepository userRepository, TableRestaurantRepository tableRepository, PasswordEncoder passwordEncoder) {
         this.platRepository = platRepository;
         this.menuRepository = menuRepository;
         this.produitRepository = produitRepository;
@@ -75,7 +75,7 @@ public class DataLoader implements CommandLineRunner {
 
         User guest = new User();
         guest.setFullName("Client Invité");
-        guest.setEmail("guest@resto.com"); // As defined in business rules
+        guest.setEmail("guest@resto.com");
         guest.setPassword(passwordEncoder.encode("guest123"));
         guest.setRole(Role.CLIENT);
 
@@ -103,7 +103,7 @@ public class DataLoader implements CommandLineRunner {
         System.out.println("Tables created.");
 
         // =================================================================
-        // 0. CREATE PRODUCT FORMATS (The different packaging/units)
+        // 0. CREATE PRODUCT FORMATS
         // =================================================================
         FormatProduit formatKg = new FormatProduit();
         formatKg.setNom("Kilogramme");
@@ -124,34 +124,60 @@ public class DataLoader implements CommandLineRunner {
         formatProduitRepository.saveAll(Arrays.asList(formatKg, formatUnite, formatBouteille50cl, formatCanette33cl));
 
         // =================================================================
-        // 1. CREATE PRODUCTS (The description of the item)
+        // 1. CREATE PRODUCTS
         // =================================================================
         Produit tomate = new Produit();
         tomate.setNom("Tomate");
         tomate.setType(TypeProduit.LEGUME);
+        tomate.setImage("https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500&q=80");
 
         Produit salade = new Produit();
         salade.setNom("Salade Laitue");
         salade.setType(TypeProduit.LEGUME);
+        salade.setImage("https://images.unsplash.com/photo-1556801712-67c8c279a093?w=500&q=80");
 
         Produit patePizza = new Produit();
         patePizza.setNom("Pâte à Pizza");
         patePizza.setType(TypeProduit.BOULANGERIE);
+        patePizza.setImage("https://images.unsplash.com/photo-1598155523122-38423bb4d6c1?w=500&q=80");
 
         Produit mozzarella = new Produit();
         mozzarella.setNom("Mozzarella");
         mozzarella.setType(TypeProduit.CREMERIE);
+        mozzarella.setImage("https://images.unsplash.com/photo-1588612571212-320d7ee82596?w=500&q=80");
 
         Produit eauPlateProduit = new Produit();
         eauPlateProduit.setNom("Eau Plate 50cl");
         eauPlateProduit.setType(TypeProduit.BOISSON);
+        eauPlateProduit.setImage("https://images.unsplash.com/photo-1564419320461-6870880221ad?w=500&q=80");
 
         Produit chocolatNoir = new Produit();
         chocolatNoir.setNom("Chocolat Noir 70%");
         chocolatNoir.setType(TypeProduit.DESSERT);
+        chocolatNoir.setImage("https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=500&q=80");
+
+        Produit penne = new Produit();
+        penne.setNom("Pâtes Penne");
+        penne.setType(TypeProduit.EPICERIE_SECHE);
+        penne.setImage("https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&q=80");
+
+        Produit cremeGlacee = new Produit();
+        cremeGlacee.setNom("Crème Glacée Vanille");
+        cremeGlacee.setType(TypeProduit.DESSERT);
+        cremeGlacee.setImage("https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=500&q=80");
+
+        Produit mascarpone = new Produit();
+        mascarpone.setNom("Mascarpone");
+        mascarpone.setType(TypeProduit.CREMERIE);
+        mascarpone.setImage("https://images.unsplash.com/photo-1585671720293-1994627d7045?w=500&q=80");
+
+        Produit cafe = new Produit();
+        cafe.setNom("Café Grain");
+        cafe.setType(TypeProduit.BOISSON);
+        cafe.setImage("https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=500&q=80");
 
         // Save all products first to get their IDs
-        List<Produit> produits = Arrays.asList(tomate, salade, patePizza, mozzarella, eauPlateProduit, chocolatNoir);
+        List<Produit> produits = Arrays.asList(tomate, salade, patePizza, mozzarella, eauPlateProduit, chocolatNoir, penne, cremeGlacee, mascarpone, cafe);
         produitRepository.saveAll(produits);
 
         // =================================================================
@@ -193,7 +219,31 @@ public class DataLoader implements CommandLineRunner {
         stockChocolat.setStockMinimum(2.0);
         stockChocolat.setUnite("kg");
 
-        List<StockProduit> stocks = Arrays.asList(stockTomate, stockSalade, stockPatePizza, stockMozzarella, stockEau, stockChocolat);
+        StockProduit stockPenne = new StockProduit();
+        stockPenne.setProduit(penne);
+        stockPenne.setStockActuel(30.0);
+        stockPenne.setStockMinimum(5.0);
+        stockPenne.setUnite("kg");
+
+        StockProduit stockGlace = new StockProduit();
+        stockGlace.setProduit(cremeGlacee);
+        stockGlace.setStockActuel(10.0);
+        stockGlace.setStockMinimum(2.0);
+        stockGlace.setUnite("kg");
+
+        StockProduit stockMascarpone = new StockProduit();
+        stockMascarpone.setProduit(mascarpone);
+        stockMascarpone.setStockActuel(8.0);
+        stockMascarpone.setStockMinimum(2.0);
+        stockMascarpone.setUnite("kg");
+
+        StockProduit stockCafe = new StockProduit();
+        stockCafe.setProduit(cafe);
+        stockCafe.setStockActuel(5.0);
+        stockCafe.setStockMinimum(1.0);
+        stockCafe.setUnite("kg");
+
+        List<StockProduit> stocks = Arrays.asList(stockTomate, stockSalade, stockPatePizza, stockMozzarella, stockEau, stockChocolat, stockPenne, stockGlace, stockMascarpone, stockCafe);
         stockProduitRepository.saveAll(stocks);
 
         // =================================================================
@@ -201,9 +251,10 @@ public class DataLoader implements CommandLineRunner {
         // =================================================================
         Plat saladeVerte = new Plat();
         saladeVerte.setNom("Salade Verte Simple");
-        saladeVerte.setDescription("Une salade fraîche de saison.");
+        saladeVerte.setDescription("Une salade fraîche de saison avec vinaigrette balsamique.");
         saladeVerte.setPrix(7.50);
         saladeVerte.setCategorie(CategoriePlat.ENTREE);
+        saladeVerte.setImage("https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&q=80");
         platRepository.save(saladeVerte);
 
         Ingredient ingSalade = new Ingredient();
@@ -222,9 +273,10 @@ public class DataLoader implements CommandLineRunner {
 
         Plat pizzaMargherita = new Plat();
         pizzaMargherita.setNom("Pizza Margherita");
-        pizzaMargherita.setDescription("Sauce tomate, mozzarella fondante et basilic frais.");
+        pizzaMargherita.setDescription("Sauce tomate, mozzarella fondante et basilic frais sur pâte fine.");
         pizzaMargherita.setPrix(12.00);
         pizzaMargherita.setCategorie(CategoriePlat.PLAT_PRINCIPAL);
+        pizzaMargherita.setImage("https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=500&q=80");
         platRepository.save(pizzaMargherita);
 
         Ingredient ingPate = new Ingredient();
@@ -250,9 +302,10 @@ public class DataLoader implements CommandLineRunner {
 
         Plat boissonEau = new Plat();
         boissonEau.setNom("Eau Plate");
-        boissonEau.setDescription("Bouteille de 50cl.");
+        boissonEau.setDescription("Bouteille d'eau minérale de 50cl.");
         boissonEau.setPrix(3.00);
         boissonEau.setCategorie(CategoriePlat.BOISSON);
+        boissonEau.setImage("https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=500&q=80");
         platRepository.save(boissonEau);
 
         Ingredient ingEau = new Ingredient();
@@ -262,15 +315,99 @@ public class DataLoader implements CommandLineRunner {
         ingEau.setUnite("bouteille");
         ingredientRepository.save(ingEau);
 
+        // NEW PLATS
+        Plat patesTomate = new Plat();
+        patesTomate.setNom("Pennes à la Tomate");
+        patesTomate.setDescription("Pâtes penne avec une sauce tomate maison et basilic.");
+        patesTomate.setPrix(11.00);
+        patesTomate.setCategorie(CategoriePlat.PLAT_PRINCIPAL);
+        patesTomate.setImage("https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=500&q=80");
+        platRepository.save(patesTomate);
+
+        Ingredient ingPenne = new Ingredient();
+        ingPenne.setPlat(patesTomate);
+        ingPenne.setProduit(penne);
+        ingPenne.setQuantite(0.200);
+        ingPenne.setUnite("kg");
+        ingredientRepository.save(ingPenne);
+
+        Ingredient ingTomatePenne = new Ingredient();
+        ingTomatePenne.setPlat(patesTomate);
+        ingTomatePenne.setProduit(tomate);
+        ingTomatePenne.setQuantite(0.150);
+        ingTomatePenne.setUnite("kg");
+        ingredientRepository.save(ingTomatePenne);
+
+        Plat tiramisu = new Plat();
+        tiramisu.setNom("Tiramisu Maison");
+        tiramisu.setDescription("Le classique italien au mascarpone et café.");
+        tiramisu.setPrix(6.50);
+        tiramisu.setCategorie(CategoriePlat.DESSERT);
+        tiramisu.setImage("https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=500&q=80");
+        platRepository.save(tiramisu);
+
+        Ingredient ingMascarpone = new Ingredient();
+        ingMascarpone.setPlat(tiramisu);
+        ingMascarpone.setProduit(mascarpone);
+        ingMascarpone.setQuantite(0.100);
+        ingMascarpone.setUnite("kg");
+        ingredientRepository.save(ingMascarpone);
+
+        Ingredient ingCafe = new Ingredient();
+        ingCafe.setPlat(tiramisu);
+        ingCafe.setProduit(cafe);
+        ingCafe.setQuantite(0.020);
+        ingCafe.setUnite("kg");
+        ingredientRepository.save(ingCafe);
+
+        Ingredient ingChocolat = new Ingredient();
+        ingChocolat.setPlat(tiramisu);
+        ingChocolat.setProduit(chocolatNoir);
+        ingChocolat.setQuantite(0.010);
+        ingChocolat.setUnite("kg");
+        ingredientRepository.save(ingChocolat);
+
+        Plat glaceVanille = new Plat();
+        glaceVanille.setNom("Coupe Glace Vanille");
+        glaceVanille.setDescription("Deux boules de glace vanille artisanale.");
+        glaceVanille.setPrix(5.00);
+        glaceVanille.setCategorie(CategoriePlat.DESSERT);
+        glaceVanille.setImage("https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=500&q=80");
+        platRepository.save(glaceVanille);
+
+        Ingredient ingGlace = new Ingredient();
+        ingGlace.setPlat(glaceVanille);
+        ingGlace.setProduit(cremeGlacee);
+        ingGlace.setQuantite(0.150);
+        ingGlace.setUnite("kg");
+        ingredientRepository.save(ingGlace);
+
         // =================================================================
         // 4. CREATE MENUS (which group dishes)
         // =================================================================
         Menu menuDuJour = new Menu();
-        menuDuJour.setNom("Menu du Jour");
-        menuDuJour.setDescription("salade vert et pizza Margherita");
-        menuDuJour.setPrix(24.00);
+        menuDuJour.setNom("Menu Italien");
+        menuDuJour.setDescription("Un voyage en Italie avec salade et pizza.");
+        menuDuJour.setPrix(18.50);
         menuDuJour.setPlats(new HashSet<>(Arrays.asList(saladeVerte, pizzaMargherita)));
+        menuDuJour.setImage("https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80");
         menuRepository.save(menuDuJour);
+
+        Menu menuEnfant = new Menu();
+        menuEnfant.setNom("Menu Enfant");
+        menuEnfant.setDescription("Pâtes à la tomate et une glace pour les petits.");
+        menuEnfant.setPrix(14.00);
+        menuEnfant.setPlats(new HashSet<>(Arrays.asList(patesTomate, glaceVanille)));
+        menuEnfant.setImage("https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=500&q=80");
+        menuRepository.save(menuEnfant);
+
+        Menu menuGourmand = new Menu();
+        menuGourmand.setNom("Menu Gourmand");
+        menuGourmand.setDescription("Pizza et Tiramisu pour les gourmands.");
+        menuGourmand.setPrix(17.50);
+        menuGourmand.setPlats(new HashSet<>(Arrays.asList(pizzaMargherita, tiramisu)));
+        menuGourmand.setImage("https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=500&q=80");
+        menuRepository.save(menuGourmand);
 
         System.out.println("Test data loaded successfully!");
     }

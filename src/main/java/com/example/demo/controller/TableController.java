@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.model.StatutTable;
 import com.example.demo.model.TableRestaurant;
 import com.example.demo.repository.TableRestaurantRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,10 +35,22 @@ public class TableController {
     }
 
     @PostMapping("/save")
-    public String saveTable(@ModelAttribute TableRestaurant table, RedirectAttributes redirectAttributes) {
-        tableRepository.save(table);
-        redirectAttributes.addFlashAttribute("successMessage", "Table enregistrée avec succès !");
-        return "redirect:/admin/tables";
+    public String saveTable(@ModelAttribute TableRestaurant table, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            tableRepository.save(table);
+            redirectAttributes.addFlashAttribute("successMessage", "Table enregistrée avec succès !");
+            return "redirect:/admin/tables";
+        } catch (DataIntegrityViolationException e) {
+            model.addAttribute("errorMessage", "Erreur : Une table avec ce numéro existe peut-être déjà ou les données sont invalides.");
+            model.addAttribute("table", table);
+            model.addAttribute("statuts", StatutTable.values());
+            return "admin/table-form";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Une erreur inattendue est survenue : " + e.getMessage());
+            model.addAttribute("table", table);
+            model.addAttribute("statuts", StatutTable.values());
+            return "admin/table-form";
+        }
     }
 
     @GetMapping("/edit/{id}")
@@ -51,8 +64,14 @@ public class TableController {
 
     @GetMapping("/delete/{id}")
     public String deleteTable(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        tableRepository.deleteById(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Table supprimée avec succès !");
+        try {
+            tableRepository.deleteById(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Table supprimée avec succès !");
+        } catch (DataIntegrityViolationException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Impossible de supprimer cette table car elle est liée à des commandes existantes.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Erreur lors de la suppression : " + e.getMessage());
+        }
         return "redirect:/admin/tables";
     }
 }
