@@ -150,6 +150,7 @@ public class OrderManagementController {
                               @RequestParam(name = "platIds", required = false) List<Long> platIds,
                               @RequestParam(name = "menuIds", required = false) List<Long> menuIds,
                               @RequestParam(name = "clientEmail", required = false) String clientEmail,
+                              @RequestParam(name = "commentaire", required = false) String commentaire,
                               Principal principal) {
         User serveur = userService.findUserByEmail(principal.getName());
         User client ;
@@ -204,6 +205,7 @@ public class OrderManagementController {
         // Mise à jour du montant total de la commande et sauvegarde
         commande.setMontantTotal(montantTotal);
         commande.setTable(table);
+        commande.setCommentaire(commentaire);
         commandeService.saveCommande(commande);
 
         return "redirect:/orders";
@@ -212,17 +214,7 @@ public class OrderManagementController {
     @GetMapping("/pay/{id}")
     @PreAuthorize("hasRole('SERVEUR')")
     public String payOrder(@PathVariable Long id) {
-        Commande commande = commandeService.updateCommandeEtat(id, EtatCommande.PAYEE);
-
-        // Si la commande a bien été payée, on libère la table
-        if (commande != null && commande.getEtat() == EtatCommande.PAYEE) {
-            TableRestaurant table = commande.getTable();
-            if (table != null) {
-                table.setStatut(StatutTable.LIBRE);
-                tableRepository.save(table);
-            }
-        }
-        return "redirect:/orders";
+        return "redirect:/paiement/form/" + id;
     }
 
     @GetMapping("/finish-preparation/{id}")
