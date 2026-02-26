@@ -33,6 +33,57 @@
         </a>
     </div>
 
+    <!-- Section Commandes à Valider -->
+    <div th:if="${!commandesAValider.isEmpty()}" class="mb-5">
+        <h3 class="text-warning mb-3 fw-bold"><i class="bi bi-bell-fill me-2"></i> Commandes en attente de validation</h3>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div th:each="cmd : ${commandesAValider}" class="col">
+                <div class="card border-warning shadow-sm h-100">
+                    <div class="card-header bg-warning text-dark fw-bold d-flex justify-content-between align-items-center">
+                        <span th:if="${cmd.table != null}">Table <span th:text="${cmd.table.numeroTable}"></span></span>
+                        <span th:if="${cmd.table == null}">Table ?</span>
+                        <span class="badge bg-dark text-warning" th:text="${#temporals.format(cmd.dateHeure, 'HH:mm')}"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <i class="bi bi-person-fill text-muted"></i>
+                            <span th:text="${cmd.client.fullName}" class="fw-bold">Client</span>
+                        </div>
+
+                        <div th:if="${cmd.commentaire != null and !cmd.commentaire.isEmpty()}" class="alert alert-danger p-2 mb-3 small">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                            <strong>Note :</strong> <span th:text="${cmd.commentaire}"></span>
+                        </div>
+
+                        <h6 class="card-subtitle mb-2 text-muted border-bottom pb-1">Détails</h6>
+                        <ul class="list-group list-group-flush small mb-3">
+                            <li th:each="ligne : ${cmd.lignesCommande}" class="list-group-item px-0 py-1 d-flex justify-content-between">
+                                <div>
+                                    <span class="fw-bold me-1" th:text="${ligne.quantite} + 'x'"></span>
+                                    <span th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}">Item</span>
+                                </div>
+                                <span class="text-muted" th:text="${#numbers.formatDecimal((ligne.plat != null ? ligne.plat.prix : ligne.menu.prix) * ligne.quantite, 1, 2)} + '€'"></span>
+                            </li>
+                        </ul>
+                        <div class="d-flex justify-content-between fw-bold border-top pt-2">
+                            <span>Total</span>
+                            <span th:text="${#numbers.formatDecimal(cmd.montantTotal, 1, 2)} + ' €'"></span>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-top-0 d-flex gap-2 pb-3">
+                        <a th:href="@{/orders/validate/{id}(id=${cmd.id})}" class="btn btn-success flex-grow-1 fw-bold shadow-sm">
+                            <i class="bi bi-check-circle-fill me-1"></i> Valider
+                        </a>
+                        <a th:href="@{/orders/delete/{id}(id=${cmd.id})}" class="btn btn-outline-danger shadow-sm" title="Refuser / Supprimer" onclick="return confirm('Voulez-vous vraiment refuser cette commande ?');">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="my-5 text-muted">
+    </div>
+
     <div class="table-grid">
         <div th:each="table : ${toutesLesTables}" th:with="estOccupee=${tablesOccupees.contains(table)}">
             <div class="card card-modern h-100 table-card position-relative shadow-sm border-0"

@@ -76,6 +76,11 @@ public class CommandeService {
         return commandeRepository.findByEtat(EtatCommande.EN_ATTENTE);
     }
 
+    public List<Commande> getCommandesAValider() {
+        // Charge les commandes à valider avec leurs détails
+        return commandeRepository.findByEtatInWithDetails(List.of(EtatCommande.EN_VALIDATION));
+    }
+
     public Commande updateCommandeEtat(Long commandeId, EtatCommande nouveauStatut) {
         Commande commande = commandeRepository.findById(commandeId).orElseThrow(() -> new IllegalArgumentException("Commande non trouvée"));
         commande.setEtat(nouveauStatut);
