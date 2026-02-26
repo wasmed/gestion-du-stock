@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{admin/layout :: layout(~{::div})}">
+<body>
+<div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 th:text="${table.identifiant == null ? 'Nouvelle Table' : 'Modifier la Table'}">Nouvelle Table</h2>
+        <a th:href="@{/admin/tables}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Retour
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <form th:action="@{/admin/tables/save}" th:object="${table}" method="post">
+                        <input type="hidden" th:field="*{identifiant}"/>
+
+                        <div class="mb-3">
+                            <label for="numeroTable" class="form-label">Numéro de Table</label>
+                            <input type="number" class="form-control" id="numeroTable" th:field="*{numeroTable}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="nombrePersonne" class="form-label">Capacité (Nombre de personnes)</label>
+                            <input type="number" class="form-control" id="nombrePersonne" th:field="*{nombrePersonne}" required min="1">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="statut" class="form-label">Statut</label>
+                            <select class="form-select" id="statut" th:field="*{statut}">
+                                <option th:each="s : ${statuts}" th:value="${s}" th:text="${s}"></option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Enregistrer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

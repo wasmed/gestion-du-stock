@@ -1,59 +1,100 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <title>Tableau de Bord Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <style>
-        .card-link { text-decoration: none; color: inherit; }
-        .card-link .card:hover { transform: translateY(-5px); box-shadow: 0 4px 15px rgba(0,0,0,.1); transition: all 0.2s ease-in-out; }
-    </style>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{admin/layout :: layout(~{::div})}">
 <body>
-<div th:replace="~{fragments/navbar :: nav}"></div>
+<div>
+    <h2 class="mb-4">Tableau de Bord</h2>
 
-<div class="container mt-4">
-    <h1>Tableau de Bord Administrateur</h1>
-
-    <!-- Section des Indicateurs Clés (KPIs) -->
-    <div class="row mt-4">
-        <!-- ... (les cartes KPI restent les mêmes) ... -->
+    <!-- KPIs -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-primary border-start border-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-3">
+                             <i class="bi bi-people fs-1 text-primary"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title text-muted">Clients Totaux</h5>
+                            <h2 class="mb-0" th:text="${totalClients}">0</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-success border-start border-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                         <div class="flex-shrink-0 me-3">
+                             <i class="bi bi-cart-check fs-1 text-success"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title text-muted">Commandes du Jour</h5>
+                            <h2 class="mb-0" th:text="${commandesAujourdhui}">0</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-warning border-start border-4">
+                 <div class="card-body">
+                    <div class="d-flex align-items-center">
+                         <div class="flex-shrink-0 me-3">
+                             <i class="bi bi-currency-euro fs-1 text-warning"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title text-muted">Revenu du Jour</h5>
+                            <!-- Handle potential null or formatting issues with safe navigation if needed,
+                                 but Controller says it returns 0.0 if null -->
+                            <h2 class="mb-0" th:text="${revenuAujourdhui} + ' €'">0,00 €</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <hr class="my-4">
-
-    <!-- Section des Raccourcis de Gestion -->
-    <h2>Gestion</h2>
-    <div class="row mt-3">
-        <div class="col-md-3 mb-3">
-            <a th:href="@{/admin/users}" class="card-link">
-                <div class="card text-center h-100 p-3">
-                    <i class="bi bi-person-gear fs-1 text-primary"></i>
-                    <h5 class="card-title mt-2">Utilisateurs</h5>
+    <!-- Gestion -->
+    <h3 class="mb-3">Raccourcis</h3>
+    <div class="row">
+         <div class="col-md-3 mb-4">
+            <a th:href="@{/admin/users}" class="text-decoration-none">
+                <div class="card h-100 text-center hover-card">
+                    <div class="card-body">
+                        <i class="bi bi-person-gear fs-1 text-primary mb-3"></i>
+                        <h5 class="card-title text-dark">Personnel</h5>
+                    </div>
                 </div>
             </a>
         </div>
-        <div class="col-md-3 mb-3">
-            <a th:href="@{/stock/list}" class="card-link">
-                <div class="card text-center h-100 p-3">
-                    <i class="bi bi-box-seam fs-1 text-success"></i>
-                    <h5 class="card-title mt-2">Stocks</h5>
+         <div class="col-md-3 mb-4">
+            <a th:href="@{/admin/tables}" class="text-decoration-none">
+                <div class="card h-100 text-center hover-card">
+                    <div class="card-body">
+                        <i class="bi bi-grid-3x3-gap fs-1 text-danger mb-3"></i>
+                        <h5 class="card-title text-dark">Tables</h5>
+                    </div>
                 </div>
             </a>
         </div>
-        <div class="col-md-3 mb-3">
-            <a href="#" class="card-link"> <!-- Mettre le lien vers la gestion de la carte -->
-                <div class="card text-center h-100 p-3">
-                    <i class="bi bi-journal-text fs-1 text-warning"></i>
-                    <h5 class="card-title mt-2">Carte & Menus</h5>
+        <div class="col-md-3 mb-4">
+            <a th:href="@{/stock/list}" class="text-decoration-none">
+                <div class="card h-100 text-center hover-card">
+                    <div class="card-body">
+                        <i class="bi bi-box-seam fs-1 text-success mb-3"></i>
+                        <h5 class="card-title text-dark">Stocks</h5>
+                    </div>
                 </div>
             </a>
         </div>
-        <div class="col-md-3 mb-3">
-            <a th:href="@{/admin/feedbacks}" class="card-link">
-                <div class="card text-center h-100 p-3">
-                    <i class="bi bi-chat-left-quote fs-1 text-info"></i>
-                    <h5 class="card-title mt-2">Feedbacks</h5>
+         <div class="col-md-3 mb-4">
+            <a th:href="@{/admin/feedbacks}" class="text-decoration-none">
+                <div class="card h-100 text-center hover-card">
+                    <div class="card-body">
+                        <i class="bi bi-chat-left-quote fs-1 text-info mb-3"></i>
+                        <h5 class="card-title text-dark">Feedbacks</h5>
+                    </div>
                 </div>
             </a>
         </div>

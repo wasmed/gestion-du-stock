@@ -1,34 +1,49 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Liste des plats</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{admin/layout :: layout(~{::div})}">
 <body>
-<h1>Liste des plats</h1>
-<a th:href="@{/plats/form}">Ajouter un nouveau plat</a>
-<br/><br/>
-<table>
-    <thead>
-    <tr>
-        <th>Nom</th>
-        <th>Description</th>
-        <th>Prix</th>
-        <th>Catégorie</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="plat : ${plats}">
-        <td th:text="${plat.nom}"></td>
-        <td th:text="${plat.description}"></td>
-        <td th:text="${plat.prix}"></td>
-        <td th:text="${plat.categorie}"></td>
-        <td>
-            <a th:href="@{/plats/form(id=${plat.identifiant})}">Modifier</a>
-            <a th:href="@{/plats/delete/{id}(id=${plat.identifiant})}">Supprimer</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Liste des Plats</h2>
+        <a th:href="@{/plats/form}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Ajouter un nouveau plat
+        </a>
+    </div>
+
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Description</th>
+                    <th>Prix</th>
+                    <th>Catégorie</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="plat : ${plats}">
+                    <td th:text="${plat.nom}"></td>
+                    <td th:text="${plat.description}"></td>
+                    <td th:text="${#numbers.formatDecimal(plat.prix, 1, 2)} + ' €'"></td>
+                    <td th:text="${plat.categorie}"></td>
+                    <td class="text-end">
+                        <a th:href="@{/plats/form(id=${plat.identifiant})}" class="btn btn-sm btn-outline-primary me-2">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a th:href="@{/plats/delete/{id}(id=${plat.identifiant})}" class="btn btn-sm btn-outline-danger"
+                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce plat ?');">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                 <tr th:if="${#lists.isEmpty(plats)}">
+                    <td colspan="5" class="text-center py-4 text-muted">Aucun plat trouvé.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 </body>
 </html>
