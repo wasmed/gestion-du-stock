@@ -17,8 +17,12 @@
     <div th:if="${!groupedPlats.isEmpty() or !groupedMenus.isEmpty()}" class="alert alert-info d-flex align-items-center" role="alert">
         <i class="bi bi-info-circle-fill me-2"></i>
         <div>
-            <strong>Note importante :</strong> Ce panier sert à préparer votre sélection. Pour finaliser, veuillez appeler un serveur qui validera la commande avec vous.
+            <strong>Validation :</strong> Veuillez sélectionner votre table ci-dessous et envoyer la commande. Le serveur viendra valider avec vous.
         </div>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+         <span th:text="${errorMessage}"></span>
     </div>
 
     <div th:if="${groupedPlats.isEmpty() and groupedMenus.isEmpty()}">
@@ -88,10 +92,30 @@
                             <span th:text="${#numbers.formatDecimal(total, 1, 2)} + ' €'"></span>
                         </li>
                     </ul>
-                    <div class="d-grid mt-3">
-                        <!-- On peut même changer le texte du bouton pour être plus clair -->
-                        <a href="#" class="btn btn-primary">Préparer ma commande pour le serveur</a>
-                    </div>
+
+                    <hr>
+
+                    <form th:action="@{/client/validate-cart}" method="post">
+                        <div class="mb-3">
+                            <label for="tableId" class="form-label">Votre Table</label>
+                            <select class="form-select" id="tableId" name="tableId" required>
+                                <option value="" selected disabled>Choisir ma table...</option>
+                                <option th:each="tbl : ${tables}"
+                                        th:value="${tbl.identifiant}"
+                                        th:text="'Table ' + ${tbl.numeroTable} + ' (' + ${tbl.nombrePersonne} + ' pers.)'">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Notes / Allergies</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Ex: Sans gluten, Sauce à part..."></textarea>
+                        </div>
+                        <div class="d-grid mt-3">
+                            <button type="submit" class="btn btn-success fw-bold">
+                                <i class="bi bi-send-check"></i> Envoyer au serveur
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
             <div class="text-center mt-3">

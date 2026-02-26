@@ -52,6 +52,10 @@ public class OrderManagementController {
         // 4. On envoie aussi la liste des tables qui ont des commandes (pour faciliter l'affichage)
         model.addAttribute("tablesOccupees", commandesParTable.keySet());
 
+        // 5. On récupère les commandes en attente de validation
+        List<Commande> commandesAValider = commandeService.getCommandesAValider();
+        model.addAttribute("commandesAValider", commandesAValider);
+
         return "serveur/dashboard";
     }
 
@@ -95,6 +99,22 @@ public class OrderManagementController {
     }
 
     // --- Création de commande par le SERVEUR ---
+
+    @GetMapping("/validate/{id}")
+    @PreAuthorize("hasRole('SERVEUR')")
+    public String validateOrder(@PathVariable Long id) {
+        Commande commande = commandeService.findCommandeById(id);
+        if (commande != null && commande.getEtat() == EtatCommande.EN_VALIDATION) {
+            commande.setEtat(EtatCommande.EN_ATTENTE);
+            TableRestaurant table = commande.getTable();
+            if (table != null && table.getStatut() == StatutTable.LIBRE) {
+                table.setStatut(StatutTable.OCCUPEE);
+                tableRepository.save(table);
+            }
+            commandeService.saveCommande(commande);
+        }
+        return "redirect:/orders";
+    }
 
     @GetMapping("/create")
     @PreAuthorize("hasRole('SERVEUR')")

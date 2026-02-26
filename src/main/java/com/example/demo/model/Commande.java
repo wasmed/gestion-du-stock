@@ -43,6 +43,16 @@ public class Commande {
     @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<LigneCommande> lignesCommande = new HashSet<>();
 
+    private String commentaire;
+
+    public String getCommentaire() {
+        return commentaire;
+    }
+
+    public void setCommentaire(String commentaire) {
+        this.commentaire = commentaire;
+    }
+
     public Long getId() {
         return id;
     }

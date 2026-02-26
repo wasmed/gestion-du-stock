@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.*;
 import com.example.demo.repository.CommandeRepository;
+import com.example.demo.repository.TableRestaurantRepository;
 import com.example.demo.service.CommandeService;
 import com.example.demo.service.MenuService;
 import com.example.demo.service.PlatService;
@@ -13,10 +14,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.security.Principal;
 import java.util.function.Function;
@@ -36,6 +39,8 @@ public class ClientController {
     private MenuService menuService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private TableRestaurantRepository tableRepository;
 
     @GetMapping("/dashboard")
     @PreAuthorize("hasRole('CLIENT')")
@@ -71,6 +76,7 @@ public class ClientController {
 
     @GetMapping("/add-to-cart")
     @PreAuthorize("hasRole('CLIENT')")
+    @SuppressWarnings("unchecked")
     public String addToCart(@RequestParam(required = false)Long platId,
                             @RequestParam(required = false) Long menuId, HttpSession session, RedirectAttributes redirectAttributes) {
         String addedItemName = "";
@@ -111,6 +117,7 @@ public class ClientController {
 
     @GetMapping("/cart")
     @PreAuthorize("hasRole('CLIENT')")
+    @SuppressWarnings("unchecked")
     public String showCart(HttpSession session, Model model) {
         List<Plat> cartPlats = (List<Plat>) session.getAttribute("cartPlats");
         List<Menu> cartMenus = (List<Menu>) session.getAttribute("cartMenus");
@@ -128,11 +135,100 @@ public class ClientController {
         total += groupedPlats.entrySet().stream().mapToDouble(entry -> entry.getKey().getPrix() * entry.getValue()).sum();
         total += groupedMenus.entrySet().stream().mapToDouble(entry -> entry.getKey().getPrix() * entry.getValue()).sum();
 
+        // Fetch available tables
+        List<TableRestaurant> tables = tableRepository.findByStatut(StatutTable.LIBRE);
+
         model.addAttribute("groupedPlats", groupedPlats);
         model.addAttribute("groupedMenus", groupedMenus);
         model.addAttribute("total", total);
+        model.addAttribute("tables", tables);
 
         return "client/cart";
+    }
+
+    @PostMapping("/validate-cart")
+    @PreAuthorize("hasRole('CLIENT')")
+    @SuppressWarnings("unchecked")
+    public String validateCart(@RequestParam Long tableId,
+                               @RequestParam(required = false) String notes,
+                               HttpSession session,
+                               Principal principal,
+                               RedirectAttributes redirectAttributes) {
+        List<Plat> cartPlats = (List<Plat>) session.getAttribute("cartPlats");
+        List<Menu> cartMenus = (List<Menu>) session.getAttribute("cartMenus");
+
+        if ((cartPlats == null || cartPlats.isEmpty()) && (cartMenus == null || cartMenus.isEmpty())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Votre panier est vide.");
+            return "redirect:/client/cart";
+        }
+
+        User client = userService.findUserByEmail(principal.getName());
+        TableRestaurant table = tableRepository.findById(tableId).orElse(null);
+
+        if (table == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Table invalide.");
+            return "redirect:/client/cart";
+        }
+
+        if (table.getStatut() != StatutTable.LIBRE) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Cette table est déjà occupée ou en cours de validation. Veuillez en choisir une autre.");
+            return "redirect:/client/cart";
+        }
+
+        Commande commande = new Commande();
+        commande.setClient(client);
+        commande.setTable(table);
+        commande.setEtat(EtatCommande.EN_VALIDATION);
+        commande.setDateHeure(LocalDateTime.now());
+        commande.setCommentaire(notes);
+
+        double montantTotal = 0;
+        Set<LigneCommande> lignes = new HashSet<>();
+
+        if (cartPlats != null) {
+            Map<Plat, Long> groupedPlats = cartPlats.stream()
+                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+            for (Map.Entry<Plat, Long> entry : groupedPlats.entrySet()) {
+                Plat plat = entry.getKey();
+                Long qty = entry.getValue();
+                LigneCommande ligne = new LigneCommande();
+                ligne.setCommande(commande);
+                ligne.setPlat(plat);
+                ligne.setQuantite(qty.intValue());
+                ligne.setTypeLigne(TypeLigneCommande.PLAT);
+                lignes.add(ligne);
+                montantTotal += plat.getPrix() * qty;
+            }
+        }
+
+        if (cartMenus != null) {
+            Map<Menu, Long> groupedMenus = cartMenus.stream()
+                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+            for (Map.Entry<Menu, Long> entry : groupedMenus.entrySet()) {
+                Menu menu = entry.getKey();
+                Long qty = entry.getValue();
+                LigneCommande ligne = new LigneCommande();
+                ligne.setCommande(commande);
+                ligne.setMenu(menu);
+                ligne.setQuantite(qty.intValue());
+                ligne.setTypeLigne(TypeLigneCommande.MENU);
+                lignes.add(ligne);
+                montantTotal += menu.getPrix() * qty;
+            }
+        }
+
+        commande.setLignesCommande(lignes);
+        commande.setMontantTotal(montantTotal);
+
+        commandeService.saveCommande(commande);
+
+        // Clear cart
+        session.removeAttribute("cartPlats");
+        session.removeAttribute("cartMenus");
+        session.removeAttribute("cartItemCount");
+
+        redirectAttributes.addFlashAttribute("successMessage", "Votre commande a été envoyée au serveur pour validation.");
+        return "redirect:/client/menu";
     }
 
     /**
@@ -140,6 +236,7 @@ public class ClientController {
      */
     @GetMapping("/remove-from-cart")
     @PreAuthorize("hasRole('CLIENT')")
+    @SuppressWarnings("unchecked")
     public String removeFromCart(@RequestParam(required = false) Long platId,
                                  @RequestParam(required = false) Long menuId,
                                  HttpSession session) {
