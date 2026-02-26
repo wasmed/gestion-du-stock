@@ -41,6 +41,16 @@ public class PaiementService {
             return; // Ou lancer une exception
         }
 
+        // --- SIMULATION SERVICE PAIEMENT ---
+        if (modePaiement == ModePaiement.CARTE_BANCAIRE) {
+            // Ici on appellerait le service externe de paiement (Stripe, Paypal, etc.)
+            System.out.println("Processing Card Payment for amount: " + commande.getMontantTotal());
+        } else if (modePaiement == ModePaiement.QR_CODE) {
+             // Ici on appellerait le service de génération/validation de QR Code
+            System.out.println("Processing QR Code Payment for amount: " + commande.getMontantTotal());
+        }
+        // -----------------------------------
+
         // 2. Créer le nouvel objet Paiement
         Paiement paiement = new Paiement();
         paiement.setCommande(commande);
