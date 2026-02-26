@@ -9,6 +9,13 @@
         </a>
     </div>
 
+    <!-- Error Alert -->
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${errorMessage}">Une erreur est survenue</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
             <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">

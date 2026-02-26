@@ -16,6 +16,8 @@ public class Plat {
     private String description;
     private Double prix;
 
+    private String image;
+
     @Enumerated(EnumType.STRING)
     private CategoriePlat categorie;
 
@@ -55,6 +57,14 @@ public class Plat {
 
     public void setPrix(Double prix) {
         this.prix = prix;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public CategoriePlat getCategorie() {

@@ -15,6 +15,8 @@ public class Produit {
     @Column(length = 50)
     private TypeProduit type;
 
+    private String image;
+
     @OneToOne(mappedBy = "produit", cascade = CascadeType.ALL, orphanRemoval = true)
     private StockProduit stockProduit;
 
@@ -40,6 +42,14 @@ public class Produit {
 
     public void setType(TypeProduit type) {
         this.type = type;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public StockProduit getStockProduit() {
