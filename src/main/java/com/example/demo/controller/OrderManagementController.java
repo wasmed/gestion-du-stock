@@ -56,6 +56,12 @@ public class OrderManagementController {
         List<Commande> commandesAValider = commandeService.getCommandesAValider();
         model.addAttribute("commandesAValider", commandesAValider);
 
+        // 6. On récupère les commandes prêtes à servir (PREPARATION_TERMINEE)
+        List<Commande> commandesPretes = commandesEnCours.stream()
+                .filter(c -> c.getEtat() == EtatCommande.PREPARATION_TERMINEE)
+                .collect(Collectors.toList());
+        model.addAttribute("commandesPretes", commandesPretes);
+
         return "serveur/dashboard";
     }
 
