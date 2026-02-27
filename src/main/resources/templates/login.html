@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Connexion - RestoApp</title>
-    <!-- Bootstrap CSS -->
+    <title>Connexion | Restaurant</title>
+    <!-- On ajoute Bootstrap pour un look plus propre -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <style>
         body {
             background-color: #f8f9fa;
@@ -15,63 +14,80 @@
             border-radius: 1rem;
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
         }
+        .login-header {
+            background-color: #0d6efd;
+            color: white;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        }
     </style>
 </head>
-<body>
+<body class="d-flex align-items-center min-vh-100">
 
-<div class="container d-flex flex-column min-vh-100 justify-content-center align-items-center">
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5 col-xl-4">
+            <div class="card login-card">
+                <div class="login-header">
+                    <h2 class="fw-bold mb-0"><i class="bi bi-shop me-2"></i>Connexion</h2>
+                    <p class="mb-0 opacity-75">Accédez à votre espace</p>
+                </div>
 
-    <div class="mb-4 text-center">
-        <a th:href="@{/}" class="text-decoration-none">
-            <h1 class="h3 fw-bold text-dark"><i class="bi bi-shop me-2"></i>RestoApp</h1>
-        </a>
-    </div>
+                <div class="card-body p-4 p-md-5">
 
-    <div class="card login-card p-4 p-md-5" style="max-width: 450px; width: 100%;">
-        <h2 class="text-center mb-4 fw-bold text-primary">Bon retour !</h2>
+                    <!-- Message d'erreur si la connexion échoue -->
+                    <div th:if="${param.error}" class="alert alert-danger d-flex align-items-center" role="alert">
+                        <i class="bi bi-exclamation-circle-fill me-2"></i>
+                        <div>Email ou mot de passe incorrect.</div>
+                    </div>
 
-        <!-- Message d'erreur si la connexion échoue -->
-        <div th:if="${param.error}" class="alert alert-danger d-flex align-items-center" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-            <div>Email ou mot de passe incorrect.</div>
-        </div>
+                    <!-- Message si l'utilisateur vient de se déconnecter -->
+                    <div th:if="${param.logout}" class="alert alert-success d-flex align-items-center" role="alert">
+                         <i class="bi bi-check-circle-fill me-2"></i>
+                         <div>Déconnecté avec succès.</div>
+                    </div>
 
-        <!-- Message si l'utilisateur vient de se déconnecter -->
-        <div th:if="${param.logout}" class="alert alert-success d-flex align-items-center" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>
-            <div>Vous avez été déconnecté avec succès.</div>
-        </div>
+                    <form th:action="@{/login}" method="post">
+                        <div class="mb-4">
+                            <label for="username" class="form-label fw-bold text-secondary">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                                <input type="text" id="username" name="username" class="form-control" placeholder="exemple@email.com" required/>
+                            </div>
+                        </div>
 
-        <form th:action="@{/login}" method="post">
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="username" name="username" placeholder="name@example.com" required>
-                <label for="username">Email</label>
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-bold text-secondary">Mot de passe</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
+                                <input type="password" id="password" name="password" class="form-control" placeholder="Votre mot de passe" required/>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mb-4">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold shadow-sm">Se connecter</button>
+                        </div>
+                    </form>
+
+                    <div class="text-center">
+                        <p class="mb-2 text-muted">Pas encore de compte ?</p>
+                        <a th:href="@{/register}" class="text-decoration-none fw-bold">Créer un compte</a>
+                        <hr class="my-4">
+                        <a th:href="@{/client/menu}" class="btn btn-outline-secondary btn-sm w-100">
+                            <i class="bi bi-book me-1"></i> Consulter le menu sans compte
+                        </a>
+                    </div>
+                </div>
             </div>
-
-            <div class="form-floating mb-4">
-                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
-                <label for="password">Mot de passe</label>
-            </div>
-
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary btn-lg">Se connecter</button>
-            </div>
-        </form>
-
-        <hr class="my-4">
-
-        <div class="text-center">
-            <p class="mb-2">Pas encore de compte ? <a th:href="@{/register}" class="fw-bold">Inscrivez-vous ici</a></p>
-            <p class="mb-0 text-muted">Ou <a th:href="@{/client/menu}" class="text-decoration-none">consultez le menu sans vous connecter</a>.</p>
         </div>
-    </div>
-
-    <div class="mt-4 text-center text-muted small">
-        &copy; 2023 RestoApp. Tous droits réservés.
     </div>
 </div>
 
-<!-- Bootstrap Bundle JS (includes Popper) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
