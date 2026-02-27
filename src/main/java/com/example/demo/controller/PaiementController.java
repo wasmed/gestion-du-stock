@@ -5,16 +5,13 @@ import com.example.demo.model.ModePaiement;
 import com.example.demo.service.CommandeService;
 import com.example.demo.service.PaiementService;
 import com.example.demo.service.QrCodeService;
-import com.example.demo.service.StripeService;
-import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.security.Principal;
 import java.util.HashMap;
@@ -32,19 +29,12 @@ public class PaiementController {
     private PaiementService paiementService;
 
     @Autowired
-    private StripeService stripeService;
-
-    @Autowired
     private QrCodeService qrCodeService;
-
-    @Value("${stripe.apiKey.public:pk_test_dummyPublic}")
-    private String stripePublicKey;
 
     @GetMapping("/form/{commandeId}")
     public String showPaymentForm(@PathVariable Long commandeId, Model model) {
         Commande commande = commandeService.findCommandeById(commandeId);
         model.addAttribute("commande", commande);
-        model.addAttribute("stripePublicKey", stripePublicKey);
         return "paiement/form";
     }
 
@@ -59,28 +49,13 @@ public class PaiementController {
 
     // --- API Endpoints for AJAX ---
 
-    @PostMapping("/api/create-payment-intent")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> createPaymentIntent(@RequestParam Long commandeId) {
-        try {
-            Commande commande = commandeService.findCommandeById(commandeId);
-            PaymentIntent paymentIntent = stripeService.createPaymentIntent(commande.getMontantTotal(), "Commande #" + commandeId);
-
-            Map<String, String> response = new HashMap<>();
-            response.put("clientSecret", paymentIntent.getClientSecret());
-
-            return ResponseEntity.ok(response);
-        } catch (StripeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
-    }
-
     @GetMapping("/api/generate-qr/{id}")
     @ResponseBody
     public ResponseEntity<Map<String, String>> generateQrCode(@PathVariable Long id) {
         try {
-            // For now, the QR code content is just the Order ID. In a real app, this might be a payment URL.
-            String qrContent = "ORDER-" + id;
+            // URL de simulation de paiement
+            String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+            String qrContent = baseUrl + "/client/paiement/simulation/" + id;
             String base64Image = qrCodeService.generateQrCodeImage(qrContent, 250, 250);
 
             Map<String, String> response = new HashMap<>();
