@@ -17,9 +17,22 @@ public class TableRestaurant {
     @Enumerated(EnumType.STRING)
     private StatutTable statut;
 
+    @ManyToOne
+    @JoinColumn(name = "serveur_id")
+    private User serveur;
+
     public TableRestaurant() {
         this.statut = StatutTable.LIBRE;
     }
+
+    public User getServeur() {
+        return serveur;
+    }
+
+    public void setServeur(User serveur) {
+        this.serveur = serveur;
+    }
+
     public Long getIdentifiant() {
         return identifiant;
     }
