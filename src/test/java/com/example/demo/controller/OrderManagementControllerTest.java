@@ -62,16 +62,29 @@ public class OrderManagementControllerTest {
         when(tableRepository.findAll()).thenReturn(tables);
 
         List<Commande> commandesEnCours = new ArrayList<>();
+
+        // Commande 1 : EN_PREPARATION
         Commande c1 = new Commande();
         c1.setId(100L);
         c1.setEtat(EtatCommande.EN_PREPARATION);
         c1.setTable(t1);
 
-        com.example.demo.model.User client = new com.example.demo.model.User();
-        client.setFullName("Jean Dupont");
-        c1.setClient(client);
-
+        com.example.demo.model.User client1 = new com.example.demo.model.User();
+        client1.setFullName("Jean Dupont");
+        c1.setClient(client1);
         commandesEnCours.add(c1);
+
+        // Commande 2 : PREPARATION_TERMINEE (Doit apparaitre dans 'commandesPretes')
+        Commande c2 = new Commande();
+        c2.setId(101L);
+        c2.setEtat(EtatCommande.PREPARATION_TERMINEE);
+        c2.setTable(t1);
+
+        com.example.demo.model.User client2 = new com.example.demo.model.User();
+        client2.setFullName("Marie Curie");
+        c2.setClient(client2);
+        commandesEnCours.add(c2);
+
 
         when(commandeService.getCommandesEnCoursEtServies()).thenReturn(commandesEnCours);
 
@@ -86,6 +99,8 @@ public class OrderManagementControllerTest {
                 .andExpect(model().attributeExists("commandesParTable"))
                 .andExpect(model().attributeExists("tablesOccupees"))
                 .andExpect(model().attributeExists("commandesAValider"))
-                .andExpect(model().attribute("toutesLesTables", hasSize(1)));
+                .andExpect(model().attributeExists("commandesPretes")) // Vérifie que l'attribut existe
+                .andExpect(model().attribute("toutesLesTables", hasSize(1)))
+                .andExpect(model().attribute("commandesPretes", hasSize(1))); // Vérifie qu'il y a 1 commande prête
     }
 }
