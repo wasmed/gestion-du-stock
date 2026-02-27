@@ -55,7 +55,7 @@
                 <div class="card-body px-3 pt-2">
                     <h5 class="fw-bold mb-3 text-secondary">Table <span th:text="${commande.table.numeroTable}"></span></h5>
                     <div class="mb-2">
-                        <small class="text-muted"><i class="bi bi-person-badge me-1"></i>Serveur: <span th:text="${commande.serveur.fullName}"></span></small>
+                        <small class="text-muted"><i class="bi bi-person-badge me-1"></i>Serveur: <span th:text="${commande.serveur?.fullName}"></span></small>
                     </div>
 
                     <div th:if="${commande.commentaire != null and !commande.commentaire.isEmpty()}" class="alert alert-danger p-2 mb-3" role="alert">

@@ -20,7 +20,7 @@ public class Feedback {
     private User client;
 
     @OneToOne
-    @JoinColumn(name = "commande_id", unique = true) // Crée une colonne "commande_id"
+    @JoinColumn(name = "commande_id", unique = true)
     private Commande commande;
 
 
