@@ -11,5 +11,6 @@ public enum TypeProduit {
     EPICERIE_SECHE,  // Pour sucre, épices, café en grains..
     GLACE,
     BOISSON,
-    DESSERT
+    DESSERT,
+    AUTRE
 }

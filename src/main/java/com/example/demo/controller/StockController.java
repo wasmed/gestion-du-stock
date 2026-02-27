@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Produit;
 import com.example.demo.model.StockProduit;
+import com.example.demo.model.TypeProduit;
 import com.example.demo.repository.StockProduitRepository;
 import com.example.demo.service.ProduitService;
 import com.example.demo.service.StockService;
@@ -12,6 +13,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/stock")
@@ -28,7 +31,16 @@ public class StockController {
     @GetMapping("/list")
     public String listStock(Model model) {
         List<StockProduit> stocks = stockService.findAllStocks();
-        model.addAttribute("stocks", stocks);
+        // Groupe les stocks par catégorie de produit (TypeProduit)
+        Map<TypeProduit, List<StockProduit>> stocksParCategorie = stocks.stream()
+                .filter(s -> s.getProduit() != null)
+                .collect(Collectors.groupingBy(
+                        s -> s.getProduit().getType() != null ? s.getProduit().getType() : TypeProduit.AUTRE,
+                        () -> new java.util.TreeMap<>(java.util.Comparator.comparing(TypeProduit::name)),
+                        Collectors.toList()
+                ));
+
+        model.addAttribute("stocksParCategorie", stocksParCategorie);
         return "stock/list";
     }
 
