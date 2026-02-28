@@ -161,7 +161,14 @@ public class OrderManagementController {
                               @RequestParam(name = "menuIds", required = false) List<Long> menuIds,
                               @RequestParam(name = "clientEmail", required = false) String clientEmail,
                               @RequestParam(name = "commentaire", required = false) String commentaire,
+                              RedirectAttributes redirectAttributes,
                               Principal principal) {
+
+        if ((platIds == null || platIds.isEmpty()) && (menuIds == null || menuIds.isEmpty())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Veuillez sélectionner au moins un plat ou un menu.");
+            return "redirect:/orders/create";
+        }
+
         User serveur = userService.findUserByEmail(principal.getName());
         User client ;
         if (clientEmail != null && !clientEmail.trim().isEmpty()) {
