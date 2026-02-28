@@ -5,6 +5,7 @@ import com.example.demo.repository.MenuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -15,6 +16,10 @@ public class MenuService {
 
     public List<Menu> findAllMenus() {
         return menuRepository.findAll();
+    }
+
+    public List<Menu> findAllActiveMenus() {
+        return menuRepository.findActiveMenus(LocalDate.now());
     }
 
     public Menu findMenuById(Long id) {

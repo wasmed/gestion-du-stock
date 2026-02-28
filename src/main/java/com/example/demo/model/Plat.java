@@ -27,6 +27,9 @@ public class Plat {
     @ManyToMany(mappedBy = "plats")
     private Set<Menu> menus;
 
+    @Column(nullable = false)
+    private Boolean actif = true;
+
     public Long getIdentifiant() {
         return identifiant;
     }
@@ -89,5 +92,13 @@ public class Plat {
 
     public void setIngredients(Set<Ingredient> ingredients) {
         this.ingredients = ingredients;
+    }
+
+    public Boolean getActif() {
+        return actif;
+    }
+
+    public void setActif(Boolean actif) {
+        this.actif = actif;
     }
 }

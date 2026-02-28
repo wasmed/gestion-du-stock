@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.time.LocalDate;
 
 @Entity
 public class Menu {
@@ -26,6 +27,13 @@ public class Menu {
             inverseJoinColumns = @JoinColumn(name = "plat_id")
     )
     private Set<Plat> plats = new HashSet<>();
+
+    @Column(nullable = false)
+    private Boolean actif = true;
+
+    private LocalDate dateDebut;
+
+    private LocalDate dateFin;
 
     // Getters and Setters
     public Long getId() {
@@ -74,5 +82,29 @@ public class Menu {
 
     public void setPlats(Set<Plat> plats) {
         this.plats = plats;
+    }
+
+    public Boolean getActif() {
+        return actif;
+    }
+
+    public void setActif(Boolean actif) {
+        this.actif = actif;
+    }
+
+    public LocalDate getDateDebut() {
+        return dateDebut;
+    }
+
+    public void setDateDebut(LocalDate dateDebut) {
+        this.dateDebut = dateDebut;
+    }
+
+    public LocalDate getDateFin() {
+        return dateFin;
+    }
+
+    public void setDateFin(LocalDate dateFin) {
+        this.dateFin = dateFin;
     }
 }

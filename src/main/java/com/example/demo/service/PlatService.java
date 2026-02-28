@@ -17,6 +17,10 @@ public class PlatService {
         return platRepository.findAll();
     }
 
+    public List<Plat> findAllActivePlats() {
+        return platRepository.findByActifTrue();
+    }
+
     public Plat savePlat(Plat plat) {
         return platRepository.save(plat);
     }

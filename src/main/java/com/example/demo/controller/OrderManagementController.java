@@ -135,7 +135,7 @@ public class OrderManagementController {
         } else {
             tablesDisponibles = tableRepository.findByStatut(StatutTable.LIBRE);
         }
-        List<Plat> plats = platService.findAllPlats();
+        List<Plat> plats = platService.findAllActivePlats();
 
         Map<Boolean, List<Plat>> platsPartitionnes = plats.stream()
                 .collect(Collectors.partitioningBy(plat -> plat.getCategorie() == CategoriePlat.BOISSON));
@@ -143,7 +143,7 @@ public class OrderManagementController {
         List<Plat> boissons = platsPartitionnes.get(true);
         List<Plat> platsCuisines = platsPartitionnes.get(false);
         List<User> clients = userService.findByRole(Role.CLIENT);
-        List<Menu> menus = menuService.findAllMenus();
+        List<Menu> menus = menuService.findAllActiveMenus();
 
         model.addAttribute("tables", tablesDisponibles);
         model.addAttribute("nombrePersonne", nombrePersonne);
@@ -273,7 +273,7 @@ public class OrderManagementController {
         }
 
         // --- LOGIQUE MISE À JOUR POUR PRÉPARER TOUTES LES LISTES ---
-        List<Plat> tousLesPlats = platService.findAllPlats();
+        List<Plat> tousLesPlats = platService.findAllActivePlats();
         Map<Boolean, List<Plat>> platsPartitionnes = tousLesPlats.stream()
                 .collect(Collectors.partitioningBy(plat -> plat.getCategorie() == CategoriePlat.BOISSON));
 
@@ -284,7 +284,7 @@ public class OrderManagementController {
         model.addAttribute("tables", tableRepository.findAll());
         model.addAttribute("platsCuisines", platsCuisines); // Envoie la liste de plats cuisinés
         model.addAttribute("boissons", boissons);           // Envoie la liste de boissons
-        model.addAttribute("menus", menuService.findAllMenus()); // Envoie la liste des menus
+        model.addAttribute("menus", menuService.findAllActiveMenus()); // Envoie la liste des menus
 
         return "serveur/formulaire-modification";
     }
