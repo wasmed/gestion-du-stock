@@ -2,6 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{admin/layout :: layout(~{::div})}">
 <body>
 <div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <h2 class="mb-4">Tableau de Bord</h2>
 
     <!-- KPIs -->
@@ -57,7 +62,7 @@
 
     <!-- Gestion -->
     <h3 class="mb-3">Raccourcis</h3>
-    <div class="row">
+    <div class="row" sec:authorize="hasRole('ADMIN')">
          <div class="col-md-3 mb-4">
             <a th:href="@{/admin/users}" class="text-decoration-none">
                 <div class="card h-100 text-center hover-card">
