@@ -31,7 +31,7 @@
                                 <th class="ps-4">Produit</th>
                                 <th class="text-center">Stock Actuel</th>
                                 <th class="text-center">Stock Minimum</th>
-                                <th style="width: 25%;" class="text-center">Ajouter du Stock (Entrée)</th>
+                                <th style="width: 35%;" class="text-center">Mouvement de Stock (Unité)</th>
                                 <th class="text-end pe-4">Actions</th>
                             </tr>
                             </thead>
@@ -46,12 +46,20 @@
                                 <td class="text-center" th:text="${stock.stockActuel} + ' ' + ${stock.formatProduit?.nom}"></td>
                                 <td class="text-center" th:text="${stock.stockMinimum} + ' ' + ${stock.formatProduit?.nom}"></td>
                                 <td class="text-center">
-                                    <form th:action="@{/stock/add}" method="post" class="d-flex justify-content-center">
+                                    <form th:action="@{/stock/update}" method="post" class="d-flex flex-column align-items-center justify-content-center">
                                         <input type="hidden" name="stockId" th:value="${stock.id}" />
-                                        <input type="number" name="quantiteAjoutee" class="form-control form-control-sm w-50" placeholder="Quantité" required step="0.1" />
-                                        <button type="submit" class="btn btn-success btn-sm ms-2">
-                                            <i class="bi bi-plus-lg"></i>
-                                        </button>
+                                        <div class="input-group input-group-sm mb-2 w-75">
+                                            <input type="number" name="quantiteSaisie" class="form-control text-center" placeholder="Nb d'unités" required step="1" min="1" />
+                                            <span class="input-group-text" th:text="${stock.formatProduit?.nom}">Unité</span>
+                                        </div>
+                                        <div class="d-flex gap-2 w-75">
+                                            <button type="submit" name="typeOperation" value="AJOUT" class="btn btn-success btn-sm flex-fill">
+                                                <i class="bi bi-plus-lg"></i> Ajouter (Entrée)
+                                            </button>
+                                            <button type="submit" name="typeOperation" value="RETRAIT" class="btn btn-danger btn-sm flex-fill">
+                                                <i class="bi bi-dash-lg"></i> Retirer (Sortie)
+                                            </button>
+                                        </div>
                                     </form>
                                 </td>
                                 <td class="text-end pe-4">
