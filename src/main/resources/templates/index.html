@@ -23,6 +23,13 @@
 <!-- Navbar included here -->
 <div th:replace="~{fragments/navbar :: nav}"></div>
 
+<div class="container mt-3">
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+
 <div class="hero-section text-center">
     <div class="container">
         <h1 class="display-3 fw-bold mb-3">Bienvenue sur RestoApp</h1>

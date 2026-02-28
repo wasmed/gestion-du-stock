@@ -165,7 +165,7 @@ public class OrderManagementController {
                               Principal principal) {
 
         if ((platIds == null || platIds.isEmpty()) && (menuIds == null || menuIds.isEmpty())) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Veuillez sélectionner au moins un plat ou un menu.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Impossible de créer la commande : vous devez ajouter au moins un produit.");
             return "redirect:/orders/create";
         }
 

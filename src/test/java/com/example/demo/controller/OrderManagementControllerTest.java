@@ -54,7 +54,7 @@ public class OrderManagementControllerTest {
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/orders/create"))
-                .andExpect(flash().attribute("errorMessage", "Veuillez sélectionner au moins un plat ou un menu."));
+                .andExpect(flash().attribute("errorMessage", "Impossible de créer la commande : vous devez ajouter au moins un produit."));
 
         long newCount = commandeRepository.count();
         // The bug should be fixed, so the count should NOT increase.

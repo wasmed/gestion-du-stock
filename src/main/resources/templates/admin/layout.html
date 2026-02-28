@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:fragment="layout(content)">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,25 +16,19 @@
             <h3>Resto Admin</h3>
         </div>
         <ul class="list-unstyled components">
-            <li>
+            <li sec:authorize="hasRole('ADMIN')">
                 <a th:href="@{/admin/dashboard}"><i class="bi bi-speedometer2"></i> Tableau de bord</a>
             </li>
-            <li>
+            <li sec:authorize="hasRole('ADMIN')">
                 <a th:href="@{/admin/tables}"><i class="bi bi-grid-3x3-gap"></i> Tables</a>
             </li>
-            <li>
+            <li sec:authorize="hasRole('ADMIN')">
                 <a th:href="@{/admin/users}"><i class="bi bi-people"></i> Personnel</a>
             </li>
-            <li>
+            <li sec:authorize="hasAnyRole('ADMIN', 'CHEF_CUISINIER')">
                 <a th:href="@{/stock/list}"><i class="bi bi-box-seam"></i> Stocks</a>
             </li>
-            <li>
-                <a th:href="@{/plats}"><i class="bi bi-egg-fried"></i> Plats</a>
-            </li>
-            <li>
-                <a th:href="@{/menus}"><i class="bi bi-journal-text"></i> Menus</a>
-            </li>
-             <li>
+             <li sec:authorize="hasRole('ADMIN')">
                 <a th:href="@{/admin/feedbacks}"><i class="bi bi-chat-left-quote"></i> Feedbacks</a>
             </li>
              <li>
