@@ -42,6 +42,7 @@ public class Commande {
     private Feedback feedBack;
 
     @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("identifiant ASC")
     private Set<LigneCommande> lignesCommande = new HashSet<>();
 
     private String commentaire;

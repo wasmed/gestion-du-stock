@@ -96,27 +96,36 @@
                     <hr>
 
                     <form th:action="@{/client/validate-cart}" method="post">
-                        <div class="mb-3">
-                            <label class="form-label d-block">Type de commande</label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="isEmporter" id="surPlace" value="false" checked onchange="toggleTableSelection()">
-                                <label class="form-check-label" for="surPlace">Sur place</label>
+                        <div th:if="${commandeActive == null}">
+                            <div class="mb-3">
+                                <label class="form-label d-block">Type de commande</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="isEmporter" id="surPlace" value="false" checked onchange="toggleTableSelection()">
+                                    <label class="form-check-label" for="surPlace">Sur place</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="isEmporter" id="aEmporter" value="true" onchange="toggleTableSelection()">
+                                    <label class="form-check-label" for="aEmporter">À emporter</label>
+                                </div>
                             </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="isEmporter" id="aEmporter" value="true" onchange="toggleTableSelection()">
-                                <label class="form-check-label" for="aEmporter">À emporter</label>
+
+                            <div class="mb-3" id="tableSelectionContainer">
+                                <label for="tableId" class="form-label">Votre Table</label>
+                                <select class="form-select" id="tableId" name="tableId" required>
+                                    <option value="" selected disabled>Choisir ma table...</option>
+                                    <option th:each="tbl : ${tables}"
+                                            th:value="${tbl.identifiant}"
+                                            th:text="'Table ' + ${tbl.numeroTable} + ' (' + ${tbl.nombrePersonne} + ' pers.)'">
+                                    </option>
+                                </select>
                             </div>
                         </div>
-
-                        <div class="mb-3" id="tableSelectionContainer">
-                            <label for="tableId" class="form-label">Votre Table</label>
-                            <select class="form-select" id="tableId" name="tableId" required>
-                                <option value="" selected disabled>Choisir ma table...</option>
-                                <option th:each="tbl : ${tables}"
-                                        th:value="${tbl.identifiant}"
-                                        th:text="'Table ' + ${tbl.numeroTable} + ' (' + ${tbl.nombrePersonne} + ' pers.)'">
-                                </option>
-                            </select>
+                        <div th:if="${commandeActive != null}">
+                            <div class="alert alert-warning mb-3" role="alert">
+                                Vous avez une commande en cours. Ces articles y seront ajoutés.
+                            </div>
+                            <input type="hidden" name="isEmporter" th:value="${commandeActive.isEmporter}">
+                            <input th:if="${commandeActive.table != null}" type="hidden" name="tableId" th:value="${commandeActive.table.identifiant}">
                         </div>
                         <div class="mb-3">
                             <label for="notes" class="form-label">Notes / Allergies</label>
@@ -138,16 +147,21 @@
 </div>
 <script>
     function toggleTableSelection() {
-        const isEmporter = document.getElementById('aEmporter').checked;
+        const emporterEl = document.getElementById('aEmporter');
+        if (!emporterEl) return;
+
+        const isEmporter = emporterEl.checked;
         const tableContainer = document.getElementById('tableSelectionContainer');
         const tableSelect = document.getElementById('tableId');
 
-        if (isEmporter) {
-            tableContainer.style.display = 'none';
-            tableSelect.removeAttribute('required');
-        } else {
-            tableContainer.style.display = 'block';
-            tableSelect.setAttribute('required', 'required');
+        if (tableContainer && tableSelect) {
+            if (isEmporter) {
+                tableContainer.style.display = 'none';
+                tableSelect.removeAttribute('required');
+            } else {
+                tableContainer.style.display = 'block';
+                tableSelect.setAttribute('required', 'required');
+            }
         }
     }
 

@@ -45,8 +45,11 @@
             <div th:each="cmd : ${commandesPretes}" class="col">
                 <div class="card border-success shadow-sm h-100" style="background-color: #f0fff4;">
                     <div class="card-header bg-success text-white fw-bold d-flex justify-content-between align-items-center">
-                        <span th:if="${cmd.table != null}">Table <span th:text="${cmd.table.numeroTable}"></span></span>
-                        <span th:if="${cmd.table == null}">Table ?</span>
+                        <span th:if="${cmd.isEmporter}" class="badge bg-info">🛍️ À Emporter</span>
+                        <span th:unless="${cmd.isEmporter}">
+                            <span th:if="${cmd.table != null}">Table <span th:text="${cmd.table.numeroTable}"></span></span>
+                            <span th:if="${cmd.table == null}">Table ?</span>
+                        </span>
                         <span class="badge bg-light text-success" th:text="${#temporals.format(cmd.dateHeure, 'HH:mm')}"></span>
                     </div>
                     <div class="card-body">
@@ -83,8 +86,11 @@
             <div th:each="cmd : ${commandesAValider}" class="col">
                 <div class="card border-warning shadow-sm h-100">
                     <div class="card-header bg-warning text-dark fw-bold d-flex justify-content-between align-items-center">
-                        <span th:if="${cmd.table != null}">Table <span th:text="${cmd.table.numeroTable}"></span></span>
-                        <span th:if="${cmd.table == null}">Table ?</span>
+                        <span th:if="${cmd.isEmporter}" class="badge bg-info">🛍️ À Emporter</span>
+                        <span th:unless="${cmd.isEmporter}">
+                            <span th:if="${cmd.table != null}">Table <span th:text="${cmd.table.numeroTable}"></span></span>
+                            <span th:if="${cmd.table == null}">Table ?</span>
+                        </span>
                         <span class="badge bg-dark text-warning" th:text="${#temporals.format(cmd.dateHeure, 'HH:mm')}"></span>
                     </div>
                     <div class="card-body">
@@ -175,9 +181,9 @@
 
                                 <div class="btn-group btn-group-sm">
                                     <!-- Actions -->
-                                    <a th:if="${commande.etat.toString() == 'EN_ATTENTE'}"
+                                    <a th:if="${commande.etat.toString() != 'PAYEE'}"
                                        th:href="@{/orders/edit/{id}(id=${commande.id})}"
-                                       class="btn btn-outline-warning" title="Modifier">
+                                       class="btn btn-outline-warning" title="Ajouter / Modifier">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <a th:if="${commande.etat.toString() == 'EN_ATTENTE'}"

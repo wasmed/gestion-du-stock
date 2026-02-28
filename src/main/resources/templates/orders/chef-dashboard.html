@@ -58,7 +58,10 @@
                 </div>
 
                 <div class="card-body px-3 pt-2">
-                    <h5 class="fw-bold mb-3 text-secondary">Table <span th:text="${commande.table.numeroTable}"></span></h5>
+                    <h5 class="fw-bold mb-3 text-secondary">
+                        <span th:if="${commande.isEmporter}" class="badge bg-info">🛍️ À Emporter</span>
+                        <span th:unless="${commande.isEmporter}">Table N°<span th:text="${commande.table?.numeroTable}"></span></span>
+                    </h5>
                     <div class="mb-2">
                         <small class="text-muted"><i class="bi bi-person-badge me-1"></i>Serveur: <span th:text="${commande.serveur?.fullName}"></span></small>
                     </div>
@@ -68,6 +71,7 @@
                         <span th:text="${commande.commentaire}"></span>
                     </div>
 
+                    <!-- Lignes de commande triées automatiquement via @OrderBy dans l'entité -->
                     <ul class="list-group list-group-flush rounded border-0">
                         <li th:each="ligne : ${commande.lignesCommande}" class="list-group-item bg-transparent px-0 border-light d-flex justify-content-between align-items-center">
                             <div>

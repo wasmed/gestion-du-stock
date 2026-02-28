@@ -267,8 +267,8 @@ public class OrderManagementController {
     public String showEditOrderForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         Commande commande = commandeService.findCommandeById(id);
 
-        if (commande.getEtat() != EtatCommande.EN_ATTENTE) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Impossible de modifier une commande déjà en préparation.");
+        if (commande.getEtat() != EtatCommande.EN_ATTENTE && commande.getEtat() != EtatCommande.EN_PREPARATION && commande.getEtat() != EtatCommande.SERVIE) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Impossible de modifier cette commande (elle doit être EN_ATTENTE, EN_PREPARATION, ou SERVIE).");
             return "redirect:/orders";
         }
 
@@ -297,10 +297,18 @@ public class OrderManagementController {
                             Principal principal) {
 
         Commande commande = commandeService.findCommandeById(id);
-        double montantTotal = 0;
-        // 1. Supprimer les anciennes lignes
-        ligneCommandeRepository.deleteAll(commande.getLignesCommande());
-        commande.getLignesCommande().clear();
+        double montantTotal = commande.getMontantTotal();
+
+        // Si la commande est déjà en préparation ou servie, on force l'état en EN_ATTENTE pour les nouveaux ajouts
+        // et on ne supprime PAS les anciennes lignes
+        if (commande.getEtat() == EtatCommande.EN_PREPARATION || commande.getEtat() == EtatCommande.SERVIE || commande.getEtat() == EtatCommande.PREPARATION_TERMINEE) {
+            commande.setEtat(EtatCommande.EN_ATTENTE);
+        } else {
+            // Si elle est juste EN_ATTENTE, on remplace tout (comportement d'origine)
+            montantTotal = 0;
+            ligneCommandeRepository.deleteAll(commande.getLignesCommande());
+            commande.getLignesCommande().clear();
+        }
 
         // 2. Ajouter les nouvelles lignes de commande
         if (platIds != null) {
