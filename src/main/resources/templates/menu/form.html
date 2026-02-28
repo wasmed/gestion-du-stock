@@ -36,6 +36,22 @@
                             <input type="text" class="form-control" th:field="*{image}" />
                         </div>
 
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{actif}" id="actifCheck">
+                            <label class="form-check-label" for="actifCheck">Actif / Disponible à la carte</label>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Date de Début (Optionnel)</label>
+                                <input type="date" class="form-control" th:field="*{dateDebut}" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Date de Fin (Optionnel)</label>
+                                <input type="date" class="form-control" th:field="*{dateFin}" />
+                            </div>
+                        </div>
+
                         <h4 class="mt-4 mb-3">Plats inclus dans le menu</h4>
                         <div class="mb-3 border p-3 rounded" style="max-height: 300px; overflow-y: auto;">
                             <div th:each="plat : ${allPlats}" class="form-check">

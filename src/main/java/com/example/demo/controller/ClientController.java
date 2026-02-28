@@ -64,8 +64,8 @@ public class ClientController {
 
     @GetMapping("/menu")
     public String showMenu(Model model) {
-        List<Plat> plats = platService.findAllPlats();
-        List<Menu> menus = menuService.findAllMenus();
+        List<Plat> plats = platService.findAllActivePlats();
+        List<Menu> menus = menuService.findAllActiveMenus();
         Map<CategoriePlat, List<Plat>> platsParCategorie = plats.stream()
                 .collect(Collectors.groupingBy(Plat::getCategorie, LinkedHashMap::new, Collectors.toList()));
 

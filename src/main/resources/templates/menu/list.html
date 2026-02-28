@@ -18,6 +18,8 @@
                     <th>Description</th>
                     <th>Prix</th>
                     <th>Plats</th>
+                    <th>Statut</th>
+                    <th>Validité</th>
                     <th class="text-end">Actions</th>
                 </tr>
                 </thead>
@@ -30,6 +32,18 @@
                         <ul class="list-unstyled mb-0">
                             <li th:each="plat : ${menu.plats}" th:text="'- ' + ${plat.nom}"></li>
                         </ul>
+                    </td>
+                    <td>
+                        <span th:if="${menu.actif}" class="badge bg-success">À la carte</span>
+                        <span th:unless="${menu.actif}" class="badge bg-secondary">Archivé/Éphémère</span>
+                    </td>
+                    <td>
+                        <div th:if="${menu.dateDebut != null or menu.dateFin != null}" class="text-muted small">
+                            <span th:if="${menu.dateDebut != null}">Du: <span th:text="${#temporals.format(menu.dateDebut, 'dd/MM/yyyy')}"></span></span>
+                            <br th:if="${menu.dateDebut != null and menu.dateFin != null}" />
+                            <span th:if="${menu.dateFin != null}">Au: <span th:text="${#temporals.format(menu.dateFin, 'dd/MM/yyyy')}"></span></span>
+                        </div>
+                        <span th:if="${menu.dateDebut == null and menu.dateFin == null}" class="text-muted small">Permanent</span>
                     </td>
                     <td class="text-end">
                         <a th:href="@{/menus/form(id=${menu.id})}" class="btn btn-sm btn-outline-primary me-2">

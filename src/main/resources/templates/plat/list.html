@@ -18,6 +18,7 @@
                     <th>Description</th>
                     <th>Prix</th>
                     <th>Catégorie</th>
+                    <th>Statut</th>
                     <th class="text-end">Actions</th>
                 </tr>
                 </thead>
@@ -27,6 +28,10 @@
                     <td th:text="${plat.description}"></td>
                     <td th:text="${#numbers.formatDecimal(plat.prix, 1, 2)} + ' €'"></td>
                     <td th:text="${plat.categorie}"></td>
+                    <td>
+                        <span th:if="${plat.actif}" class="badge bg-success">À la carte</span>
+                        <span th:unless="${plat.actif}" class="badge bg-secondary">Archivé/Éphémère</span>
+                    </td>
                     <td class="text-end">
                         <a th:href="@{/plats/form(id=${plat.identifiant})}" class="btn btn-sm btn-outline-primary me-2">
                             <i class="bi bi-pencil"></i>

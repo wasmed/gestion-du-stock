@@ -38,6 +38,11 @@
                             </select>
                         </div>
 
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{actif}" id="actifCheck">
+                            <label class="form-check-label" for="actifCheck">Actif / Disponible à la carte</label>
+                        </div>
+
                         <h4 class="mt-4 mb-3 d-flex justify-content-between align-items-center">
                             Ingrédients
                             <button type="button" class="btn btn-sm btn-outline-success" onclick="addIngredient()">

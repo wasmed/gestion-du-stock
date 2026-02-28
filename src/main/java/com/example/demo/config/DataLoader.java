@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -433,6 +434,7 @@ public class DataLoader implements CommandLineRunner {
         menuDuJour.setNom("Menu Italien");
         menuDuJour.setDescription("Un voyage en Italie avec salade et pizza.");
         menuDuJour.setPrix(18.50);
+        menuDuJour.setActif(true);
         menuDuJour.setPlats(new HashSet<>(Arrays.asList(saladeVerte, pizzaMargherita)));
         menuDuJour.setImage("https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80");
         menuRepository.save(menuDuJour);
@@ -441,6 +443,7 @@ public class DataLoader implements CommandLineRunner {
         menuEnfant.setNom("Menu Enfant");
         menuEnfant.setDescription("Pâtes à la tomate et une glace pour les petits.");
         menuEnfant.setPrix(14.00);
+        menuEnfant.setActif(true);
         menuEnfant.setPlats(new HashSet<>(Arrays.asList(patesTomate, glaceVanille)));
         menuEnfant.setImage("https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=500&q=80");
         menuRepository.save(menuEnfant);
@@ -449,9 +452,21 @@ public class DataLoader implements CommandLineRunner {
         menuGourmand.setNom("Menu Gourmand");
         menuGourmand.setDescription("Pizza et Tiramisu pour les gourmands.");
         menuGourmand.setPrix(17.50);
+        menuGourmand.setActif(true);
         menuGourmand.setPlats(new HashSet<>(Arrays.asList(pizzaMargherita, tiramisu)));
         menuGourmand.setImage("https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=500&q=80");
         menuRepository.save(menuGourmand);
+
+        Menu menuSaintValentin = new Menu();
+        menuSaintValentin.setNom("Menu Saint-Valentin");
+        menuSaintValentin.setDescription("Menu exceptionnel pour la Saint-Valentin.");
+        menuSaintValentin.setPrix(45.00);
+        menuSaintValentin.setActif(true);
+        menuSaintValentin.setDateDebut(LocalDate.now().minusDays(1));
+        menuSaintValentin.setDateFin(LocalDate.now().plusDays(2));
+        menuSaintValentin.setPlats(new HashSet<>(Arrays.asList(pizzaMargherita, tiramisu)));
+        menuSaintValentin.setImage("https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=500&q=80");
+        menuRepository.save(menuSaintValentin);
 
         System.out.println("Test data loaded successfully!");
     }
