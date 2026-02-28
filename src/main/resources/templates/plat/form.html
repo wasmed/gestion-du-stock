@@ -38,27 +38,41 @@
                             </select>
                         </div>
 
-                        <h4 class="mt-4 mb-3">Ingrédients</h4>
-                        <div class="alert alert-info" th:if="${#lists.isEmpty(plat.ingredients)}">
-                            Aucun ingrédient associé.
-                        </div>
-                        <div th:each="ingredient, stat : *{ingredients}" class="card mb-3 bg-light">
-                            <div class="card-body">
-                                <input type="hidden" th:field="*{ingredients[__${stat.index}__].identifiant}" />
-                                <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label class="form-label">Produit</label>
-                                        <select class="form-select" th:field="*{ingredients[__${stat.index}__].produit}">
-                                            <option th:each="produit : ${produits}" th:value="${produit.identifiant}" th:text="${produit.nom}"></option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Quantité</label>
-                                        <input type="number" class="form-control" th:field="*{ingredients[__${stat.index}__].quantite}" required />
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Unité</label>
-                                        <input type="text" class="form-control" th:field="*{ingredients[__${stat.index}__].unite}" required />
+                        <h4 class="mt-4 mb-3 d-flex justify-content-between align-items-center">
+                            Ingrédients
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="addIngredient()">
+                                <i class="bi bi-plus"></i> Ajouter Ingrédient
+                            </button>
+                        </h4>
+
+                        <div id="ingredientsContainer">
+                            <div class="alert alert-info" id="noIngredientsAlert" th:if="${#lists.isEmpty(plat.ingredients)}">
+                                Aucun ingrédient associé.
+                            </div>
+
+                            <div th:each="ingredient, stat : *{ingredients}" class="card mb-3 bg-light ingredient-row">
+                                <div class="card-body position-relative">
+                                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2" onclick="removeIngredient(this)">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                    <input type="hidden" th:field="*{ingredients[__${stat.index}__].identifiant}" />
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label">Produit</label>
+                                            <select class="form-select" th:field="*{ingredients[__${stat.index}__].produit}">
+                                                <option th:each="produit : ${produits}" th:value="${produit.id}" th:text="${produit.nom}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Quantité</label>
+                                            <input type="number" step="0.01" class="form-control" th:field="*{ingredients[__${stat.index}__].quantite}" required />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Unité</label>
+                                            <select class="form-select" th:field="*{ingredients[__${stat.index}__].formatProduit}">
+                                                <option th:each="format : ${formats}" th:value="${format.identifiant}" th:text="${format.nom} + ' (' + ${format.quantite} + ')'"></option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -73,5 +87,89 @@
         </div>
     </div>
 </div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var produits = /*[[${produits}]]*/ [];
+    var formats = /*[[${formats}]]*/ [];
+    /*]]>*/
+
+    function addIngredient() {
+        const container = document.getElementById('ingredientsContainer');
+        const alertBox = document.getElementById('noIngredientsAlert');
+        if (alertBox) {
+            alertBox.style.display = 'none';
+        }
+
+        // Count existing rows
+        const index = container.querySelectorAll('.ingredient-row').length;
+
+        let produitsOptions = '';
+        produits.forEach(p => {
+            produitsOptions += `<option value="${p.id}">${p.nom}</option>`;
+        });
+
+        let formatsOptions = '';
+        formats.forEach(f => {
+            formatsOptions += `<option value="${f.identifiant}">${f.nom} (${f.quantite})</option>`;
+        });
+
+        const newRow = document.createElement('div');
+        newRow.className = 'card mb-3 bg-light ingredient-row';
+        newRow.innerHTML = `
+            <div class="card-body position-relative">
+                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2" onclick="removeIngredient(this)">
+                    <i class="bi bi-x"></i>
+                </button>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Produit</label>
+                        <select class="form-select" name="ingredients[${index}].produit" required>
+                            ${produitsOptions}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Quantité</label>
+                        <input type="number" step="0.01" class="form-control" name="ingredients[${index}].quantite" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Unité</label>
+                        <select class="form-select" name="ingredients[${index}].formatProduit" required>
+                            ${formatsOptions}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(newRow);
+    }
+
+    function removeIngredient(btn) {
+        btn.closest('.ingredient-row').remove();
+
+        // Check if we need to show the alert again
+        const container = document.getElementById('ingredientsContainer');
+        if (container.querySelectorAll('.ingredient-row').length === 0) {
+            const alertBox = document.getElementById('noIngredientsAlert');
+            if (alertBox) alertBox.style.display = 'block';
+        }
+
+        // Re-index remaining inputs
+        const rows = container.querySelectorAll('.ingredient-row');
+        rows.forEach((row, idx) => {
+            // update name attributes
+            const selects = row.querySelectorAll('select');
+            const inputs = row.querySelectorAll('input');
+
+            selects.forEach(s => {
+                s.name = s.name.replace(/ingredients\[\d+\]/, `ingredients[${idx}]`);
+            });
+            inputs.forEach(i => {
+                i.name = i.name.replace(/ingredients\[\d+\]/, `ingredients[${idx}]`);
+            });
+        });
+    }
+</script>
 </body>
 </html>

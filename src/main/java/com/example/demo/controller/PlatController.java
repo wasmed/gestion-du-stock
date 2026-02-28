@@ -23,6 +23,11 @@ public class PlatController {
         return "plat/list"; // Renvoie vers plat/list.html
     }
 
+    @Autowired
+    private com.example.demo.repository.FormatProduitRepository formatProduitRepository;
+    @Autowired
+    private com.example.demo.service.ProduitService produitService;
+
     // Affiche le formulaire d'ajout/modification
     @GetMapping("/form")
     @PreAuthorize("hasAnyRole('ADMIN', 'CHEF_CUISINIER')")
@@ -30,6 +35,8 @@ public class PlatController {
         Plat plat = (id != null) ? platService.findPlatById(id) : new Plat();
         model.addAttribute("plat", plat);
         model.addAttribute("categories", CategoriePlat.values());
+        model.addAttribute("produits", produitService.findAllProduits());
+        model.addAttribute("formats", formatProduitRepository.findAll());
         return "plat/form"; // Renvoie vers plat/form.html
     }
 
@@ -37,6 +44,12 @@ public class PlatController {
     @PostMapping("/save")
     @PreAuthorize("hasAnyRole('ADMIN', 'CHEF_CUISINIER')")
     public String savePlat(@ModelAttribute Plat plat) {
+        // Link ingredients back to plat to cascade save correctly
+        if (plat.getIngredients() != null) {
+            for (com.example.demo.model.Ingredient ing : plat.getIngredients()) {
+                ing.setPlat(plat);
+            }
+        }
         platService.savePlat(plat);
         return "redirect:/plats";
     }

@@ -27,6 +27,10 @@ public class StockController {
     private StockProduitRepository stockProduitRepository;
     @Autowired
     private ProduitService produitService;
+    @Autowired
+    private com.example.demo.repository.FormatProduitRepository formatProduitRepository;
+    @Autowired
+    private com.example.demo.repository.ProduitRepository produitRepository;
 
     @GetMapping("/list")
     public String listStock(Model model) {
@@ -55,20 +59,63 @@ public class StockController {
         return "redirect:/stock/list";
     }
 
+    @GetMapping("/new")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF_CUISINIER')")
+    public String showCreateForm(Model model) {
+        StockProduit stock = new StockProduit();
+        stock.setProduit(new Produit()); // Initialize to avoid null pointer in view
+
+        model.addAttribute("stock", stock);
+        model.addAttribute("formats", formatProduitRepository.findAll());
+        model.addAttribute("types", TypeProduit.values());
+        return "stock/form";
+    }
+
+    @PostMapping("/save")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF_CUISINIER')")
+    public String saveNewStock(@ModelAttribute StockProduit stockProduit) {
+        // Enregistrer le nouveau Produit s'il n'existe pas encore
+        if (stockProduit.getProduit() != null && stockProduit.getProduit().getId() == null) {
+            Produit savedProduit = produitRepository.save(stockProduit.getProduit());
+            stockProduit.setProduit(savedProduit);
+        }
+
+        stockService.saveStock(stockProduit);
+        return "redirect:/stock/list";
+    }
+
     @GetMapping("/edit/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF_CUISINIER')")
     public String showEditForm(@PathVariable Long id, Model model) {
         StockProduit stock = stockService.findStockById(id);
         List<Produit> produits = produitService.findAllProduits();
 
         model.addAttribute("stock", stock);
-        model.addAttribute("produits", produits);
-        return "stock/edit-form";
+        model.addAttribute("formats", formatProduitRepository.findAll());
+        model.addAttribute("types", TypeProduit.values());
+        return "stock/form"; // We use the same view for edit and new
     }
 
     @PostMapping("/edit")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CHEF_CUISINIER')")
     public String updateStock(@ModelAttribute StockProduit stockProduit) {
+        // Enregistrer le nouveau Produit s'il n'existe pas encore
+        if (stockProduit.getProduit() != null && stockProduit.getProduit().getId() == null) {
+            Produit savedProduit = produitRepository.save(stockProduit.getProduit());
+            stockProduit.setProduit(savedProduit);
+        } else if (stockProduit.getProduit() != null) {
+            produitRepository.save(stockProduit.getProduit());
+        }
+
         stockService.saveStock(stockProduit);
-        return "redirect:/stock";
+        return "redirect:/stock/list";
+    }
+
+    @GetMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String deleteStock(@PathVariable Long id) {
+        stockProduitRepository.deleteById(id);
+        return "redirect:/stock/list";
     }
 
     @GetMapping("/low-stock-alert")
