@@ -48,13 +48,19 @@ public class OrderManagementController {
 
         // 3. On groupe les commandes par leur objet TableRestaurant
         Map<TableRestaurant, List<Commande>> commandesParTable = commandesEnCours.stream()
-                .filter(c -> c.getTable() != null)
+                .filter(c -> c.getTable() != null && !Boolean.TRUE.equals(c.getIsEmporter()))
                 .collect(Collectors.groupingBy(Commande::getTable));
 
         model.addAttribute("commandesParTable", commandesParTable);
 
         // 4. On envoie aussi la liste des tables qui ont des commandes (pour faciliter l'affichage)
         model.addAttribute("tablesOccupees", commandesParTable.keySet());
+
+        // 4bis. On récupère les commandes à emporter en cours
+        List<Commande> commandesAEmporter = commandesEnCours.stream()
+                .filter(c -> c.getTable() == null || Boolean.TRUE.equals(c.getIsEmporter()))
+                .collect(Collectors.toList());
+        model.addAttribute("commandesAEmporter", commandesAEmporter);
 
         // 5. On récupère les commandes en attente de validation
         List<Commande> commandesAValider = commandeService.getCommandesAValider();
