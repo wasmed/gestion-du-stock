@@ -35,12 +35,16 @@ public class OrderManagementController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('SERVEUR', 'ADMIN')")
-    public String listOrders(Model model) {
+    public String listOrders(Model model, Principal principal) {
+        User currentUser = userService.findUserByEmail(principal.getName());
+        model.addAttribute("currentUser", currentUser);
         List<TableRestaurant> toutesLesTables = tableRepository.findAll();
         model.addAttribute("toutesLesTables", toutesLesTables);
 
         // 2. On récupère les commandes en cours
         List<Commande> commandesEnCours = commandeService.getCommandesEnCoursEtServies();
+
+        model.addAttribute("toutesLesCommandes", commandesEnCours);
 
         // 3. On groupe les commandes par leur objet TableRestaurant
         Map<TableRestaurant, List<Commande>> commandesParTable = commandesEnCours.stream()
