@@ -46,6 +46,16 @@ public class Commande {
 
     private String commentaire;
 
+    private Boolean isEmporter = false;
+
+    public Boolean getIsEmporter() {
+        return isEmporter;
+    }
+
+    public void setIsEmporter(Boolean isEmporter) {
+        this.isEmporter = isEmporter;
+    }
+
     public String getCommentaire() {
         return commentaire;
     }

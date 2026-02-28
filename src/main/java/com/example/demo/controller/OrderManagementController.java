@@ -156,7 +156,8 @@ public class OrderManagementController {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('SERVEUR')")
-    public String createOrder(@RequestParam Long tableId,
+    public String createOrder(@RequestParam(required = false) Long tableId,
+                              @RequestParam(required = false) Boolean isEmporter,
                               @RequestParam(name = "platIds", required = false) List<Long> platIds,
                               @RequestParam(name = "menuIds", required = false) List<Long> menuIds,
                               @RequestParam(name = "clientEmail", required = false) String clientEmail,
@@ -188,7 +189,22 @@ public class OrderManagementController {
             throw new RuntimeException("Le compte client 'guest@resto.com' est introuvable.");
         }
 
-        Commande commande = commandeService.createNewCommande(client, serveur, tableId);
+        if (Boolean.TRUE.equals(isEmporter)) {
+            tableId = null; // Ignore table if it's takeout
+        } else if (tableId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Impossible de créer la commande : aucune table sélectionnée.");
+            return "redirect:/orders/create";
+        }
+
+        Commande commande;
+        if (tableId != null) {
+            commande = commandeService.createNewCommande(client, serveur, tableId);
+        } else {
+            commande = commandeService.createNewCommande(client, serveur);
+        }
+        if (Boolean.TRUE.equals(isEmporter)) {
+            commande.setIsEmporter(true);
+        }
 
         double montantTotal = 0;
 
@@ -213,12 +229,16 @@ public class OrderManagementController {
                 }
             }
         }
-        TableRestaurant table = tableRepository.findById(tableId).orElse(null);
-        if (table != null) {
-            // ON MET LA TABLE EN STATUT OCCUPÉE
-            table.setStatut(StatutTable.OCCUPEE);
-            table.setServeur(serveur);
-            tableRepository.save(table);
+
+        TableRestaurant table = null;
+        if (tableId != null) {
+            table = tableRepository.findById(tableId).orElse(null);
+            if (table != null) {
+                // ON MET LA TABLE EN STATUT OCCUPÉE
+                table.setStatut(StatutTable.OCCUPEE);
+                table.setServeur(serveur);
+                tableRepository.save(table);
+            }
         }
         // Mise à jour du montant total de la commande et sauvegarde
         commande.setMontantTotal(montantTotal);

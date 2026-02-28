@@ -29,11 +29,12 @@ public class PaiementClientController {
 
     @PostMapping("/process")
     public String processSimulationPayment(@RequestParam Long commandeId,
+                                           @RequestParam(required = false, defaultValue = "0.0") Double pourboire,
                                            RedirectAttributes redirectAttributes) {
         // Simuler un paiement par QR Code (qui est en fait un paiement externe validé)
         // Ici on suppose que le client a "payé" via l'interface de simulation.
-        // On enregistre le paiement avec un montant de pourboire à 0 par défaut pour la simulation.
-        paiementService.processPayment(commandeId, 0.0, ModePaiement.QR_CODE);
+        // On enregistre le paiement avec le montant de pourboire.
+        paiementService.processPayment(commandeId, pourboire, ModePaiement.QR_CODE);
 
         redirectAttributes.addFlashAttribute("successMessage", "Paiement simulé validé avec succès !");
         return "redirect:/client/paiement/simulation/" + commandeId + "?success";

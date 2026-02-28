@@ -118,7 +118,22 @@ public class ClientController {
     @GetMapping("/cart")
     @PreAuthorize("hasRole('CLIENT')")
     @SuppressWarnings("unchecked")
-    public String showCart(HttpSession session, Model model) {
+    public String showCart(HttpSession session, Model model, Principal principal, RedirectAttributes redirectAttributes) {
+        if (!"guest@resto.com".equals(principal.getName())) {
+            User client = userService.findUserByEmail(principal.getName());
+            Optional<Commande> commandeActiveOpt = commandeRepository.findActiveCommandeByClientId(client.getId());
+            if (commandeActiveOpt.isPresent()) {
+                Commande active = commandeActiveOpt.get();
+                String msg = "Vous avez déjà une commande en cours";
+                if (active.getTable() != null) {
+                    msg += " sur la table " + active.getTable().getNumeroTable();
+                }
+                msg += ". Vous pouvez y ajouter des plats.";
+                redirectAttributes.addFlashAttribute("errorMessage", msg);
+                return "redirect:/client/dashboard";
+            }
+        }
+
         List<Plat> cartPlats = (List<Plat>) session.getAttribute("cartPlats");
         List<Menu> cartMenus = (List<Menu>) session.getAttribute("cartMenus");
         Map<Plat, Long> groupedPlats = (cartPlats != null) ?
@@ -149,11 +164,28 @@ public class ClientController {
     @PostMapping("/validate-cart")
     @PreAuthorize("hasRole('CLIENT')")
     @SuppressWarnings("unchecked")
-    public String validateCart(@RequestParam Long tableId,
+    public String validateCart(@RequestParam(required = false) Long tableId,
+                               @RequestParam(required = false) Boolean isEmporter,
                                @RequestParam(required = false) String notes,
                                HttpSession session,
                                Principal principal,
                                RedirectAttributes redirectAttributes) {
+        User client = userService.findUserByEmail(principal.getName());
+
+        if (!"guest@resto.com".equals(principal.getName())) {
+            Optional<Commande> commandeActiveOpt = commandeRepository.findActiveCommandeByClientId(client.getId());
+            if (commandeActiveOpt.isPresent()) {
+                Commande active = commandeActiveOpt.get();
+                String msg = "Vous avez déjà une commande en cours";
+                if (active.getTable() != null) {
+                    msg += " sur la table " + active.getTable().getNumeroTable();
+                }
+                msg += ". Vous pouvez y ajouter des plats.";
+                redirectAttributes.addFlashAttribute("errorMessage", msg);
+                return "redirect:/client/dashboard";
+            }
+        }
+
         List<Plat> cartPlats = (List<Plat>) session.getAttribute("cartPlats");
         List<Menu> cartMenus = (List<Menu>) session.getAttribute("cartMenus");
 
@@ -162,22 +194,33 @@ public class ClientController {
             return "redirect:/client/cart";
         }
 
-        User client = userService.findUserByEmail(principal.getName());
-        TableRestaurant table = tableRepository.findById(tableId).orElse(null);
+        TableRestaurant table = null;
+        if (Boolean.TRUE.equals(isEmporter)) {
+            // Pas de table nécessaire
+        } else {
+            if (tableId == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Veuillez sélectionner une table ou choisir à emporter.");
+                return "redirect:/client/cart";
+            }
+            table = tableRepository.findById(tableId).orElse(null);
 
-        if (table == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Table invalide.");
-            return "redirect:/client/cart";
-        }
+            if (table == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Table invalide.");
+                return "redirect:/client/cart";
+            }
 
-        if (table.getStatut() != StatutTable.LIBRE) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Cette table est déjà occupée ou en cours de validation. Veuillez en choisir une autre.");
-            return "redirect:/client/cart";
+            if (table.getStatut() != StatutTable.LIBRE) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Cette table est déjà occupée ou en cours de validation. Veuillez en choisir une autre.");
+                return "redirect:/client/cart";
+            }
         }
 
         Commande commande = new Commande();
         commande.setClient(client);
         commande.setTable(table);
+        if (Boolean.TRUE.equals(isEmporter)) {
+            commande.setIsEmporter(true);
+        }
         commande.setEtat(EtatCommande.EN_VALIDATION);
         commande.setDateHeure(LocalDateTime.now());
         commande.setCommentaire(notes);

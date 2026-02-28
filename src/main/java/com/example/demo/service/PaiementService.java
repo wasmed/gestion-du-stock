@@ -52,9 +52,14 @@ public class PaiementService {
         // -----------------------------------
 
         // 2. Créer le nouvel objet Paiement
+        double totalAPayer = commande.getMontantTotal();
+        if (montantPourboire != null && montantPourboire > 0) {
+            totalAPayer += montantPourboire;
+        }
+
         Paiement paiement = new Paiement();
         paiement.setCommande(commande);
-        paiement.setMontant(commande.getMontantTotal());
+        paiement.setMontant(totalAPayer);
         paiement.setServeur(commande.getServeur());
         paiement.setDatePaiement(LocalDateTime.now());
         paiement.setStatut(StatutPaiement.PAYE);
