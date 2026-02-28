@@ -48,14 +48,11 @@ public class StockController {
         return "stock/list";
     }
 
-    @PostMapping("/add")
-    public String addStock(@RequestParam Long stockId, @RequestParam Double quantiteAjoutee) {
-        StockProduit stockProduit = stockProduitRepository.findById(stockId)
-                .orElseThrow(() -> new IllegalArgumentException("Stock non trouvé pour l'ID: " + stockId));
-
-        stockProduit.setStockActuel(stockProduit.getStockActuel() + quantiteAjoutee);
-        stockProduitRepository.save(stockProduit);
-
+    @PostMapping("/update")
+    public String updateStock(@RequestParam Long stockId,
+                              @RequestParam Integer quantiteSaisie,
+                              @RequestParam String typeOperation) {
+        stockService.updateStockQuantity(stockId, quantiteSaisie, typeOperation);
         return "redirect:/stock/list";
     }
 

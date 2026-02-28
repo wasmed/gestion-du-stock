@@ -75,6 +75,29 @@ public class StockService {
         return stockProduitRepository.findById(id).orElse(null);
     }
 
+    @Transactional
+    public void updateStockQuantity(Long stockId, Integer quantiteSaisie, String typeOperation) {
+        StockProduit stockProduit = stockProduitRepository.findById(stockId)
+                .orElseThrow(() -> new IllegalArgumentException("Stock non trouvé pour l'ID: " + stockId));
+
+        double quantiteFormat = 1.0;
+        if (stockProduit.getFormatProduit() != null && stockProduit.getFormatProduit().getQuantite() != null) {
+            quantiteFormat = stockProduit.getFormatProduit().getQuantite();
+        }
+
+        double quantiteARajuster = quantiteSaisie * quantiteFormat;
+
+        if ("AJOUT".equals(typeOperation)) {
+            stockProduit.setStockActuel(stockProduit.getStockActuel() + quantiteARajuster);
+        } else if ("RETRAIT".equals(typeOperation)) {
+            stockProduit.setStockActuel(stockProduit.getStockActuel() - quantiteARajuster);
+        } else {
+            throw new IllegalArgumentException("Opération non supportée: " + typeOperation);
+        }
+
+        stockProduitRepository.save(stockProduit);
+    }
+
     public StockProduit saveStock(StockProduit stockProduit) {
         return stockProduitRepository.save(stockProduit);
     }
