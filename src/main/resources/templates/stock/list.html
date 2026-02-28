@@ -4,7 +4,9 @@
 <div>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Gestion des Stocks</h2>
-        <!-- On pourrait ajouter un bouton "Nouveau Produit" ici -->
+        <a th:href="@{/stock/new}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Ajouter un Produit
+        </a>
     </div>
 
     <div class="table-container">
@@ -29,7 +31,8 @@
                                 <th class="ps-4">Produit</th>
                                 <th class="text-center">Stock Actuel</th>
                                 <th class="text-center">Stock Minimum</th>
-                                <th style="width: 25%;" class="pe-4">Ajouter du Stock (Entrée)</th>
+                                <th style="width: 25%;" class="text-center">Ajouter du Stock (Entrée)</th>
+                                <th class="text-end pe-4">Actions</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -40,16 +43,25 @@
                                         <i class="bi bi-exclamation-triangle-fill"></i> Stock bas !
                                     </div>
                                 </td>
-                                <td class="text-center" th:text="${stock.stockActuel} + ' ' + ${stock.unite}"></td>
-                                <td class="text-center" th:text="${stock.stockMinimum} + ' ' + ${stock.unite}"></td>
-                                <td class="pe-4">
-                                    <form th:action="@{/stock/add}" method="post" class="d-flex">
+                                <td class="text-center" th:text="${stock.stockActuel} + ' ' + ${stock.formatProduit?.nom}"></td>
+                                <td class="text-center" th:text="${stock.stockMinimum} + ' ' + ${stock.formatProduit?.nom}"></td>
+                                <td class="text-center">
+                                    <form th:action="@{/stock/add}" method="post" class="d-flex justify-content-center">
                                         <input type="hidden" name="stockId" th:value="${stock.id}" />
-                                        <input type="number" name="quantiteAjoutee" class="form-control form-control-sm" placeholder="Quantité" required step="0.1" />
+                                        <input type="number" name="quantiteAjoutee" class="form-control form-control-sm w-50" placeholder="Quantité" required step="0.1" />
                                         <button type="submit" class="btn btn-success btn-sm ms-2">
                                             <i class="bi bi-plus-lg"></i>
                                         </button>
                                     </form>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a th:href="@{/stock/edit/{id}(id=${stock.id})}" class="btn btn-sm btn-outline-primary me-2">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a th:href="@{/stock/delete/{id}(id=${stock.id})}" class="btn btn-sm btn-outline-danger"
+                                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit du stock ?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
                                 </td>
                             </tr>
                             </tbody>

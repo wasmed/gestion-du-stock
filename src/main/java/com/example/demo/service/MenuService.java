@@ -20,4 +20,12 @@ public class MenuService {
     public Menu findMenuById(Long id) {
         return menuRepository.findById(id).orElse(null);
     }
+
+    public Menu saveMenu(Menu menu) {
+        return menuRepository.save(menu);
+    }
+
+    public void deleteMenuById(Long id) {
+        menuRepository.deleteById(id);
+    }
 }
