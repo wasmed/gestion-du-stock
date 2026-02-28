@@ -97,6 +97,18 @@
 
                     <form th:action="@{/client/validate-cart}" method="post">
                         <div class="mb-3">
+                            <label class="form-label d-block">Type de commande</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="isEmporter" id="surPlace" value="false" checked onchange="toggleTableSelection()">
+                                <label class="form-check-label" for="surPlace">Sur place</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="isEmporter" id="aEmporter" value="true" onchange="toggleTableSelection()">
+                                <label class="form-check-label" for="aEmporter">À emporter</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3" id="tableSelectionContainer">
                             <label for="tableId" class="form-label">Votre Table</label>
                             <select class="form-select" id="tableId" name="tableId" required>
                                 <option value="" selected disabled>Choisir ma table...</option>
@@ -124,6 +136,24 @@
         </div>
     </div>
 </div>
+<script>
+    function toggleTableSelection() {
+        const isEmporter = document.getElementById('aEmporter').checked;
+        const tableContainer = document.getElementById('tableSelectionContainer');
+        const tableSelect = document.getElementById('tableId');
+
+        if (isEmporter) {
+            tableContainer.style.display = 'none';
+            tableSelect.removeAttribute('required');
+        } else {
+            tableContainer.style.display = 'block';
+            tableSelect.setAttribute('required', 'required');
+        }
+    }
+
+    // Initial check on load
+    document.addEventListener("DOMContentLoaded", toggleTableSelection);
+</script>
 </body>
 </html>
 
