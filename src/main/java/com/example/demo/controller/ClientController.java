@@ -122,16 +122,7 @@ public class ClientController {
         if (!"guest@resto.com".equals(principal.getName())) {
             User client = userService.findUserByEmail(principal.getName());
             Optional<Commande> commandeActiveOpt = commandeRepository.findActiveCommandeByClientId(client.getId());
-            if (commandeActiveOpt.isPresent()) {
-                Commande active = commandeActiveOpt.get();
-                String msg = "Vous avez déjà une commande en cours";
-                if (active.getTable() != null) {
-                    msg += " sur la table " + active.getTable().getNumeroTable();
-                }
-                msg += ". Vous pouvez y ajouter des plats.";
-                redirectAttributes.addFlashAttribute("errorMessage", msg);
-                return "redirect:/client/dashboard";
-            }
+            commandeActiveOpt.ifPresent(commande -> model.addAttribute("commandeActive", commande));
         }
 
         List<Plat> cartPlats = (List<Plat>) session.getAttribute("cartPlats");
@@ -172,17 +163,12 @@ public class ClientController {
                                RedirectAttributes redirectAttributes) {
         User client = userService.findUserByEmail(principal.getName());
 
+        Commande commande = null;
+
         if (!"guest@resto.com".equals(principal.getName())) {
             Optional<Commande> commandeActiveOpt = commandeRepository.findActiveCommandeByClientId(client.getId());
             if (commandeActiveOpt.isPresent()) {
-                Commande active = commandeActiveOpt.get();
-                String msg = "Vous avez déjà une commande en cours";
-                if (active.getTable() != null) {
-                    msg += " sur la table " + active.getTable().getNumeroTable();
-                }
-                msg += ". Vous pouvez y ajouter des plats.";
-                redirectAttributes.addFlashAttribute("errorMessage", msg);
-                return "redirect:/client/dashboard";
+                commande = commandeActiveOpt.get();
             }
         }
 
@@ -194,39 +180,58 @@ public class ClientController {
             return "redirect:/client/cart";
         }
 
-        TableRestaurant table = null;
-        if (Boolean.TRUE.equals(isEmporter)) {
-            // Pas de table nécessaire
+        if (commande == null) {
+            TableRestaurant table = null;
+            if (Boolean.TRUE.equals(isEmporter)) {
+                // Pas de table nécessaire
+            } else {
+                if (tableId == null) {
+                    redirectAttributes.addFlashAttribute("errorMessage", "Veuillez sélectionner une table ou choisir à emporter.");
+                    return "redirect:/client/cart";
+                }
+                table = tableRepository.findById(tableId).orElse(null);
+
+                if (table == null) {
+                    redirectAttributes.addFlashAttribute("errorMessage", "Table invalide.");
+                    return "redirect:/client/cart";
+                }
+
+                if (table.getStatut() != StatutTable.LIBRE) {
+                    redirectAttributes.addFlashAttribute("errorMessage", "Cette table est déjà occupée ou en cours de validation. Veuillez en choisir une autre.");
+                    return "redirect:/client/cart";
+                }
+            }
+
+            commande = new Commande();
+            commande.setClient(client);
+            commande.setTable(table);
+            if (Boolean.TRUE.equals(isEmporter)) {
+                commande.setIsEmporter(true);
+                commande.setEtat(EtatCommande.EN_ATTENTE);
+            } else {
+                commande.setEtat(EtatCommande.EN_VALIDATION);
+            }
+            commande.setDateHeure(LocalDateTime.now());
+            commande.setCommentaire(notes);
+            commande.setMontantTotal(0.0);
+            commande.setLignesCommande(new HashSet<>());
         } else {
-            if (tableId == null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Veuillez sélectionner une table ou choisir à emporter.");
-                return "redirect:/client/cart";
+            // Commande existe déjà, on la repasse en EN_ATTENTE
+            commande.setEtat(EtatCommande.EN_ATTENTE);
+            if (notes != null && !notes.trim().isEmpty()) {
+                String existingComment = commande.getCommentaire() != null ? commande.getCommentaire() : "";
+                commande.setCommentaire(existingComment + (existingComment.isEmpty() ? "" : " | ") + notes);
             }
-            table = tableRepository.findById(tableId).orElse(null);
-
-            if (table == null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Table invalide.");
-                return "redirect:/client/cart";
+            if (commande.getMontantTotal() == null) {
+                commande.setMontantTotal(0.0);
             }
-
-            if (table.getStatut() != StatutTable.LIBRE) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Cette table est déjà occupée ou en cours de validation. Veuillez en choisir une autre.");
-                return "redirect:/client/cart";
+            if (commande.getLignesCommande() == null) {
+                commande.setLignesCommande(new HashSet<>());
             }
         }
 
-        Commande commande = new Commande();
-        commande.setClient(client);
-        commande.setTable(table);
-        if (Boolean.TRUE.equals(isEmporter)) {
-            commande.setIsEmporter(true);
-        }
-        commande.setEtat(EtatCommande.EN_VALIDATION);
-        commande.setDateHeure(LocalDateTime.now());
-        commande.setCommentaire(notes);
-
-        double montantTotal = 0;
-        Set<LigneCommande> lignes = new HashSet<>();
+        double montantTotal = commande.getMontantTotal();
+        Set<LigneCommande> lignes = commande.getLignesCommande();
 
         if (cartPlats != null) {
             Map<Plat, Long> groupedPlats = cartPlats.stream()

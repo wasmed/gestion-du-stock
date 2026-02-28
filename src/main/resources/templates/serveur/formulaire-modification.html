@@ -33,6 +33,10 @@
                             <input type="text" class="form-control" th:value="${commande.client.fullName}" readonly>
                         </div>
 
+                        <div class="alert alert-info" th:if="${commande.etat.toString() != 'EN_ATTENTE'}">
+                            Cette commande est déjà en cours. Les éléments sélectionnés ci-dessous seront <strong>ajoutés</strong> (ils ne remplaceront pas l'existant).
+                        </div>
+
                         <!-- ========================================================== -->
                         <!--     MISE À JOUR AVEC LES 3 LISTES DE SÉLECTION           -->
                         <!-- ========================================================== -->
@@ -42,7 +46,7 @@
                                 <option th:each="plat : ${platsCuisines}"
                                         th:value="${plat.identifiant}"
                                         th:text="${plat.nom}"
-                                        th:selected="${commande.lignesCommande.![plat != null ? plat.identifiant : null].contains(plat.identifiant)}"></option>
+                                        th:selected="${commande.etat.toString() == 'EN_ATTENTE' and commande.lignesCommande.![plat != null ? plat.identifiant : null].contains(plat.identifiant)}"></option>
                             </select>
                             <small class="form-text text-muted">Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs items.</small>
                         </div>
@@ -53,7 +57,7 @@
                                 <option th:each="boisson : ${boissons}"
                                         th:value="${boisson.identifiant}"
                                         th:text="${boisson.nom}"
-                                        th:selected="${commande.lignesCommande.![plat != null ? plat.identifiant : null].contains(boisson.identifiant)}"></option>
+                                        th:selected="${commande.etat.toString() == 'EN_ATTENTE' and commande.lignesCommande.![plat != null ? plat.identifiant : null].contains(boisson.identifiant)}"></option>
                             </select>
                         </div>
 
@@ -63,7 +67,7 @@
                                 <option th:each="menu : ${menus}"
                                         th:value="${menu.id}"
                                         th:text="${menu.nom}"
-                                        th:selected="${commande.lignesCommande.![menu != null ? menu.id : null].contains(menu.id)}"></option>
+                                        th:selected="${commande.etat.toString() == 'EN_ATTENTE' and commande.lignesCommande.![menu != null ? menu.id : null].contains(menu.id)}"></option>
                             </select>
                         </div>
 
