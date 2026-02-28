@@ -33,9 +33,10 @@
             <span class="badge bg-light text-primary fs-6" th:text="${commandeEnCours.etat.toString().replace('_', ' ')}"></span>
         </div>
         <div class="card-body">
-            <p class="card-text mb-0">
+            <p class="card-text mb-2">
                 Suivez ici l'état d'avancement de votre commande n°<strong th:text="${commandeEnCours.id}"></strong>.
             </p>
+            <a th:href="@{/client/commande/{id}(id=${commandeEnCours.id})}" class="btn btn-light btn-sm mt-1">Voir le détail</a>
         </div>
     </div>
 
@@ -67,13 +68,14 @@
     <div th:if="${!isGuest}">
         <h3 class="mt-4 mb-3">Votre historique récent</h3>
         <div th:if="${!dernieresCommandes.isEmpty()}" class="table-responsive">
-            <table class="table table-hover mt-3">
+            <table class="table table-hover mt-3 align-middle">
                 <thead class="table-light">
                 <tr>
                     <th>Numéro</th>
                     <th>Date</th>
                     <th>Montant</th>
                     <th>État</th>
+                    <th class="text-end">Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -82,6 +84,11 @@
                     <td th:text="${#temporals.format(commande.dateHeure, 'dd/MM/yyyy HH:mm')}"></td>
                     <td th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + ' €'"></td>
                     <td><span class="badge bg-secondary" th:text="${commande.etat}"></span></td>
+                    <td class="text-end">
+                        <a th:href="@{/client/commande/{id}(id=${commande.id})}" class="btn btn-outline-primary btn-sm" title="Voir les détails">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                    </td>
                 </tr>
                 </tbody>
             </table>

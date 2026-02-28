@@ -24,6 +24,7 @@ import java.util.*;
 import java.security.Principal;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 @RequestMapping("/client")
@@ -329,6 +330,26 @@ public class ClientController {
 
         model.addAttribute("commandesDuClient", commandesDuClient);
         return "client/historique";
+    }
+
+    @GetMapping("/commande/{id}")
+    @PreAuthorize("hasRole('CLIENT')")
+    public String showCommandeDetails(@PathVariable Long id, Principal principal, RedirectAttributes redirectAttributes, Model model) {
+        User currentUser = userService.findUserByEmail(principal.getName());
+        Commande commande = commandeService.findCommandeById(id);
+
+        if (commande == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Commande introuvable.");
+            return "redirect:/client/dashboard";
+        }
+
+        if (!commande.getClient().getId().equals(currentUser.getId())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Accès refusé. Vous ne pouvez consulter que vos propres commandes.");
+            return "redirect:/client/dashboard";
+        }
+
+        model.addAttribute("commande", commande);
+        return "client/commande-details";
     }
 
 }
