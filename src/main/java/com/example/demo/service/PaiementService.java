@@ -76,6 +76,7 @@ public class PaiementService {
         TableRestaurant table = commande.getTable();
         if (table != null) {
             table.setStatut(StatutTable.LIBRE);
+            table.setServeur(null);
             tableRepository.save(table);
         }
     }

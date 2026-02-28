@@ -108,13 +108,17 @@ public class OrderManagementController {
 
     @GetMapping("/validate/{id}")
     @PreAuthorize("hasRole('SERVEUR')")
-    public String validateOrder(@PathVariable Long id) {
+    public String validateOrder(@PathVariable Long id, Principal principal) {
         Commande commande = commandeService.findCommandeById(id);
         if (commande != null && commande.getEtat() == EtatCommande.EN_VALIDATION) {
+            User serveur = userService.findUserByEmail(principal.getName());
+            commande.setServeur(serveur);
             commande.setEtat(EtatCommande.EN_ATTENTE);
+
             TableRestaurant table = commande.getTable();
             if (table != null && table.getStatut() == StatutTable.LIBRE) {
                 table.setStatut(StatutTable.OCCUPEE);
+                table.setServeur(serveur);
                 tableRepository.save(table);
             }
             commandeService.saveCommande(commande);
@@ -206,6 +210,7 @@ public class OrderManagementController {
         if (table != null) {
             // ON MET LA TABLE EN STATUT OCCUPÉE
             table.setStatut(StatutTable.OCCUPEE);
+            table.setServeur(serveur);
             tableRepository.save(table);
         }
         // Mise à jour du montant total de la commande et sauvegarde

@@ -1,57 +1,110 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Mon Historique</title>
+    <title>Historique des commandes | RestoApp</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body>
+<body class="bg-light">
 <div th:replace="~{fragments/navbar :: nav}"></div>
 
-<div class="container mt-4">
-    <h1 class="mb-4">Historique de mes commandes</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="d-flex align-items-center mb-4">
+                <div class="bg-primary text-white rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                    <i class="bi bi-clock-history fs-3"></i>
+                </div>
+                <div>
+                    <h1 class="fw-bold mb-0">Mon Historique</h1>
+                    <p class="text-muted mb-0">Retrouvez toutes vos commandes passées et laissez votre avis.</p>
+                </div>
+            </div>
 
-    <!-- Messages de succès/erreur pour le feedback -->
-    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+            <!-- Messages de succès/erreur -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
 
-    <div th:if="${commandesDuClient.isEmpty()}">
-        <p class="text-muted">Vous n'avez pas encore passé de commande.</p>
-    </div>
+            <!-- Empty State -->
+            <div th:if="${commandesDuClient.isEmpty()}" class="text-center py-5">
+                <div class="mb-4">
+                    <i class="bi bi-receipt text-secondary" style="font-size: 5rem; opacity: 0.2;"></i>
+                </div>
+                <h3 class="text-secondary fw-bold">Aucune commande trouvée</h3>
+                <p class="text-muted">Vous n'avez pas encore passé de commande chez nous.</p>
+                <a th:href="@{/client/menu}" class="btn btn-primary mt-3 px-4 py-2 rounded-pill">
+                    <i class="bi bi-book me-2"></i> Découvrir la carte
+                </a>
+            </div>
 
-    <div th:if="${!commandesDuClient.isEmpty()}" class="table-responsive">
-        <table class="table table-hover align-middle">
-            <thead class="table-light">
-            <tr>
-                <th>N°</th>
-                <th>Date</th>
-                <th>Montant</th>
-                <th>État</th>
-                <th class="text-center">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="commande : ${commandesDuClient}">
-                <td th:text="${commande.id}"></td>
-                <td th:text="${#temporals.format(commande.dateHeure, 'dd/MM/yyyy HH:mm')}"></td>
-                <td th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + ' €'"></td>
-                <td><span class="badge bg-info text-dark" th:text="${commande.etat}"></span></td>
-                <td class="text-center">
-                    <!-- BOUTON POUR OUVRIR LE MODAL -->
-                    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" th:data-bs-target="'#detailsCommandeModal' + ${commande.id}">
-                        <i class="bi bi-eye"></i> Détails
-                    </button>
+            <!-- Orders List -->
+            <div th:if="${!commandesDuClient.isEmpty()}" class="card shadow-sm border-0 rounded-3 overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                        <tr>
+                            <th class="py-3 ps-4">N°</th>
+                            <th class="py-3">Date</th>
+                            <th class="py-3">Montant</th>
+                            <th class="py-3">État</th>
+                            <th class="py-3 text-end pe-4">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="commande : ${commandesDuClient}">
+                            <td class="ps-4 fw-bold text-primary" th:text="'#' + ${commande.id}"></td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-bold" th:text="${#temporals.format(commande.dateHeure, 'dd/MM/yyyy')}"></span>
+                                    <span class="small text-muted" th:text="${#temporals.format(commande.dateHeure, 'HH:mm')}"></span>
+                                </div>
+                            </td>
+                            <td class="fw-bold" th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + ' €'"></td>
+                            <td>
+                                <span class="badge rounded-pill"
+                                      th:classappend="${
+                                        commande.etat.toString() == 'PAYEE' ? 'bg-success' :
+                                        (commande.etat.toString() == 'SERVIE' ? 'bg-info text-dark' :
+                                        (commande.etat.toString() == 'EN_ATTENTE' ? 'bg-secondary' : 'bg-warning text-dark'))
+                                      }">
+                                    <i class="bi"
+                                       th:classappend="${
+                                         commande.etat.toString() == 'PAYEE' ? 'bi-check-all' :
+                                         (commande.etat.toString() == 'SERVIE' ? 'bi-bell' : 'bi-hourglass-split')
+                                       }"></i>
+                                    <span th:text="${commande.etat.toString().replace('_', ' ')}"></span>
+                                </span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <!-- BOUTON POUR OUVRIR LE MODAL -->
+                                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill" data-bs-toggle="modal" th:data-bs-target="'#detailsCommandeModal' + ${commande.id}">
+                                        <i class="bi bi-eye"></i> Détails
+                                    </button>
 
-                    <!-- Lien pour laisser un avis (conditionnel) -->
-                    <a th:if="${commande.etat == T(com.example.demo.model.EtatCommande).PAYEE and commande.feedBack == null}"
-                       th:href="@{/feedback/laisser-avis(commandeId=${commande.id})}" class="btn btn-outline-success btn-sm">
-                        <i class="bi bi-chat-left-text"></i> Laisser un avis
-                    </a>
-                    <span th:if="${commande.feedBack != null}" class="badge bg-light text-success"><i class="bi bi-check-circle"></i> Avis laissé</span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                                    <!-- Lien pour laisser un avis (conditionnel) -->
+                                    <a th:if="${commande.etat == T(com.example.demo.model.EtatCommande).PAYEE and commande.feedBack == null}"
+                                       th:href="@{/feedback/laisser-avis(commandeId=${commande.id})}" class="btn btn-outline-success btn-sm rounded-pill">
+                                        <i class="bi bi-star"></i> Avis
+                                    </a>
+                                    <span th:if="${commande.feedBack != null}" class="badge bg-light text-success border border-success rounded-pill d-flex align-items-center">
+                                        <i class="bi bi-check-circle-fill me-1"></i> Avis envoyé
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -61,27 +114,41 @@
 <div th:each="commande : ${commandesDuClient}">
     <div class="modal fade" th:id="'detailsCommandeModal' + ${commande.id}" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Détails de la commande n°<span th:text="${commande.id}"></span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-receipt me-2"></i>Commande #<span th:text="${commande.id}"></span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <ul class="list-group">
-                        <li th:each="ligne : ${commande.lignesCommande}" class="list-group-item d-flex justify-content-between">
-                                <span>
-                                    <strong th:text="${ligne.quantite} + 'x '"></strong>
-                                    <span th:if="${ligne.plat != null}" th:text="${ligne.plat.nom}"></span>
-                                    <span th:if="${ligne.menu != null}" th:text="${ligne.menu.nom}"></span>
-                                </span>
-                            <span th:if="${ligne.plat != null}" th:text="${#numbers.formatDecimal(ligne.plat.prix * ligne.quantite, 1, 2)} + ' €'"></span>
-                            <span th:if="${ligne.menu != null}" th:text="${#numbers.formatDecimal(ligne.menu.prix * ligne.quantite, 1, 2)} + ' €'"></span>
+                <div class="modal-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                        <span class="text-muted">Date : <strong class="text-dark" th:text="${#temporals.format(commande.dateHeure, 'dd/MM/yyyy à HH:mm')}"></strong></span>
+                        <span class="badge bg-light text-dark border" th:text="${commande.etat}"></span>
+                    </div>
+
+                    <h6 class="text-uppercase text-secondary small fw-bold mb-3">Détails de la commande</h6>
+                    <ul class="list-group list-group-flush mb-3">
+                        <li th:each="ligne : ${commande.lignesCommande}" class="list-group-item px-0 d-flex justify-content-between align-items-center border-bottom-0 py-2">
+                            <div>
+                                <span class="badge bg-primary rounded-pill me-2" th:text="${ligne.quantite}"></span>
+                                <span th:if="${ligne.plat != null}" th:text="${ligne.plat.nom}" class="fw-medium"></span>
+                                <span th:if="${ligne.menu != null}" th:text="${ligne.menu.nom}" class="fw-medium"></span>
+                            </div>
+                            <span class="fw-bold text-secondary">
+                                <span th:if="${ligne.plat != null}" th:text="${#numbers.formatDecimal(ligne.plat.prix * ligne.quantite, 1, 2)} + ' €'"></span>
+                                <span th:if="${ligne.menu != null}" th:text="${#numbers.formatDecimal(ligne.menu.prix * ligne.quantite, 1, 2)} + ' €'"></span>
+                            </span>
                         </li>
                     </ul>
+
+                    <div class="alert alert-light border d-flex justify-content-between align-items-center mt-4 mb-0">
+                        <span class="fs-5">Total payé</span>
+                        <span class="fs-4 fw-bold text-primary" th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + ' €'"></span>
+                    </div>
                 </div>
-                <div class="modal-footer justify-content-between">
-                    <strong>Total : <span th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + ' €'"></span></strong>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                <div class="modal-footer border-0 pt-0 pb-4 px-4">
+                    <button type="button" class="btn btn-secondary w-100 rounded-pill" data-bs-dismiss="modal">Fermer</button>
                 </div>
             </div>
         </div>

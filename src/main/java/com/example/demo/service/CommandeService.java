@@ -141,6 +141,7 @@ public class CommandeService {
 
             if (table != null) {
                 table.setStatut(StatutTable.LIBRE);
+                table.setServeur(null);
                 tableRepository.save(table);
             }
         }
