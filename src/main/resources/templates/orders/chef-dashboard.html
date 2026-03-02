@@ -46,61 +46,73 @@
     </div>
 
     <div class="row g-4">
-        <div th:each="commande : ${commandes}" class="col-md-6 col-lg-4 col-xl-3">
-            <div class="card card-modern shadow-sm border-0 chef-card h-100"
-                 th:classappend="${commande.etat.toString() == 'EN_ATTENTE' ? 'en-attente' : 'en-prepa'}">
+        <th:block th:each="commande : ${commandes}" th:with="hasPendingLines=${commande.lignesCommande.![etat.toString()].contains('EN_ATTENTE') or commande.lignesCommande.![etat.toString()].contains('EN_PREPARATION')}">
+            <div th:if="${hasPendingLines}" class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card card-modern shadow-sm border-0 chef-card h-100"
+                     th:classappend="${commande.lignesCommande.![etat.toString()].contains('EN_ATTENTE') ? 'en-attente' : 'en-prepa'}">
 
-                <div class="card-header bg-transparent border-bottom-0 pb-0 pt-3 px-3 d-flex justify-content-between align-items-center">
-                    <span class="badge rounded-pill px-3 py-2 fw-normal"
-                          th:classappend="${commande.etat.toString() == 'EN_ATTENTE' ? 'bg-danger' : 'bg-warning text-dark'}"
-                          th:text="${commande.etat.toString() == 'EN_ATTENTE' ? 'À FAIRE' : 'EN COURS'}">Statut</span>
-                    <span class="fw-bold fs-5 text-dark">#<span th:text="${commande.id}"></span></span>
-                </div>
-
-                <div class="card-body px-3 pt-2">
-                    <h5 class="fw-bold mb-3 text-secondary">
-                        <span th:if="${commande.isEmporter}" class="badge bg-info">🛍️ À Emporter</span>
-                        <span th:unless="${commande.isEmporter}">Table N°<span th:text="${commande.table?.numeroTable}"></span></span>
-                    </h5>
-                    <div class="mb-2">
-                        <small class="text-muted"><i class="bi bi-person-badge me-1"></i>Serveur: <span th:text="${commande.serveur?.fullName}"></span></small>
+                    <div class="card-header bg-transparent border-bottom-0 pb-0 pt-3 px-3 d-flex justify-content-between align-items-center">
+                        <span class="badge rounded-pill px-3 py-2 fw-normal"
+                              th:classappend="${commande.lignesCommande.![etat.toString()].contains('EN_ATTENTE') ? 'bg-danger' : 'bg-warning text-dark'}"
+                              th:text="${commande.lignesCommande.![etat.toString()].contains('EN_ATTENTE') ? 'À FAIRE' : 'EN COURS'}">Statut</span>
+                        <span class="fw-bold fs-5 text-dark">Cmd #<span th:text="${commande.id}"></span></span>
                     </div>
 
-                    <div th:if="${commande.commentaire != null and !commande.commentaire.isEmpty()}" class="alert alert-danger p-2 mb-3" role="alert">
-                        <small class="fw-bold"><i class="bi bi-exclamation-triangle-fill me-1"></i>NOTE IMPORTANTE:</small><br>
-                        <span th:text="${commande.commentaire}"></span>
-                    </div>
+                    <div class="card-body px-3 pt-2">
+                        <h5 class="fw-bold mb-3 text-secondary">
+                            <span th:if="${commande.isEmporter}" class="badge bg-info">🛍️ À Emporter</span>
+                            <span th:unless="${commande.isEmporter}">Table N°<span th:text="${commande.table?.numeroTable}"></span></span>
+                        </h5>
+                        <div class="mb-2">
+                            <small class="text-muted"><i class="bi bi-person-badge me-1"></i>Serveur: <span th:text="${commande.serveur?.fullName}"></span></small>
+                        </div>
 
-                    <!-- Lignes de commande triées automatiquement via @OrderBy dans l'entité -->
-                    <ul class="list-group list-group-flush rounded border-0">
-                        <li th:each="ligne : ${commande.lignesCommande}" class="list-group-item bg-transparent px-0 border-light d-flex justify-content-between align-items-center">
-                            <div>
-                                <span class="badge bg-secondary me-2 rounded-circle" style="width: 25px; height: 25px; display: inline-flex; align-items: center; justify-content: center;" th:text="${ligne.quantite}">1</span>
-                                <span class="fw-bold" th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}">Plat</span>
-                            </div>
-                            <!-- Icon for visual check -->
-                            <i class="bi bi-dash-lg text-muted opacity-25"></i>
-                        </li>
-                    </ul>
-                </div>
+                        <div th:if="${commande.commentaire != null and !commande.commentaire.isEmpty()}" class="alert alert-danger p-2 mb-3" role="alert">
+                            <small class="fw-bold"><i class="bi bi-exclamation-triangle-fill me-1"></i>NOTE IMPORTANTE:</small><br>
+                            <span th:text="${commande.commentaire}"></span>
+                        </div>
 
-                <div class="card-footer bg-transparent border-top-0 pb-3 px-3">
-                    <div class="d-grid gap-2">
-                        <a th:if="${commande.etat.toString() == 'EN_ATTENTE'}"
-                           th:href="@{/orders/prepare/{id}(id=${commande.id})}"
-                           class="btn btn-primary shadow-sm btn-lg fw-bold">
-                            <i class="bi bi-fire me-2"></i> Lancer
-                        </a>
+                        <ul class="list-group list-group-flush rounded border-0">
+                            <th:block th:each="ligne : ${commande.lignesCommande}" th:if="${ligne.etat.toString() == 'EN_ATTENTE' or ligne.etat.toString() == 'EN_PREPARATION'}">
+                                <li class="list-group-item bg-transparent px-0 border-light d-flex justify-content-between align-items-start flex-column mb-2">
+                                    <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                                        <div th:if="${ligne.plat != null}" class="d-flex align-items-center">
+                                            <span class="badge bg-secondary me-2 rounded-circle" style="width: 25px; height: 25px; display: inline-flex; align-items: center; justify-content: center;" th:text="${ligne.quantite}">1</span>
+                                            <span class="fw-bold" th:text="${ligne.plat.nom}">Plat</span>
+                                        </div>
+                                        <div th:if="${ligne.menu != null}" class="d-flex align-items-center">
+                                            <span class="badge bg-secondary me-2 rounded-circle" style="width: 25px; height: 25px; display: inline-flex; align-items: center; justify-content: center;" th:text="${ligne.quantite}">1</span>
+                                            <span class="fw-bold" th:text="${ligne.menu.nom}">Menu</span>
+                                        </div>
+                                        <div>
+                                            <span class="badge" th:classappend="${ligne.etat.toString() == 'EN_ATTENTE' ? 'bg-danger' : 'bg-warning text-dark'}" th:text="${ligne.etat.toString().replace('_', ' ')}">Statut</span>
+                                        </div>
+                                    </div>
+                                    <div th:if="${ligne.menu != null}" class="d-flex flex-column w-100 ps-4">
+                                        <ul class="mt-1 mb-2 list-unstyled small text-muted">
+                                            <li th:each="platMenu : ${ligne.menu.plats}" th:text="'- ' + ${platMenu.nom}"></li>
+                                        </ul>
+                                    </div>
+                                    <div class="d-flex w-100 gap-2 mt-2">
+                                        <a th:if="${ligne.etat.toString() == 'EN_ATTENTE'}"
+                                           th:href="@{/orders/prepare-ligne/{id}(id=${ligne.identifiant})}"
+                                           class="btn btn-outline-primary btn-sm flex-grow-1 fw-bold">
+                                            <i class="bi bi-fire me-1"></i> Lancer
+                                        </a>
 
-                        <a th:if="${commande.etat.toString() == 'EN_PREPARATION'}"
-                           th:href="@{/orders/finish-preparation/{id}(id=${commande.id})}"
-                           class="btn btn-success shadow-sm btn-lg fw-bold text-white">
-                            <i class="bi bi-check-lg me-2"></i> Terminer
-                        </a>
+                                        <a th:if="${ligne.etat.toString() == 'EN_PREPARATION'}"
+                                           th:href="@{/orders/finish-preparation-ligne/{id}(id=${ligne.identifiant})}"
+                                           class="btn btn-success btn-sm flex-grow-1 fw-bold text-white">
+                                            <i class="bi bi-check-lg me-1"></i> Terminer
+                                        </a>
+                                    </div>
+                                </li>
+                            </th:block>
+                        </ul>
                     </div>
                 </div>
             </div>
-        </div>
+        </th:block>
     </div>
 </div>
 

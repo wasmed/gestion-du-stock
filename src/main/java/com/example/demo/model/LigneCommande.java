@@ -18,6 +18,9 @@ public class LigneCommande {
     @Enumerated(EnumType.STRING)
     private TypeLigneCommande typeLigne;
 
+    @Enumerated(EnumType.STRING)
+    private EtatLigneCommande etat = EtatLigneCommande.EN_ATTENTE;
+
     @ManyToOne
     @JoinColumn(name = "commande_id")
     private Commande commande;
@@ -56,6 +59,14 @@ public class LigneCommande {
 
     public void setTypeLigne(TypeLigneCommande typeLigne) {
         this.typeLigne = typeLigne;
+    }
+
+    public EtatLigneCommande getEtat() {
+        return etat;
+    }
+
+    public void setEtat(EtatLigneCommande etat) {
+        this.etat = etat;
     }
 
     public Commande getCommande() {

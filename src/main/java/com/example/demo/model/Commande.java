@@ -121,6 +121,18 @@ public class Commande {
         this.lignesCommande = lignesCommande;
     }
 
+    public boolean isToutesLignesServies() {
+        if (lignesCommande == null || lignesCommande.isEmpty()) {
+            return false;
+        }
+        for (LigneCommande ligne : lignesCommande) {
+            if (ligne.getEtat() != EtatLigneCommande.SERVIE) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public Paiement getPaiement() {
         return paiement;
     }

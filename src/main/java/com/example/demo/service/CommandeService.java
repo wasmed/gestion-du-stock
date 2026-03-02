@@ -39,16 +39,19 @@ public class CommandeService {
         commande.setClient(client);
         commande.setServeur(serveur);
         commande.setTable(table);
-        commande.setEtat(EtatCommande.EN_ATTENTE);
+        commande.setEtat(EtatCommande.EN_COURS);
         return commandeRepository.save(commande);
     }
     public Commande createNewCommande(User client, User serveur) {
         Commande commande = new Commande();
         commande.setClient(client);
         commande.setServeur(serveur);
-        commande.setEtat(EtatCommande.EN_ATTENTE);
+        commande.setEtat(EtatCommande.EN_COURS);
         return commandeRepository.save(commande);
     }
+
+    @Autowired
+    private StockService stockService;
 
     public Commande addPlatToCommande(Commande commande, Long platId, int quantite) {
         Plat plat = platRepository.findById(platId).orElseThrow(() -> new IllegalArgumentException("Plat non trouvé"));
@@ -57,7 +60,12 @@ public class CommandeService {
         ligne.setQuantite(quantite);
         ligne.setPlat(plat); // Link the order line to the plat
         ligne.setTypeLigne(TypeLigneCommande.PLAT); // Set the type to PLAT
-        ligneCommandeRepository.save(ligne);
+        ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
+        ligne = ligneCommandeRepository.save(ligne);
+
+        // Decrement stock immediately
+        stockService.processStockDecrementForLigne(ligne);
+
         return commande;
     }
 
@@ -68,12 +76,17 @@ public class CommandeService {
         ligne.setQuantite(quantite);
         ligne.setMenu(menu); // Link the order line to the menu
         ligne.setTypeLigne(TypeLigneCommande.MENU); // Set the type to MENU
-        ligneCommandeRepository.save(ligne);
+        ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
+        ligne = ligneCommandeRepository.save(ligne);
+
+        // Decrement stock immediately
+        stockService.processStockDecrementForLigne(ligne);
+
         return commande;
     }
 
-    public List<Commande> getCommandesEnAttente() {
-        return commandeRepository.findByEtat(EtatCommande.EN_ATTENTE);
+    public List<Commande> getCommandesEnCours() {
+        return commandeRepository.findByEtat(EtatCommande.EN_COURS);
     }
 
     public List<Commande> getCommandesAValider() {
@@ -85,11 +98,6 @@ public class CommandeService {
         Commande commande = commandeRepository.findById(commandeId).orElseThrow(() -> new IllegalArgumentException("Commande non trouvée"));
         commande.setEtat(nouveauStatut);
         return commandeRepository.save(commande);
-    }
-
-    public List<Commande> getCommandesEnCours() {
-        // Récupérer les commandes en attente et en préparation
-        return commandeRepository.findByEtatIn(List.of(EtatCommande.EN_ATTENTE, EtatCommande.EN_PREPARATION));
     }
 
     public LigneCommande saveLigneCommande(LigneCommande ligne) {
@@ -108,10 +116,7 @@ public class CommandeService {
 
     public List<Commande> getCommandesEnCoursEtServies() {
         List<EtatCommande> etats = List.of(
-                EtatCommande.EN_ATTENTE,
-                EtatCommande.EN_PREPARATION,
-                EtatCommande.PREPARATION_TERMINEE,
-                EtatCommande.SERVIE
+                EtatCommande.EN_COURS
         );
         // On appelle la nouvelle méthode du repository
         return commandeRepository.findByEtatInWithDetails(etats);
@@ -119,11 +124,18 @@ public class CommandeService {
 
     public List<Commande> getCommandesEnAttenteEtEnPreparation() {
         List<EtatCommande> etats = List.of(
-                EtatCommande.EN_ATTENTE,
-                EtatCommande.EN_PREPARATION
+                EtatCommande.EN_COURS
         );
         // On utilise la méthode optimisée pour charger les détails
         return commandeRepository.findByEtatInWithDetails(etats);
+    }
+
+    public void updateLigneCommandeEtat(Long id, EtatLigneCommande etat) {
+        LigneCommande ligne = ligneCommandeRepository.findById(id).orElse(null);
+        if (ligne != null) {
+            ligne.setEtat(etat);
+            ligneCommandeRepository.save(ligne);
+        }
     }
 
     public List<Commande> findCommandesByClientWithDetails(User client) {

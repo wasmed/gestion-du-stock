@@ -37,6 +37,9 @@ public class CommandeServiceTest {
     @Mock
     private ConsommationStockRepository consommationStockRepository;
 
+    @Mock
+    private StockService stockService;
+
     @InjectMocks
     private CommandeService commandeService;
 
@@ -62,7 +65,7 @@ public class CommandeServiceTest {
         assertEquals(client, createdCommande.getClient());
         assertEquals(serveur, createdCommande.getServeur());
         assertEquals(table, createdCommande.getTable());
-        assertEquals(EtatCommande.EN_ATTENTE, createdCommande.getEtat());
+        assertEquals(EtatCommande.EN_COURS, createdCommande.getEtat());
         verify(tableRepository).findById(tableId);
         verify(commandeRepository).save(any(Commande.class));
     }
@@ -73,17 +76,17 @@ public class CommandeServiceTest {
         Long commandeId = 1L;
         Commande commande = new Commande();
         commande.setId(commandeId);
-        commande.setEtat(EtatCommande.EN_ATTENTE);
+        commande.setEtat(EtatCommande.EN_COURS);
 
         when(commandeRepository.findById(commandeId)).thenReturn(Optional.of(commande));
         when(commandeRepository.save(any(Commande.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
-        Commande updatedCommande = commandeService.updateCommandeEtat(commandeId, EtatCommande.EN_PREPARATION);
+        Commande updatedCommande = commandeService.updateCommandeEtat(commandeId, EtatCommande.PAYEE);
 
         // Assert
         assertNotNull(updatedCommande);
-        assertEquals(EtatCommande.EN_PREPARATION, updatedCommande.getEtat());
+        assertEquals(EtatCommande.PAYEE, updatedCommande.getEtat());
         verify(commandeRepository).findById(commandeId);
         verify(commandeRepository).save(commande);
     }
@@ -107,25 +110,26 @@ public class CommandeServiceTest {
         assertNotNull(resultCommande);
         verify(platRepository).findById(platId);
         verify(ligneCommandeRepository).save(any(LigneCommande.class));
+        verify(stockService).processStockDecrementForLigne(any());
     }
 
     @Test
-    void testGetCommandesEnAttente() {
+    void testGetCommandesEnCours() {
         // Arrange
         Commande c1 = new Commande();
-        c1.setEtat(EtatCommande.EN_ATTENTE);
+        c1.setEtat(EtatCommande.EN_COURS);
         Commande c2 = new Commande();
-        c2.setEtat(EtatCommande.EN_ATTENTE);
+        c2.setEtat(EtatCommande.EN_COURS);
         List<Commande> expectedList = Arrays.asList(c1, c2);
 
-        when(commandeRepository.findByEtat(EtatCommande.EN_ATTENTE)).thenReturn(expectedList);
+        when(commandeRepository.findByEtat(EtatCommande.EN_COURS)).thenReturn(expectedList);
 
         // Act
-        List<Commande> actualList = commandeService.getCommandesEnAttente();
+        List<Commande> actualList = commandeService.getCommandesEnCours();
 
         // Assert
         assertEquals(2, actualList.size());
         assertEquals(expectedList, actualList);
-        verify(commandeRepository).findByEtat(EtatCommande.EN_ATTENTE);
+        verify(commandeRepository).findByEtat(EtatCommande.EN_COURS);
     }
 }

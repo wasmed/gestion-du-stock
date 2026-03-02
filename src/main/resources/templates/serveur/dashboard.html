@@ -151,11 +151,9 @@
                                     <span class="fw-bold text-dark small">Commande #<span th:text="${commande.id}"></span></span>
                                     <span class="badge badge-modern small"
                                           th:classappend="${
-                                            commande.etat.toString() == 'EN_ATTENTE' ? 'bg-secondary' :
-                                            (commande.etat.toString() == 'EN_PREPARATION' ? 'bg-warning text-dark' :
-                                            (commande.etat.toString() == 'PREPARATION_TERMINEE' ? 'bg-success' : 'bg-info text-dark'))
+                                            commande.isToutesLignesServies() ? 'bg-success' : 'bg-warning text-dark'
                                           }"
-                                          th:text="${commande.etat.toString().replace('_', ' ')}">Statut</span>
+                                          th:text="${commande.isToutesLignesServies() ? 'PRÊT' : 'EN COURS'}">Statut</span>
                                 </div>
 
                                 <div class="mb-2 text-muted small">
@@ -163,9 +161,12 @@
                                 </div>
 
                                 <ul class="list-unstyled mb-3 small text-secondary ps-3 border-start border-3 border-light">
-                                    <li th:each="ligne : ${commande.lignesCommande}" class="mb-1">
-                                        <span class="fw-bold" th:text="${ligne.quantite} + 'x'"></span>
-                                        <span th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}">Item</span>
+                                    <li th:each="ligne : ${commande.lignesCommande}" class="mb-1 d-flex justify-content-between">
+                                        <div>
+                                            <span class="fw-bold" th:text="${ligne.quantite} + 'x'"></span>
+                                            <span th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}">Item</span>
+                                        </div>
+                                        <span class="badge" th:classappend="${ligne.etat.toString() == 'SERVIE' ? 'bg-success' : 'bg-secondary'}" th:text="${ligne.etat.toString()}">Statut</span>
                                     </li>
                                 </ul>
 
@@ -174,25 +175,22 @@
 
                                     <div class="btn-group btn-group-sm">
                                         <!-- Actions -->
-                                        <a th:if="${commande.etat.toString() != 'PAYEE'}"
+                                        <a th:if="${commande.etat.toString() == 'EN_COURS'}"
                                            th:href="@{/orders/edit/{id}(id=${commande.id})}"
                                            class="btn btn-outline-warning" title="Ajouter / Modifier">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a th:if="${commande.etat.toString() == 'EN_ATTENTE'}"
+                                        <a th:if="${commande.etat.toString() == 'EN_COURS'}"
                                            th:href="@{/orders/delete/{id}(id=${commande.id})}"
                                            class="btn btn-outline-danger" title="Annuler"
                                            onclick="return confirm('Annuler cette commande ?');">
                                             <i class="bi bi-trash"></i>
                                         </a>
 
-                                        <a th:if="${commande.etat.toString() == 'PREPARATION_TERMINEE'}"
-                                           th:href="@{/orders/serve/{id}(id=${commande.id})}"
-                                           class="btn btn-success fw-bold">Servir</a>
-
-                                        <a th:if="${commande.etat.toString() == 'SERVIE'}"
+                                        <!-- Optionnel: bouton servir/terminer tout -->
+                                        <a th:if="${commande.isToutesLignesServies() and commande.etat.toString() == 'EN_COURS'}"
                                            th:href="@{/orders/pay/{id}(id=${commande.id})}"
-                                           class="btn btn-primary fw-bold">Payer</a>
+                                           class="btn btn-primary fw-bold">Encaisser</a>
                                     </div>
                                 </div>
                             </div>
@@ -231,11 +229,9 @@
                                 <span class="fw-bold text-dark small">Commande #<span th:text="${commande.id}"></span></span>
                                 <span class="badge badge-modern small"
                                       th:classappend="${
-                                        commande.etat.toString() == 'EN_ATTENTE' ? 'bg-secondary' :
-                                        (commande.etat.toString() == 'EN_PREPARATION' ? 'bg-warning text-dark' :
-                                        (commande.etat.toString() == 'PREPARATION_TERMINEE' ? 'bg-success' : 'bg-info text-dark'))
+                                            commande.isToutesLignesServies() ? 'bg-success' : 'bg-warning text-dark'
                                       }"
-                                      th:text="${commande.etat.toString().replace('_', ' ')}">Statut</span>
+                                          th:text="${commande.isToutesLignesServies() ? 'PRÊT' : 'EN COURS'}">Statut</span>
                             </div>
 
                             <div class="mb-2 text-muted small">
@@ -243,9 +239,12 @@
                             </div>
 
                             <ul class="list-unstyled mb-3 small text-secondary ps-3 border-start border-3 border-light">
-                                <li th:each="ligne : ${commande.lignesCommande}" class="mb-1">
-                                    <span class="fw-bold" th:text="${ligne.quantite} + 'x'"></span>
-                                    <span th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}">Item</span>
+                                <li th:each="ligne : ${commande.lignesCommande}" class="mb-1 d-flex justify-content-between">
+                                    <div>
+                                        <span class="fw-bold" th:text="${ligne.quantite} + 'x'"></span>
+                                        <span th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}">Item</span>
+                                    </div>
+                                    <span class="badge" th:classappend="${ligne.etat.toString() == 'SERVIE' ? 'bg-success' : 'bg-secondary'}" th:text="${ligne.etat.toString()}">Statut</span>
                                 </li>
                             </ul>
 
@@ -254,25 +253,21 @@
 
                                 <div class="btn-group btn-group-sm">
                                     <!-- Actions -->
-                                    <a th:if="${commande.etat.toString() != 'PAYEE'}"
+                                    <a th:if="${commande.etat.toString() == 'EN_COURS'}"
                                        th:href="@{/orders/edit/{id}(id=${commande.id})}"
                                        class="btn btn-outline-warning" title="Ajouter / Modifier">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <a th:if="${commande.etat.toString() == 'EN_ATTENTE'}"
+                                    <a th:if="${commande.etat.toString() == 'EN_COURS'}"
                                        th:href="@{/orders/delete/{id}(id=${commande.id})}"
                                        class="btn btn-outline-danger" title="Annuler"
                                        onclick="return confirm('Annuler cette commande ?');">
                                         <i class="bi bi-trash"></i>
                                     </a>
 
-                                    <a th:if="${commande.etat.toString() == 'PREPARATION_TERMINEE'}"
-                                       th:href="@{/orders/serve/{id}(id=${commande.id})}"
-                                       class="btn btn-success fw-bold">Servir</a>
-
-                                    <a th:if="${commande.etat.toString() == 'SERVIE'}"
+                                    <a th:if="${commande.isToutesLignesServies() and commande.etat.toString() == 'EN_COURS'}"
                                        th:href="@{/orders/pay/{id}(id=${commande.id})}"
-                                       class="btn btn-primary fw-bold">Payer</a>
+                                       class="btn btn-primary fw-bold">Encaisser</a>
                                 </div>
                             </div>
                         </div>

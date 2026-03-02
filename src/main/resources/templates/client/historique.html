@@ -71,15 +71,15 @@
                                 <span class="badge rounded-pill"
                                       th:classappend="${
                                         commande.etat.toString() == 'PAYEE' ? 'bg-success' :
-                                        (commande.etat.toString() == 'SERVIE' ? 'bg-info text-dark' :
-                                        (commande.etat.toString() == 'EN_ATTENTE' ? 'bg-secondary' : 'bg-warning text-dark'))
+                                        (commande.etat.toString() == 'EN_VALIDATION' ? 'bg-secondary' :
+                                        (commande.isToutesLignesServies() ? 'bg-info text-dark' : 'bg-warning text-dark'))
                                       }">
                                     <i class="bi"
                                        th:classappend="${
                                          commande.etat.toString() == 'PAYEE' ? 'bi-check-all' :
-                                         (commande.etat.toString() == 'SERVIE' ? 'bi-bell' : 'bi-hourglass-split')
+                                         (commande.isToutesLignesServies() ? 'bi-bell' : 'bi-hourglass-split')
                                        }"></i>
-                                    <span th:text="${commande.etat.toString().replace('_', ' ')}"></span>
+                                    <span th:text="${commande.etat.toString() == 'EN_COURS' ? (commande.isToutesLignesServies() ? 'PRÊTE' : 'EN COURS') : commande.etat.toString().replace('_', ' ')}"></span>
                                 </span>
                             </td>
                             <td class="text-end pe-4">

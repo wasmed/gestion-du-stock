@@ -7,6 +7,7 @@ import com.example.demo.service.CommandeService;
 import com.example.demo.service.MenuService;
 import com.example.demo.service.PlatService;
 import com.example.demo.service.UserService;
+import com.example.demo.service.StockService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -42,6 +43,8 @@ public class ClientController {
     private UserService userService;
     @Autowired
     private TableRestaurantRepository tableRepository;
+    @Autowired
+    private StockService stockService;
 
     @GetMapping("/dashboard")
     @PreAuthorize("hasRole('CLIENT')")
@@ -208,7 +211,7 @@ public class ClientController {
             commande.setTable(table);
             if (Boolean.TRUE.equals(isEmporter)) {
                 commande.setIsEmporter(true);
-                commande.setEtat(EtatCommande.EN_ATTENTE);
+                commande.setEtat(EtatCommande.EN_COURS);
             } else {
                 commande.setEtat(EtatCommande.EN_VALIDATION);
             }
@@ -217,8 +220,8 @@ public class ClientController {
             commande.setMontantTotal(0.0);
             commande.setLignesCommande(new HashSet<>());
         } else {
-            // Commande existe déjà, on la repasse en EN_ATTENTE
-            commande.setEtat(EtatCommande.EN_ATTENTE);
+            // Commande existe déjà, on la repasse en EN_COURS (ou on laisse EN_COURS)
+            commande.setEtat(EtatCommande.EN_COURS);
             if (notes != null && !notes.trim().isEmpty()) {
                 String existingComment = commande.getCommentaire() != null ? commande.getCommentaire() : "";
                 commande.setCommentaire(existingComment + (existingComment.isEmpty() ? "" : " | ") + notes);
@@ -245,6 +248,7 @@ public class ClientController {
                 ligne.setPlat(plat);
                 ligne.setQuantite(qty.intValue());
                 ligne.setTypeLigne(TypeLigneCommande.PLAT);
+                ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
                 lignes.add(ligne);
                 montantTotal += plat.getPrix() * qty;
             }
@@ -261,6 +265,7 @@ public class ClientController {
                 ligne.setMenu(menu);
                 ligne.setQuantite(qty.intValue());
                 ligne.setTypeLigne(TypeLigneCommande.MENU);
+                ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
                 lignes.add(ligne);
                 montantTotal += menu.getPrix() * qty;
             }
@@ -269,7 +274,15 @@ public class ClientController {
         commande.setLignesCommande(lignes);
         commande.setMontantTotal(montantTotal);
 
-        commandeService.saveCommande(commande);
+        commande = commandeService.saveCommande(commande);
+
+        if (Boolean.TRUE.equals(isEmporter)) {
+            // Pour les commandes à emporter, la commande est directement EN_COURS
+            // et les lignes sont EN_ATTENTE (envoyées en cuisine), on doit donc déduire le stock.
+            for (LigneCommande ligne : commande.getLignesCommande()) {
+                stockService.processStockDecrementForLigne(ligne);
+            }
+        }
 
         // Clear cart
         session.removeAttribute("cartPlats");

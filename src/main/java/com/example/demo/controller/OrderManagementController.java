@@ -66,9 +66,9 @@ public class OrderManagementController {
         List<Commande> commandesAValider = commandeService.getCommandesAValider();
         model.addAttribute("commandesAValider", commandesAValider);
 
-        // 6. On récupère les commandes prêtes à servir (PREPARATION_TERMINEE)
+        // 6. On récupère les commandes prêtes à servir (Toutes les lignes SERVIE)
         List<Commande> commandesPretes = commandesEnCours.stream()
-                .filter(c -> c.getEtat() == EtatCommande.PREPARATION_TERMINEE)
+                .filter(Commande::isToutesLignesServies)
                 .collect(Collectors.toList());
         model.addAttribute("commandesPretes", commandesPretes);
 
@@ -84,25 +84,23 @@ public class OrderManagementController {
         return "orders/details";
     }
 
-    @GetMapping("/prepare/{id}")
+    @GetMapping("/prepare-ligne/{id}")
     @PreAuthorize("hasRole('CHEF_CUISINIER')")
-    public String prepareOrder(@PathVariable Long id) {
-        commandeService.updateCommandeEtat(id, EtatCommande.EN_PREPARATION);
+    public String prepareLigne(@PathVariable Long id) {
+        commandeService.updateLigneCommandeEtat(id, EtatLigneCommande.EN_PREPARATION);
+        return "redirect:/orders/chef-dashboard";
+    }
+
+    @GetMapping("/finish-preparation-ligne/{id}")
+    @PreAuthorize("hasRole('CHEF_CUISINIER')")
+    public String finishPreparationLigne(@PathVariable Long id) {
+        commandeService.updateLigneCommandeEtat(id, EtatLigneCommande.SERVIE);
         return "redirect:/orders/chef-dashboard";
     }
 
     @GetMapping("/serve/{id}")
     @PreAuthorize("hasRole('SERVEUR')")
     public String serveOrder(@PathVariable Long id) {
-        Commande commande = commandeService.findCommandeById(id);
-
-        if (commande != null && commande.getEtat() == EtatCommande.PREPARATION_TERMINEE) {
-            stockService.processStockDecrementForCommande(commande);
-
-            commande.setEtat(EtatCommande.SERVIE);
-            commandeService.saveCommande(commande);
-        }
-
         return "redirect:/orders";
     }
 
@@ -123,7 +121,7 @@ public class OrderManagementController {
         if (commande != null && commande.getEtat() == EtatCommande.EN_VALIDATION) {
             User serveur = userService.findUserByEmail(principal.getName());
             commande.setServeur(serveur);
-            commande.setEtat(EtatCommande.EN_ATTENTE);
+            commande.setEtat(EtatCommande.EN_COURS);
 
             TableRestaurant table = commande.getTable();
             if (table != null && table.getStatut() == StatutTable.LIBRE) {
@@ -132,6 +130,13 @@ public class OrderManagementController {
                 tableRepository.save(table);
             }
             commandeService.saveCommande(commande);
+
+            // Decrement stock for all lines since they are now validated and sent to kitchen
+            if (commande.getLignesCommande() != null) {
+                for (LigneCommande ligne : commande.getLignesCommande()) {
+                    stockService.processStockDecrementForLigne(ligne);
+                }
+            }
         }
         return "redirect:/orders";
     }
@@ -265,20 +270,13 @@ public class OrderManagementController {
         return "redirect:/paiement/form/" + id;
     }
 
-    @GetMapping("/finish-preparation/{id}")
-    @PreAuthorize("hasRole('CHEF_CUISINIER')")
-    public String finishPreparation(@PathVariable Long id) {
-        commandeService.updateCommandeEtat(id, EtatCommande.PREPARATION_TERMINEE);
-        // On redirige le chef vers son propre tableau de bord
-        return "redirect:/orders/chef-dashboard";
-    }
     @GetMapping("/edit/{id}")
     @PreAuthorize("hasRole('SERVEUR')")
     public String showEditOrderForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         Commande commande = commandeService.findCommandeById(id);
 
-        if (commande.getEtat() != EtatCommande.EN_ATTENTE && commande.getEtat() != EtatCommande.EN_PREPARATION && commande.getEtat() != EtatCommande.SERVIE) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Impossible de modifier cette commande (elle doit être EN_ATTENTE, EN_PREPARATION, ou SERVIE).");
+        if (commande.getEtat() != EtatCommande.EN_COURS) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Impossible de modifier cette commande (elle doit être EN_COURS).");
             return "redirect:/orders";
         }
 
@@ -309,16 +307,9 @@ public class OrderManagementController {
         Commande commande = commandeService.findCommandeById(id);
         double montantTotal = commande.getMontantTotal();
 
-        // Si la commande est déjà en préparation ou servie, on force l'état en EN_ATTENTE pour les nouveaux ajouts
-        // et on ne supprime PAS les anciennes lignes
-        if (commande.getEtat() == EtatCommande.EN_PREPARATION || commande.getEtat() == EtatCommande.SERVIE || commande.getEtat() == EtatCommande.PREPARATION_TERMINEE) {
-            commande.setEtat(EtatCommande.EN_ATTENTE);
-        } else {
-            // Si elle est juste EN_ATTENTE, on remplace tout (comportement d'origine)
-            montantTotal = 0;
-            ligneCommandeRepository.deleteAll(commande.getLignesCommande());
-            commande.getLignesCommande().clear();
-        }
+        // On ne supprime JAMAIS les anciennes lignes, on en ajoute simplement de nouvelles
+        // car l'état de préparation est par ligne.
+        // Si on veut permettre la suppression, il faut le faire via une autre interface.
 
         // 2. Ajouter les nouvelles lignes de commande
         if (platIds != null) {
@@ -329,8 +320,10 @@ public class OrderManagementController {
                 ligne.setPlat(plat);
                 ligne.setQuantite(1); // Gérer la quantité si nécessaire
                 ligne.setTypeLigne(TypeLigneCommande.PLAT);
+                ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
                 montantTotal += plat.getPrix();
-                ligneCommandeRepository.save(ligne);
+                ligne = ligneCommandeRepository.save(ligne);
+                stockService.processStockDecrementForLigne(ligne);
                 commande.getLignesCommande().add(ligne); // <-- LA LIGNE CLÉ À AJOUTER
             }
         }
@@ -343,8 +336,10 @@ public class OrderManagementController {
                 ligne.setMenu(menu);
                 ligne.setQuantite(1); // Gérer la quantité si nécessaire
                 ligne.setTypeLigne(TypeLigneCommande.MENU);
+                ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
                 montantTotal += menu.getPrix();
-                ligneCommandeRepository.save(ligne);
+                ligne = ligneCommandeRepository.save(ligne);
+                stockService.processStockDecrementForLigne(ligne);
                 commande.getLignesCommande().add(ligne); // <-- LA LIGNE CLÉ À AJOUTER
             }
         }

@@ -24,15 +24,12 @@ public class StockService {
     private ConsommationStockRepository consommationStockRepository;
 
     @Transactional
-    public void processStockDecrementForCommande(Commande commande) {
-        Set<LigneCommande> lignesCommande = commande.getLignesCommande();
-        if (lignesCommande != null && !lignesCommande.isEmpty()) {
-            for (LigneCommande ligne : lignesCommande) {
-                if (ligne.getTypeLigne() == TypeLigneCommande.PLAT) {
-                    processStockForPlat(ligne.getPlat(), ligne);
-                } else if (ligne.getTypeLigne() == TypeLigneCommande.MENU) {
-                    processStockForMenu(ligne.getMenu(), ligne);
-                }
+    public void processStockDecrementForLigne(LigneCommande ligne) {
+        if (ligne != null) {
+            if (ligne.getTypeLigne() == TypeLigneCommande.PLAT) {
+                processStockForPlat(ligne.getPlat(), ligne);
+            } else if (ligne.getTypeLigne() == TypeLigneCommande.MENU) {
+                processStockForMenu(ligne.getMenu(), ligne);
             }
         }
     }
