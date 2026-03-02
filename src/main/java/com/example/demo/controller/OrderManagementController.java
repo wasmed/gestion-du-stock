@@ -94,13 +94,24 @@ public class OrderManagementController {
     @GetMapping("/finish-preparation-ligne/{id}")
     @PreAuthorize("hasRole('CHEF_CUISINIER')")
     public String finishPreparationLigne(@PathVariable Long id) {
-        commandeService.updateLigneCommandeEtat(id, EtatLigneCommande.SERVIE);
+        commandeService.updateLigneCommandeEtat(id, EtatLigneCommande.PREPARATION_TERMINEE);
         return "redirect:/orders/chef-dashboard";
     }
 
     @GetMapping("/serve/{id}")
     @PreAuthorize("hasRole('SERVEUR')")
     public String serveOrder(@PathVariable Long id) {
+        Commande commande = commandeService.findCommandeById(id);
+        if (commande != null && commande.getLignesCommande() != null) {
+            boolean hasServed = false;
+            for (LigneCommande ligne : commande.getLignesCommande()) {
+                if (ligne.getEtat() == EtatLigneCommande.PREPARATION_TERMINEE) {
+                    ligne.setEtat(EtatLigneCommande.SERVIE);
+                    ligneCommandeRepository.save(ligne);
+                    hasServed = true;
+                }
+            }
+        }
         return "redirect:/orders";
     }
 
@@ -113,6 +124,37 @@ public class OrderManagementController {
     }
 
     // --- Création de commande par le SERVEUR ---
+
+    @GetMapping("/validate-lines/{id}")
+    @PreAuthorize("hasRole('SERVEUR')")
+    public String validateOrderLines(@PathVariable Long id, Principal principal) {
+        Commande commande = commandeService.findCommandeById(id);
+        if (commande != null) {
+            boolean hasLinesValidated = false;
+            if (commande.getLignesCommande() != null) {
+                for (LigneCommande ligne : commande.getLignesCommande()) {
+                    if (ligne.getEtat() == EtatLigneCommande.EN_VALIDATION) {
+                        ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
+                        ligneCommandeRepository.save(ligne);
+                        stockService.processStockDecrementForLigne(ligne);
+                        hasLinesValidated = true;
+                    }
+                }
+            }
+
+            if (hasLinesValidated) {
+                // S'assurer que la commande est au minimum EN_COURS ou la repasser en EN_COURS
+                // pour signaler à la cuisine qu'il y a de nouvelles lignes EN_ATTENTE
+                if (commande.getEtat() == EtatCommande.PAYEE) {
+                    // Normalement impossible, mais au cas où
+                } else {
+                    commande.setEtat(EtatCommande.EN_COURS);
+                }
+                commandeService.saveCommande(commande);
+            }
+        }
+        return "redirect:/orders";
+    }
 
     @GetMapping("/validate/{id}")
     @PreAuthorize("hasRole('SERVEUR')")
@@ -134,7 +176,11 @@ public class OrderManagementController {
             // Decrement stock for all lines since they are now validated and sent to kitchen
             if (commande.getLignesCommande() != null) {
                 for (LigneCommande ligne : commande.getLignesCommande()) {
-                    stockService.processStockDecrementForLigne(ligne);
+                    if (ligne.getEtat() == EtatLigneCommande.EN_VALIDATION) {
+                        ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
+                        ligneCommandeRepository.save(ligne);
+                        stockService.processStockDecrementForLigne(ligne);
+                    }
                 }
             }
         }
