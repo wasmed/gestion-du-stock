@@ -248,7 +248,11 @@ public class ClientController {
                 ligne.setPlat(plat);
                 ligne.setQuantite(qty.intValue());
                 ligne.setTypeLigne(TypeLigneCommande.PLAT);
-                ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
+                if (Boolean.TRUE.equals(isEmporter)) {
+                    ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
+                } else {
+                    ligne.setEtat(EtatLigneCommande.EN_VALIDATION);
+                }
                 lignes.add(ligne);
                 montantTotal += plat.getPrix() * qty;
             }
@@ -265,7 +269,11 @@ public class ClientController {
                 ligne.setMenu(menu);
                 ligne.setQuantite(qty.intValue());
                 ligne.setTypeLigne(TypeLigneCommande.MENU);
-                ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
+                if (Boolean.TRUE.equals(isEmporter)) {
+                    ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
+                } else {
+                    ligne.setEtat(EtatLigneCommande.EN_VALIDATION);
+                }
                 lignes.add(ligne);
                 montantTotal += menu.getPrix() * qty;
             }
@@ -280,7 +288,9 @@ public class ClientController {
             // Pour les commandes à emporter, la commande est directement EN_COURS
             // et les lignes sont EN_ATTENTE (envoyées en cuisine), on doit donc déduire le stock.
             for (LigneCommande ligne : commande.getLignesCommande()) {
-                stockService.processStockDecrementForLigne(ligne);
+                if (ligne.getEtat() == EtatLigneCommande.EN_ATTENTE && ligne.getConsommations().isEmpty()) {
+                    stockService.processStockDecrementForLigne(ligne);
+                }
             }
         }
 
