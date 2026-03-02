@@ -28,31 +28,20 @@
         <td>
             <a th:href="@{/orders/details/{id}(id=${commande.id})}">Détails</a>
 
-            <span sec:authorize="hasRole('CHEF_CUISINIER')">
-                        <a th:href="@{/orders/prepare/{id}(id=${commande.id})}"
-                           th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_ATTENTE}">
-                            | Préparer
-                        </a>
-                    </span>
-
             <span sec:authorize="hasRole('SERVEUR')">
-                        <a th:href="@{/orders/serve/{id}(id=${commande.id})}"
-                           th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_PREPARATION}">
-                            | Servir
-                        </a>
                         <a th:href="@{/paiement/form/{id}(id=${commande.id})}"
-                           th:if="${commande.etat == T(com.example.demo.model.EtatCommande).SERVIE}">
+                           th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_COURS and commande.isToutesLignesServies()}">
                             | Paiement
                         </a>
                     </span>
 
             <span sec:authorize="hasRole('SERVEUR')">
                         <a th:href="@{/orders/edit/{id}(id=${commande.id})}"
-                           th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_ATTENTE}">
+                           th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_COURS}">
                             | Modifier
                         </a>
                         <a th:href="@{/orders/delete/{id}(id=${commande.id})}"
-                           th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_ATTENTE}">
+                           th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_COURS}">
                             | Supprimer
                         </a>
                     </span>
