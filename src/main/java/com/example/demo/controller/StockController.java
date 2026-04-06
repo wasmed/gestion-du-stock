@@ -6,6 +6,7 @@ import com.example.demo.model.TypeProduit;
 import com.example.demo.repository.StockProduitRepository;
 import com.example.demo.service.ProduitService;
 import com.example.demo.service.StockService;
+import com.example.demo.service.StockAiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -31,6 +32,8 @@ public class StockController {
     private com.example.demo.repository.FormatProduitRepository formatProduitRepository;
     @Autowired
     private com.example.demo.repository.ProduitRepository produitRepository;
+    @Autowired
+    private StockAiService stockAiService;
 
     @GetMapping("/list")
     public String listStock(Model model) {
@@ -133,5 +136,11 @@ public class StockController {
         List<StockProduit> lowStocks = stockService.findLowStocks();
         model.addAttribute("lowStocks", lowStocks);
         return "stock/low-stock-alert";
+    }
+
+    @GetMapping(value = {"/analyse-ia", "/api/stock/analyse-ia"})
+    @ResponseBody
+    public String analyseStockIa() {
+        return stockAiService.analyseStock();
     }
 }
