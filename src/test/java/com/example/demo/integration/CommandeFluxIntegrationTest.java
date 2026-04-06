@@ -11,6 +11,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -98,7 +100,7 @@ public class CommandeFluxIntegrationTest {
         ingredient.setQuantite(2.0); // 2 tomates par salade
         ingredient.setFormatProduit(formatUnite);
 
-        plat.setIngredients(new HashSet<>(List.of(ingredient)));
+        plat.setIngredients(new ArrayList<>(Arrays.asList(ingredient)));
         platRepository.save(plat);
     }
 
