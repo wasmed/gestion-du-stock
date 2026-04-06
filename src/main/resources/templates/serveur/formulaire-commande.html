@@ -107,16 +107,18 @@
                             <div class="tab-pane fade show active" id="pills-plats" role="tabpanel">
                                 <div class="row row-cols-1 row-cols-md-3 g-3">
                                     <div th:each="plat : ${platsCuisines}" class="col">
-                                        <div class="position-relative">
-                                            <input class="form-check-input position-absolute top-0 start-0 m-2 z-1" type="checkbox" name="platIds" th:value="${plat.identifiant}" th:id="'plat-'+${plat.identifiant}" style="transform: scale(1.3);">
-                                            <label class="card h-100 border-0 shadow-sm card-check" th:for="'plat-'+${plat.identifiant}">
-                                                <div class="card-body d-flex flex-column pt-4">
-                                                    <span class="fw-bold mb-2" th:text="${plat.nom}"></span>
-                                                    <div class="mt-auto text-end text-primary fw-bold fs-5">
+                                        <div class="card h-100 border-0 shadow-sm">
+                                            <div class="card-body d-flex flex-column">
+                                                <span class="fw-bold mb-2" th:text="${plat.nom}"></span>
+                                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                                    <div class="text-primary fw-bold fs-5">
                                                         <span th:text="${plat.prix} + ' €'"></span>
                                                     </div>
+                                                    <div style="width: 80px;">
+                                                        <input type="number" th:name="'platQty_' + ${plat.identifiant}" class="form-control form-control-sm text-center" min="0" value="0">
+                                                    </div>
                                                 </div>
-                                            </label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -126,16 +128,18 @@
                             <div class="tab-pane fade" id="pills-boissons" role="tabpanel">
                                  <div class="row row-cols-1 row-cols-md-3 g-3">
                                     <div th:each="boisson : ${boissons}" class="col">
-                                        <div class="position-relative">
-                                            <input class="form-check-input position-absolute top-0 start-0 m-2 z-1" type="checkbox" name="platIds" th:value="${boisson.identifiant}" th:id="'boisson-'+${boisson.identifiant}" style="transform: scale(1.3);">
-                                            <label class="card h-100 border-0 shadow-sm card-check" th:for="'boisson-'+${boisson.identifiant}">
-                                                <div class="card-body d-flex flex-column pt-4">
-                                                    <span class="fw-bold mb-2" th:text="${boisson.nom}"></span>
-                                                    <div class="mt-auto text-end text-primary fw-bold fs-5">
+                                        <div class="card h-100 border-0 shadow-sm">
+                                            <div class="card-body d-flex flex-column">
+                                                <span class="fw-bold mb-2" th:text="${boisson.nom}"></span>
+                                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                                    <div class="text-primary fw-bold fs-5">
                                                         <span th:text="${boisson.prix} + ' €'"></span>
                                                     </div>
+                                                    <div style="width: 80px;">
+                                                        <input type="number" th:name="'platQty_' + ${boisson.identifiant}" class="form-control form-control-sm text-center" min="0" value="0">
+                                                    </div>
                                                 </div>
-                                            </label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -145,16 +149,18 @@
                             <div class="tab-pane fade" id="pills-menus" role="tabpanel">
                                 <div class="row row-cols-1 row-cols-md-2 g-3">
                                     <div th:each="menu : ${menus}" class="col">
-                                        <div class="position-relative">
-                                            <input class="form-check-input position-absolute top-0 start-0 m-2 z-1" type="checkbox" name="menuIds" th:value="${menu.id}" th:id="'menu-'+${menu.id}" style="transform: scale(1.3);">
-                                            <label class="card h-100 border-0 shadow-sm card-check" th:for="'menu-'+${menu.id}">
-                                                <div class="card-body d-flex flex-column pt-4">
-                                                    <span class="fw-bold mb-2" th:text="${menu.nom}"></span>
-                                                    <div class="mt-auto text-end text-primary fw-bold fs-5">
+                                        <div class="card h-100 border-0 shadow-sm">
+                                            <div class="card-body d-flex flex-column">
+                                                <span class="fw-bold mb-2" th:text="${menu.nom}"></span>
+                                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                                    <div class="text-primary fw-bold fs-5">
                                                         <span th:text="${menu.prix} + ' €'"></span>
                                                     </div>
+                                                    <div style="width: 80px;">
+                                                        <input type="number" th:name="'menuQty_' + ${menu.id}" class="form-control form-control-sm text-center" min="0" value="0">
+                                                    </div>
                                                 </div>
-                                            </label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

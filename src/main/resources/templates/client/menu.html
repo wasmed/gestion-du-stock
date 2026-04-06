@@ -61,15 +61,17 @@
                                 <h5 class="card-title fw-bold" th:text="${menu.nom}">Nom du Menu</h5>
                                 <p class="card-text text-muted small flex-grow-1" th:text="${menu.description}">Description</p>
 
-                                <div class="mt-3 d-grid">
-                                    <a sec:authorize="hasRole('CLIENT')"
-                                       th:href="@{/client/add-to-cart(menuId=${menu.id})}"
-                                       class="btn btn-primary btn-modern shadow-sm">
-                                        <i class="bi bi-cart-plus me-2"></i> Ajouter au Panier
-                                    </a>
+                                <div class="mt-3">
+                                    <form sec:authorize="hasRole('CLIENT')" th:action="@{/client/add-to-cart}" method="get" class="d-flex align-items-center">
+                                        <input type="hidden" name="menuId" th:value="${menu.id}" />
+                                        <input type="number" name="quantite" class="form-control form-control-sm me-2 text-center" style="width: 70px;" min="1" value="1" />
+                                        <button type="submit" class="btn btn-primary btn-modern shadow-sm flex-grow-1">
+                                            <i class="bi bi-cart-plus me-2"></i> Ajouter au Panier
+                                        </button>
+                                    </form>
                                      <a sec:authorize="!isAuthenticated()"
                                        th:href="@{/login}"
-                                       class="btn btn-outline-primary btn-modern shadow-sm">
+                                       class="btn btn-outline-primary btn-modern shadow-sm d-block w-100">
                                         Se connecter pour commander
                                     </a>
                                 </div>
@@ -102,15 +104,17 @@
                                 <h5 class="card-title fw-bold" th:text="${plat.nom}">Nom du Plat</h5>
                                 <p class="card-text text-muted small flex-grow-1" th:text="${plat.description}">Description</p>
 
-                                <div class="mt-3 d-grid">
-                                    <a sec:authorize="hasRole('CLIENT')"
-                                       th:href="@{/client/add-to-cart(platId=${plat.identifiant})}"
-                                       class="btn btn-outline-primary btn-modern shadow-sm">
-                                        <i class="bi bi-cart-plus me-2"></i> Ajouter
-                                    </a>
+                                <div class="mt-3">
+                                    <form sec:authorize="hasRole('CLIENT')" th:action="@{/client/add-to-cart}" method="get" class="d-flex align-items-center">
+                                        <input type="hidden" name="platId" th:value="${plat.identifiant}" />
+                                        <input type="number" name="quantite" class="form-control form-control-sm me-2 text-center" style="width: 70px;" min="1" value="1" />
+                                        <button type="submit" class="btn btn-outline-primary btn-modern shadow-sm flex-grow-1">
+                                            <i class="bi bi-cart-plus me-2"></i> Ajouter
+                                        </button>
+                                    </form>
                                     <a sec:authorize="!isAuthenticated()"
                                        th:href="@{/login}"
-                                       class="btn btn-outline-secondary btn-modern shadow-sm">
+                                       class="btn btn-outline-secondary btn-modern shadow-sm d-block w-100">
                                         Se connecter
                                     </a>
                                 </div>

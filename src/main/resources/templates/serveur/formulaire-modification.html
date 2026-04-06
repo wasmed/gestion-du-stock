@@ -38,37 +38,48 @@
                         </div>
 
                         <!-- ========================================================== -->
-                        <!--     MISE À JOUR AVEC LES 3 LISTES DE SÉLECTION           -->
+                        <!--     MISE À JOUR AVEC LES LISTES DE SÉLECTION             -->
                         <!-- ========================================================== -->
-                        <div class="mb-3">
-                            <label for="plats" class="form-label">Plats Cuisinés & Desserts</label>
-                            <select id="plats" name="platIds" class="form-select" multiple size="8">
-                                <option th:each="plat : ${platsCuisines}"
-                                        th:value="${plat.identifiant}"
-                                        th:text="${plat.nom}"
-                                        th:selected="${commande.etat.toString() == 'EN_ATTENTE' and commande.lignesCommande.![plat != null ? plat.identifiant : null].contains(plat.identifiant)}"></option>
-                            </select>
-                            <small class="form-text text-muted">Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs items.</small>
+                        <div class="mb-4">
+                            <h5 class="form-label border-bottom pb-2">Plats Cuisinés & Desserts</h5>
+                            <div class="row row-cols-1 row-cols-md-2 g-2">
+                                <div th:each="plat : ${platsCuisines}" class="col">
+                                    <div class="d-flex justify-content-between align-items-center border p-2 rounded">
+                                        <span th:text="${plat.nom}"></span>
+                                        <div style="width: 80px;">
+                                            <input type="number" th:name="'platQty_' + ${plat.identifiant}" class="form-control form-control-sm text-center" min="0" value="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="boissons" class="form-label">Boissons</label>
-                            <select id="boissons" name="platIds" class="form-select" multiple size="5">
-                                <option th:each="boisson : ${boissons}"
-                                        th:value="${boisson.identifiant}"
-                                        th:text="${boisson.nom}"
-                                        th:selected="${commande.etat.toString() == 'EN_ATTENTE' and commande.lignesCommande.![plat != null ? plat.identifiant : null].contains(boisson.identifiant)}"></option>
-                            </select>
+                        <div class="mb-4">
+                            <h5 class="form-label border-bottom pb-2">Boissons</h5>
+                            <div class="row row-cols-1 row-cols-md-2 g-2">
+                                <div th:each="boisson : ${boissons}" class="col">
+                                    <div class="d-flex justify-content-between align-items-center border p-2 rounded">
+                                        <span th:text="${boisson.nom}"></span>
+                                        <div style="width: 80px;">
+                                            <input type="number" th:name="'platQty_' + ${boisson.identifiant}" class="form-control form-control-sm text-center" min="0" value="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="menus" class="form-label">Menus</label>
-                            <select id="menus" name="menuIds" class="form-select" multiple size="5">
-                                <option th:each="menu : ${menus}"
-                                        th:value="${menu.id}"
-                                        th:text="${menu.nom}"
-                                        th:selected="${commande.etat.toString() == 'EN_ATTENTE' and commande.lignesCommande.![menu != null ? menu.id : null].contains(menu.id)}"></option>
-                            </select>
+                        <div class="mb-4">
+                            <h5 class="form-label border-bottom pb-2">Menus</h5>
+                            <div class="row row-cols-1 row-cols-md-2 g-2">
+                                <div th:each="menu : ${menus}" class="col">
+                                    <div class="d-flex justify-content-between align-items-center border p-2 rounded">
+                                        <span th:text="${menu.nom}"></span>
+                                        <div style="width: 80px;">
+                                            <input type="number" th:name="'menuQty_' + ${menu.id}" class="form-control form-control-sm text-center" min="0" value="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">

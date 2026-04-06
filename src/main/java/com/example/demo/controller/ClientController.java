@@ -82,7 +82,9 @@ public class ClientController {
     @PreAuthorize("hasRole('CLIENT')")
     @SuppressWarnings("unchecked")
     public String addToCart(@RequestParam(required = false)Long platId,
-                            @RequestParam(required = false) Long menuId, HttpSession session, RedirectAttributes redirectAttributes) {
+                            @RequestParam(required = false) Long menuId,
+                            @RequestParam(required = false, defaultValue = "1") Integer quantite,
+                            HttpSession session, RedirectAttributes redirectAttributes) {
         String addedItemName = "";
 
         // Gestion des plats
@@ -97,14 +99,21 @@ public class ClientController {
             cartMenus = new ArrayList<>();
         }
 
+        // Limit quantity to prevent DoS (max 100 per request)
+        int safeQuantite = (quantite != null && quantite > 0) ? Math.min(quantite, 100) : 1;
+
         if (platId != null) {
             Plat plat = platService.findPlatById(platId);
-            cartPlats.add(plat);
-            addedItemName = plat.getNom();
+            for (int i = 0; i < safeQuantite; i++) {
+                cartPlats.add(plat);
+            }
+            addedItemName = safeQuantite + "x " + plat.getNom();
         } else if (menuId != null) {
             Menu menu = menuService.findMenuById(menuId);
-            cartMenus.add(menu);
-            addedItemName = menu.getNom();
+            for (int i = 0; i < safeQuantite; i++) {
+                cartMenus.add(menu);
+            }
+            addedItemName = safeQuantite + "x " + menu.getNom();
         }
 
         session.setAttribute("cartPlats", cartPlats);
