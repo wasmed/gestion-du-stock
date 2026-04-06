@@ -223,6 +223,10 @@ public class ClientController {
                 commande.setEtat(EtatCommande.EN_COURS);
             } else {
                 commande.setEtat(EtatCommande.EN_VALIDATION);
+                if (table != null) {
+                    table.setStatut(StatutTable.OCCUPEE);
+                    tableRepository.save(table);
+                }
             }
             commande.setDateHeure(LocalDateTime.now());
             commande.setCommentaire(notes);
