@@ -30,6 +30,10 @@ public class PlatService {
     }
 
     public void deletePlatById(Long id) {
-        platRepository.deleteById(id);
+        Plat plat = platRepository.findById(id).orElse(null);
+        if (plat != null) {
+            plat.setActif(false);
+            platRepository.save(plat);
+        }
     }
 }

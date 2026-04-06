@@ -151,9 +151,9 @@
                                     <span class="fw-bold text-dark small">Commande #<span th:text="${commande.id}"></span></span>
                                     <span class="badge badge-modern small"
                                           th:classappend="${
-                                            commande.isToutesLignesServies() ? 'bg-success' : 'bg-warning text-dark'
+                                            commande.isPreteAServir() ? 'bg-success' : (commande.isToutesLignesServies() ? 'bg-primary' : 'bg-warning text-dark')
                                           }"
-                                          th:text="${commande.isToutesLignesServies() ? 'PRÊT' : 'EN COURS'}">Statut</span>
+                                          th:text="${commande.isPreteAServir() ? 'PRÊT' : (commande.isToutesLignesServies() ? 'SERVIE' : 'EN COURS')}">Statut</span>
                                 </div>
 
                                 <div class="mb-2 text-muted small">
@@ -238,9 +238,9 @@
                                 <span class="fw-bold text-dark small">Commande #<span th:text="${commande.id}"></span></span>
                                 <span class="badge badge-modern small"
                                       th:classappend="${
-                                            commande.isToutesLignesServies() ? 'bg-success' : 'bg-warning text-dark'
+                                            commande.isPreteAServir() ? 'bg-success' : (commande.isToutesLignesServies() ? 'bg-primary' : 'bg-warning text-dark')
                                       }"
-                                          th:text="${commande.isToutesLignesServies() ? 'PRÊT' : 'EN COURS'}">Statut</span>
+                                          th:text="${commande.isPreteAServir() ? 'PRÊT' : (commande.isToutesLignesServies() ? 'SERVIE' : 'EN COURS')}">Statut</span>
                             </div>
 
                             <div class="mb-2 text-muted small">

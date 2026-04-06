@@ -68,7 +68,7 @@ public class OrderManagementController {
 
         // 6. On récupère les commandes prêtes à servir (Toutes les lignes SERVIE)
         List<Commande> commandesPretes = commandesEnCours.stream()
-                .filter(Commande::isToutesLignesServies)
+                .filter(Commande::isPreteAServir)
                 .collect(Collectors.toList());
         model.addAttribute("commandesPretes", commandesPretes);
 
