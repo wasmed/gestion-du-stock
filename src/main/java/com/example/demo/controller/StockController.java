@@ -73,7 +73,8 @@ public class StockController {
     public String saveNewStock(@ModelAttribute StockProduit stockProduit) {
         // Enregistrer le nouveau Produit s'il n'existe pas encore
         if (stockProduit.getProduit() != null && stockProduit.getProduit().getId() == null) {
-            Produit savedProduit = produitRepository.save(stockProduit.getProduit());
+            Produit produitToSave = stockProduit.getProduit();
+            Produit savedProduit = produitRepository.save(produitToSave);
             stockProduit.setProduit(savedProduit);
         }
 
@@ -98,10 +99,22 @@ public class StockController {
     public String updateStock(@ModelAttribute StockProduit stockProduit) {
         // Enregistrer le nouveau Produit s'il n'existe pas encore
         if (stockProduit.getProduit() != null && stockProduit.getProduit().getId() == null) {
-            Produit savedProduit = produitRepository.save(stockProduit.getProduit());
+            Produit produitToSave = stockProduit.getProduit();
+            Produit savedProduit = produitRepository.save(produitToSave);
             stockProduit.setProduit(savedProduit);
         } else if (stockProduit.getProduit() != null) {
-            produitRepository.save(stockProduit.getProduit());
+            // Find existing produit to merge or update
+            Produit existingProduit = produitRepository.findById(stockProduit.getProduit().getId()).orElse(null);
+            if (existingProduit != null) {
+                existingProduit.setNom(stockProduit.getProduit().getNom());
+                existingProduit.setType(stockProduit.getProduit().getType());
+                existingProduit.setImage(stockProduit.getProduit().getImage());
+                produitRepository.save(existingProduit);
+                stockProduit.setProduit(existingProduit);
+            } else {
+                Produit savedProduit = produitRepository.save(stockProduit.getProduit());
+                stockProduit.setProduit(savedProduit);
+            }
         }
 
         stockService.saveStock(stockProduit);
