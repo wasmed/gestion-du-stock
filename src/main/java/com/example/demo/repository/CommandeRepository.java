@@ -43,5 +43,9 @@ public interface CommandeRepository extends JpaRepository<Commande, Long> {
 
     @Query("SELECT SUM(c.montantTotal) FROM Commande c WHERE c.dateHeure >= :startDate AND c.etat = 'PAYEE'")
     Double sumTotalForToday(@Param("startDate") java.time.LocalDateTime startDate);
+
+    @Query("SELECT new com.example.demo.dto.ItemStatDTO(1L, CAST(CAST(c.dateHeure AS DATE) AS string), COUNT(c)) " +
+           "FROM Commande c GROUP BY CAST(c.dateHeure AS DATE) ORDER BY COUNT(c) DESC")
+    List<com.example.demo.dto.ItemStatDTO> findCommandesPerDay();
 }
 

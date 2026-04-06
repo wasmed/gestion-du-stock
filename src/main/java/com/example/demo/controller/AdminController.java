@@ -7,6 +7,7 @@ import com.example.demo.model.User;
 import com.example.demo.repository.CommandeRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.FeedbackService;
+import com.example.demo.service.StatistiqueService;
 import com.example.demo.service.StockService;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ public class AdminController {
 
     @Autowired
     private FeedbackService feedbackService;
+
+    @Autowired
+    private StatistiqueService statistiqueService;
 
     @GetMapping("/dashboard")
     public String showAdminDashboard(Model model) {
@@ -113,5 +117,22 @@ public class AdminController {
     public String deleteUser(@PathVariable Long id) {
         userRepository.deleteById(id);
         return "redirect:/admin/users";
+    }
+
+    @GetMapping("/statistiques")
+    public String showStatistiques(Model model) {
+        model.addAttribute("topSellingPlats", statistiqueService.getTopSellingPlats());
+        model.addAttribute("bottomSellingPlats", statistiqueService.getBottomSellingPlats());
+        model.addAttribute("topSellingMenus", statistiqueService.getTopSellingMenus());
+        model.addAttribute("bottomSellingMenus", statistiqueService.getBottomSellingMenus());
+
+        model.addAttribute("topRatedPlats", statistiqueService.getTopRatedPlats());
+        model.addAttribute("bottomRatedPlats", statistiqueService.getBottomRatedPlats());
+        model.addAttribute("topRatedMenus", statistiqueService.getTopRatedMenus());
+        model.addAttribute("bottomRatedMenus", statistiqueService.getBottomRatedMenus());
+
+        model.addAttribute("commandesPerDay", statistiqueService.getCommandesPerDay());
+
+        return "admin/statistiques";
     }
 }
