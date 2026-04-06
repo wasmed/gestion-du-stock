@@ -133,6 +133,18 @@ public class Commande {
         return true;
     }
 
+    public boolean isPreteAServir() {
+        if (lignesCommande == null || lignesCommande.isEmpty()) {
+            return false;
+        }
+        for (LigneCommande ligne : lignesCommande) {
+            if (ligne.getEtat() == EtatLigneCommande.PREPARATION_TERMINEE) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Paiement getPaiement() {
         return paiement;
     }

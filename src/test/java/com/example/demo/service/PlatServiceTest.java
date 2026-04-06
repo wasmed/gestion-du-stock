@@ -86,11 +86,18 @@ public class PlatServiceTest {
     void testDeletePlatById() {
         // Arrange
         Long id = 1L;
+        Plat plat = new Plat();
+        plat.setIdentifiant(id);
+        plat.setActif(true);
+
+        when(platRepository.findById(id)).thenReturn(Optional.of(plat));
 
         // Act
         platService.deletePlatById(id);
 
         // Assert
-        verify(platRepository).deleteById(id);
+        verify(platRepository).findById(id);
+        verify(platRepository).save(plat);
+        org.junit.jupiter.api.Assertions.assertFalse(plat.getActif());
     }
 }

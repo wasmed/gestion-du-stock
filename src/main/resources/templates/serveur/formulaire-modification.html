@@ -1,96 +1,187 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Modifier la Commande</title>
+    <title>Modifier la Commande | RestoApp</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
-<body>
+<body class="bg-light">
 <div th:replace="~{fragments/navbar :: nav}"></div>
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <h3>Modifier la commande n°<span th:text="${commande.id}"></span></h3>
-                </div>
-                <div class="card-body">
-                    <form th:action="@{/orders/edit/{id}(id=${commande.id})}" method="post">
-                        <!-- Sélecteur de table (ne change pas) -->
+<div class="container-fluid py-4">
+    <div class="alert alert-danger alert-dismissible fade show" th:if="${errorMessage}" role="alert">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Modifier la Commande #<span th:text="${commande.id}"></span></h2>
+        <p class="text-muted">Modifiez la table ou ajoutez de nouveaux articles à la commande.</p>
+    </div>
+
+    <form th:action="@{/orders/edit/{id}(id=${commande.id})}" method="post">
+        <div class="row">
+            <!-- LEFT COLUMN: SELECTION -->
+            <div class="col-lg-8">
+
+                <!-- TABLE SELECTION -->
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                        <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-shop me-2"></i>1. Modifier la Table</h5>
+                    </div>
+                    <div class="card-body px-4 pb-4">
                         <div class="mb-3">
-                            <label for="table" class="form-label">Table</label>
-                            <select id="table" name="tableId" class="form-select" required>
+                            <label for="table" class="form-label">Sélectionnez la nouvelle table</label>
+                            <select id="table" name="tableId" class="form-select form-select-lg" required>
                                 <option th:each="tableRestaurant : ${tables}"
                                         th:value="${tableRestaurant.identifiant}"
-                                        th:text="'Table ' + ${tableRestaurant.numeroTable}"
-                                        th:selected="${tableRestaurant.identifiant == commande.table.identifiant}"></option>
+                                        th:text="'Table ' + ${tableRestaurant.numeroTable} + ' (' + ${tableRestaurant.nombrePersonne} + ' places)'"
+                                        th:selected="${commande.table != null and tableRestaurant.identifiant == commande.table.identifiant}"></option>
                             </select>
                         </div>
+                    </div>
+                </div>
 
-                        <!-- Affichage du client (ne change pas) -->
-                        <div class="mb-3">
-                            <label class="form-label">Client</label>
-                            <input type="text" class="form-control" th:value="${commande.client.fullName}" readonly>
+                <!-- ITEMS SELECTION -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                        <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-basket2 me-2"></i>2. Ajouter des Articles</h5>
+                    </div>
+                    <div class="card-body px-4 pb-4">
+                        <div class="alert alert-info border small text-muted mb-4">
+                            <i class="bi bi-info-circle me-1"></i> Cette commande est en cours. Les éléments sélectionnés ci-dessous seront <strong>ajoutés</strong> (ils ne remplaceront pas l'existant).
                         </div>
+                        <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active rounded-pill px-4" id="pills-plats-tab" data-bs-toggle="pill" data-bs-target="#pills-plats" type="button" role="tab">
+                                    <i class="bi bi-egg-fried me-2"></i>Plats Cuisinés
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link rounded-pill px-4" id="pills-boissons-tab" data-bs-toggle="pill" data-bs-target="#pills-boissons" type="button" role="tab">
+                                    <i class="bi bi-cup-straw me-2"></i>Boissons
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link rounded-pill px-4" id="pills-menus-tab" data-bs-toggle="pill" data-bs-target="#pills-menus" type="button" role="tab">
+                                    <i class="bi bi-journal-text me-2"></i>Menus
+                                </button>
+                            </li>
+                        </ul>
 
-                        <div class="alert alert-info" th:if="${commande.etat.toString() != 'EN_ATTENTE'}">
-                            Cette commande est déjà en cours. Les éléments sélectionnés ci-dessous seront <strong>ajoutés</strong> (ils ne remplaceront pas l'existant).
-                        </div>
+                        <div class="tab-content" id="pills-tabContent">
+                            <!-- PLATS -->
+                            <div class="tab-pane fade show active" id="pills-plats" role="tabpanel">
+                                <div class="row row-cols-1 row-cols-md-3 g-3">
+                                    <div th:each="plat : ${platsCuisines}" class="col">
+                                        <div class="card h-100 border-0 shadow-sm">
+                                            <div class="card-body d-flex flex-column">
+                                                <span class="fw-bold mb-2" th:text="${plat.nom}"></span>
+                                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                                    <div class="text-primary fw-bold fs-5">
+                                                        <span th:text="${plat.prix} + ' €'"></span>
+                                                    </div>
+                                                    <div style="width: 80px;">
+                                                        <input type="number" th:name="'platQty_' + ${plat.identifiant}" class="form-control form-control-sm text-center" min="0" value="0">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                        <!-- ========================================================== -->
-                        <!--     MISE À JOUR AVEC LES LISTES DE SÉLECTION             -->
-                        <!-- ========================================================== -->
-                        <div class="mb-4">
-                            <h5 class="form-label border-bottom pb-2">Plats Cuisinés & Desserts</h5>
-                            <div class="row row-cols-1 row-cols-md-2 g-2">
-                                <div th:each="plat : ${platsCuisines}" class="col">
-                                    <div class="d-flex justify-content-between align-items-center border p-2 rounded">
-                                        <span th:text="${plat.nom}"></span>
-                                        <div style="width: 80px;">
-                                            <input type="number" th:name="'platQty_' + ${plat.identifiant}" class="form-control form-control-sm text-center" min="0" value="0">
+                            <!-- BOISSONS -->
+                            <div class="tab-pane fade" id="pills-boissons" role="tabpanel">
+                                 <div class="row row-cols-1 row-cols-md-3 g-3">
+                                    <div th:each="boisson : ${boissons}" class="col">
+                                        <div class="card h-100 border-0 shadow-sm">
+                                            <div class="card-body d-flex flex-column">
+                                                <span class="fw-bold mb-2" th:text="${boisson.nom}"></span>
+                                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                                    <div class="text-primary fw-bold fs-5">
+                                                        <span th:text="${boisson.prix} + ' €'"></span>
+                                                    </div>
+                                                    <div style="width: 80px;">
+                                                        <input type="number" th:name="'platQty_' + ${boisson.identifiant}" class="form-control form-control-sm text-center" min="0" value="0">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- MENUS -->
+                            <div class="tab-pane fade" id="pills-menus" role="tabpanel">
+                                <div class="row row-cols-1 row-cols-md-2 g-3">
+                                    <div th:each="menu : ${menus}" class="col">
+                                        <div class="card h-100 border-0 shadow-sm">
+                                            <div class="card-body d-flex flex-column">
+                                                <span class="fw-bold mb-2" th:text="${menu.nom}"></span>
+                                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                                    <div class="text-primary fw-bold fs-5">
+                                                        <span th:text="${menu.prix} + ' €'"></span>
+                                                    </div>
+                                                    <div style="width: 80px;">
+                                                        <input type="number" th:name="'menuQty_' + ${menu.id}" class="form-control form-control-sm text-center" min="0" value="0">
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="mb-4">
-                            <h5 class="form-label border-bottom pb-2">Boissons</h5>
-                            <div class="row row-cols-1 row-cols-md-2 g-2">
-                                <div th:each="boisson : ${boissons}" class="col">
-                                    <div class="d-flex justify-content-between align-items-center border p-2 rounded">
-                                        <span th:text="${boisson.nom}"></span>
-                                        <div style="width: 80px;">
-                                            <input type="number" th:name="'platQty_' + ${boisson.identifiant}" class="form-control form-control-sm text-center" min="0" value="0">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <h5 class="form-label border-bottom pb-2">Menus</h5>
-                            <div class="row row-cols-1 row-cols-md-2 g-2">
-                                <div th:each="menu : ${menus}" class="col">
-                                    <div class="d-flex justify-content-between align-items-center border p-2 rounded">
-                                        <span th:text="${menu.nom}"></span>
-                                        <div style="width: 80px;">
-                                            <input type="number" th:name="'menuQty_' + ${menu.id}" class="form-control form-control-sm text-center" min="0" value="0">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                            <a th:href="@{/orders}" class="btn btn-secondary">Annuler</a>
-                            <button type="submit" class="btn btn-primary">Enregistrer les Modifications</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
+
+            <!-- RIGHT COLUMN: SUMMARY & SUBMIT -->
+            <div class="col-lg-4">
+                 <div class="card shadow border-0 sticky-top" style="top: 20px; z-index: 100;">
+                    <div class="card-header bg-primary text-white py-3">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-receipt me-2"></i>Résumé</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted">Client</label>
+                            <p class="form-control-static fw-bold fs-5"><i class="bi bi-person-circle me-2 text-primary"></i><span th:text="${commande.client.fullName}"></span></p>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted">Contenu actuel de la commande</label>
+                            <ul class="list-group list-group-flush small border-top border-bottom mb-3">
+                                <li th:each="ligne : ${commande.lignesCommande}" class="list-group-item px-0 py-2 d-flex justify-content-between">
+                                    <div>
+                                        <span class="fw-bold me-1 text-primary" th:text="${ligne.quantite} + 'x'"></span>
+                                        <span th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}">Item</span>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="d-flex justify-content-between fw-bold pt-2 fs-5">
+                                <span>Total actuel :</span>
+                                <span th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + ' €'"></span>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm">
+                                <i class="bi bi-save me-2"></i>Enregistrer les Modifications
+                            </button>
+                            <a th:href="@{/orders}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-lg me-2"></i>Annuler
+                            </a>
+                        </div>
+                    </div>
+                 </div>
+            </div>
         </div>
-    </div>
+    </form>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
