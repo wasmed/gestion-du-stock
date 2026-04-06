@@ -48,30 +48,42 @@
                         <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-shop me-2"></i>1. Choisir une Table ou À Emporter</h5>
                     </div>
                     <div class="card-body px-4 pb-4">
-                        <div class="mb-3">
-                            <label class="form-label d-block fw-bold">Type de commande</label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="isEmporter" id="surPlace" value="false" checked onchange="toggleTableSelection()">
-                                <label class="form-check-label" for="surPlace">Sur place</label>
+                        <div th:if="${selectedTable != null}">
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                <strong>Installation sur la Table <span th:text="${selectedTable.numeroTable}"></span></strong>
+                                (<span th:text="${selectedTable.nombrePersonne}"></span> places).
                             </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="isEmporter" id="aEmporter" value="true" onchange="toggleTableSelection()">
-                                <label class="form-check-label" for="aEmporter">À emporter</label>
-                            </div>
+                            <input type="hidden" name="tableId" th:value="${selectedTable.identifiant}">
+                            <input type="hidden" name="isEmporter" value="false">
                         </div>
 
-                        <div id="tableSelectionContainer">
-                            <div th:if="${tables.isEmpty()}" class="alert alert-warning">
-                                Aucune table disponible.
+                        <div th:if="${selectedTable == null}">
+                            <div class="mb-3">
+                                <label class="form-label d-block fw-bold">Type de commande</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="isEmporter" id="surPlace" value="false" checked onchange="toggleTableSelection()">
+                                    <label class="form-check-label" for="surPlace">Sur place</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="isEmporter" id="aEmporter" value="true" onchange="toggleTableSelection()">
+                                    <label class="form-check-label" for="aEmporter">À emporter</label>
+                                </div>
                             </div>
-                            <div class="row row-cols-2 row-cols-md-4 row-cols-xl-5 g-3">
-                                <div th:each="table : ${tables}" class="col">
-                                    <input type="radio" name="tableId" th:value="${table.identifiant}" th:id="'table-'+${table.identifiant}" class="btn-check table-radio" required>
-                                    <label th:for="'table-'+${table.identifiant}" class="btn btn-outline-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3 shadow-sm border-2">
-                                        <i class="bi bi-square fs-1 mb-2"></i>
-                                        <span class="fw-bold fs-5">Table <span th:text="${table.numeroTable}"></span></span>
-                                        <small class=""><span th:text="${table.nombrePersonne}"></span> places</small>
-                                    </label>
+
+                            <div id="tableSelectionContainer">
+                                <div th:if="${tables.isEmpty()}" class="alert alert-warning">
+                                    Aucune table disponible.
+                                </div>
+                                <div class="row row-cols-2 row-cols-md-4 row-cols-xl-5 g-3">
+                                    <div th:each="table : ${tables}" class="col">
+                                        <input type="radio" name="tableId" th:value="${table.identifiant}" th:id="'table-'+${table.identifiant}" class="btn-check table-radio" required>
+                                        <label th:for="'table-'+${table.identifiant}" class="btn btn-outline-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3 shadow-sm border-2">
+                                            <i class="bi bi-square fs-1 mb-2"></i>
+                                            <span class="fw-bold fs-5">Table <span th:text="${table.numeroTable}"></span></span>
+                                            <small class=""><span th:text="${table.nombrePersonne}"></span> places</small>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>

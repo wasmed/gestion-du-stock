@@ -189,13 +189,23 @@ public class OrderManagementController {
 
     @GetMapping("/create")
     @PreAuthorize("hasRole('SERVEUR')")
-    public String showCreateOrderForm(@RequestParam(required = false) Integer nombrePersonne,Model model) {
+    public String showCreateOrderForm(@RequestParam(required = false) Integer nombrePersonne,
+                                      @RequestParam(required = false) Long tableId,
+                                      Model model) {
         List<TableRestaurant> tablesDisponibles;
         if (nombrePersonne != null && nombrePersonne > 0) {
             tablesDisponibles = tableRepository.findByStatutAndNombrePersonneGreaterThanEqual(StatutTable.LIBRE, nombrePersonne);
         } else {
             tablesDisponibles = tableRepository.findByStatut(StatutTable.LIBRE);
         }
+
+        if (tableId != null) {
+            TableRestaurant table = tableRepository.findById(tableId).orElse(null);
+            if (table != null && table.getStatut() == StatutTable.LIBRE) {
+                model.addAttribute("selectedTable", table);
+            }
+        }
+
         List<Plat> plats = platService.findAllActivePlats();
 
         Map<Boolean, List<Plat>> platsPartitionnes = plats.stream()
