@@ -1,0 +1,470 @@
+[INFO] Scanning for projects...
+[WARNING]
+[WARNING] Some problems were encountered while building the effective model for com.example:demo:jar:0.0.1-SNAPSHOT
+[WARNING] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: org.thymeleaf.extras:thymeleaf-extras-springsecurity6:jar -> duplicate declaration of version (?) @ line 116, column 21
+[WARNING]
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING]
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING]
+[INFO]
+[INFO] --------------------------< com.example:demo >--------------------------
+[INFO] Building demo 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] >>> spring-boot:3.5.4:run (default-cli) > test-compile @ demo >>>
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ demo ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 39 resources from src/main/resources to target/classes
+[INFO]
+[INFO] --- compiler:3.14.0:compile (default-compile) @ demo ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 67 source files with javac [debug parameters release 21] to target/classes
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ demo ---
+[INFO] Copying 1 resource from src/test/resources to target/test-classes
+[INFO]
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ demo ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 5 source files with javac [debug parameters release 21] to target/test-classes
+[INFO]
+[INFO] <<< spring-boot:3.5.4:run (default-cli) < test-compile @ demo <<<
+[INFO]
+[INFO]
+[INFO] --- spring-boot:3.5.4:run (default-cli) @ demo ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.4)
+
+2026-04-06T23:32:11.634Z  INFO 130107 --- [demo-test] [  restartedMain] com.example.demo.DemoApplication         : Starting DemoApplication using Java 21.0.10 with PID 130107 (/app/target/classes started by jules in /app)
+2026-04-06T23:32:11.637Z  INFO 130107 --- [demo-test] [  restartedMain] com.example.demo.DemoApplication         : The following 1 profile is active: "h2"
+2026-04-06T23:32:11.696Z  INFO 130107 --- [demo-test] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-04-06T23:32:11.696Z  INFO 130107 --- [demo-test] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-04-06T23:32:12.718Z  INFO 130107 --- [demo-test] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-06T23:32:12.720Z  INFO 130107 --- [demo-test] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
+2026-04-06T23:32:12.768Z  INFO 130107 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.CommandeRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:32:12.770Z  INFO 130107 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.ConsommationStockRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:32:12.771Z  INFO 130107 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.FeedbackRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:32:12.772Z  INFO 130107 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.FormatProduitRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:32:12.774Z  INFO 130107 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.IngredientRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:32:12.775Z  INFO 130107 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.LigneCommandeRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:32:12.776Z  INFO 130107 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.MenuRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:32:12.777Z  INFO 130107 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.PaiementRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:32:12.779Z  INFO 130107 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.PlatRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:32:12.780Z  INFO 130107 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.PourboireRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:32:12.781Z  INFO 130107 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.ProduitRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:32:12.782Z  INFO 130107 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.StockProduitRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:32:12.783Z  INFO 130107 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.TableRestaurantRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:32:12.786Z  INFO 130107 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.UserRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:32:12.787Z  INFO 130107 --- [demo-test] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 57 ms. Found 0 JDBC repository interfaces.
+2026-04-06T23:32:12.803Z  INFO 130107 --- [demo-test] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-06T23:32:12.804Z  INFO 130107 --- [demo-test] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-06T23:32:12.957Z  INFO 130107 --- [demo-test] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 148 ms. Found 14 JPA repository interfaces.
+2026-04-06T23:32:13.797Z  INFO 130107 --- [demo-test] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-04-06T23:32:13.814Z  INFO 130107 --- [demo-test] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-06T23:32:13.815Z  INFO 130107 --- [demo-test] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.43]
+2026-04-06T23:32:13.855Z  INFO 130107 --- [demo-test] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-06T23:32:13.856Z  INFO 130107 --- [demo-test] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2159 ms
+2026-04-06T23:32:14.182Z  INFO 130107 --- [demo-test] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-06T23:32:14.424Z  INFO 130107 --- [demo-test] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2026-04-06T23:32:14.427Z  INFO 130107 --- [demo-test] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-06T23:32:14.493Z  INFO 130107 --- [demo-test] [  restartedMain] org.flywaydb.core.FlywayExecutor         : Database: jdbc:h2:mem:testdb (H2 2.3)
+2026-04-06T23:32:14.523Z  INFO 130107 --- [demo-test] [  restartedMain] o.f.c.i.s.JdbcTableSchemaHistory         : Schema history table "PUBLIC"."flyway_schema_history" does not exist yet
+2026-04-06T23:32:14.525Z  INFO 130107 --- [demo-test] [  restartedMain] o.f.core.internal.command.DbValidate     : Successfully validated 0 migrations (execution time 00:00.008s)
+2026-04-06T23:32:14.525Z  WARN 130107 --- [demo-test] [  restartedMain] o.f.core.internal.command.DbValidate     : No migrations found. Are your locations set up correctly?
+2026-04-06T23:32:14.534Z  INFO 130107 --- [demo-test] [  restartedMain] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "PUBLIC"."flyway_schema_history" ...
+2026-04-06T23:32:14.582Z  INFO 130107 --- [demo-test] [  restartedMain] o.f.core.internal.command.DbMigrate      : Current version of schema "PUBLIC": << Empty Schema >>
+2026-04-06T23:32:14.586Z  INFO 130107 --- [demo-test] [  restartedMain] o.f.core.internal.command.DbMigrate      : Schema "PUBLIC" is up to date. No migration necessary.
+2026-04-06T23:32:14.707Z  INFO 130107 --- [demo-test] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-06T23:32:14.754Z  INFO 130107 --- [demo-test] [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.22.Final
+2026-04-06T23:32:14.786Z  INFO 130107 --- [demo-test] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-06T23:32:15.069Z  INFO 130107 --- [demo-test] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-06T23:32:15.118Z  WARN 130107 --- [demo-test] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-06T23:32:15.132Z  INFO 130107 --- [demo-test] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-06T23:32:16.496Z  INFO 130107 --- [demo-test] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: drop table if exists commande cascade
+Hibernate: drop table if exists consommation_stock cascade
+Hibernate: drop table if exists feedback cascade
+Hibernate: drop table if exists format_produit cascade
+Hibernate: drop table if exists ingredient cascade
+Hibernate: drop table if exists ligne_commande cascade
+Hibernate: drop table if exists menu cascade
+Hibernate: drop table if exists menu_plat cascade
+Hibernate: drop table if exists paiement cascade
+Hibernate: drop table if exists plat cascade
+Hibernate: drop table if exists pourboire cascade
+Hibernate: drop table if exists produit cascade
+Hibernate: drop table if exists stock_produit cascade
+Hibernate: drop table if exists table_restaurant cascade
+Hibernate: drop table if exists "user" cascade
+Hibernate: create table commande (is_emporter boolean, montant_total float(53), client_id bigint, date_heure timestamp(6), id bigint generated by default as identity, serveur_id bigint, table_id bigint, commentaire varchar(255), etat enum ('EN_COURS','EN_VALIDATION','PAYEE'), primary key (id))
+Hibernate: create table consommation_stock (quantite_utilisee float(53), format_produit_id bigint, identifiant bigint generated by default as identity, ligne_commande_id bigint, produit_id bigint, primary key (identifiant))
+Hibernate: create table feedback (note integer, client_id bigint, commande_id bigint unique, date_submitted timestamp(6), identifiant bigint generated by default as identity, commentaire varchar(255), primary key (identifiant))
+Hibernate: create table format_produit (quantite float(53), identifiant bigint generated by default as identity, nom varchar(255), primary key (identifiant))
+Hibernate: create table ingredient (quantite float(53), format_produit_id bigint, identifiant bigint generated by default as identity, plat_id bigint, produit_id bigint, primary key (identifiant))
+Hibernate: create table ligne_commande (quantite integer, commande_id bigint, identifiant bigint generated by default as identity, menu_id bigint, plat_id bigint, etat enum ('EN_ATTENTE','EN_PREPARATION','EN_VALIDATION','PREPARATION_TERMINEE','SERVIE'), type_ligne enum ('MENU','PLAT'), primary key (identifiant))
+Hibernate: create table menu (actif boolean not null, date_debut date, date_fin date, prix float(53), id bigint generated by default as identity, description varchar(255), image varchar(255), nom varchar(255), primary key (id))
+Hibernate: create table menu_plat (menu_id bigint not null, plat_id bigint not null, primary key (menu_id, plat_id))
+Hibernate: create table paiement (montant float(53), commande_id bigint, date_paiement timestamp(6), id bigint generated by default as identity, serveur_id bigint, mode_paiement enum ('CAISSE','CARTE_BANCAIRE','QR_CODE'), statut enum ('EN_COURS','PAYE','REFUSE'), primary key (id))
+Hibernate: create table plat (actif boolean not null, prix float(53), identifiant bigint generated by default as identity, description varchar(255), image varchar(255), nom varchar(255), categorie enum ('BOISSON','DESSERT','ENTREE','GLACE','PLAT_PRINCIPAL'), primary key (identifiant))
+Hibernate: create table pourboire (montant float(53), id bigint generated by default as identity, paiement_id bigint unique, primary key (id))
+Hibernate: create table produit (id bigint generated by default as identity, image varchar(255), nom varchar(255), type enum ('AUTRE','BOISSON','BOULANGERIE','CREMERIE','DESSERT','EPICERIE_SECHE','FRUIT','GLACE','LEGUME','POISSON','VIANDE'), primary key (id))
+Hibernate: create table stock_produit (stock_actuel float(53), stock_minimum float(53), format_produit_id bigint, id bigint generated by default as identity, produit_id bigint unique, primary key (id))
+Hibernate: create table table_restaurant (nombre_personne integer, numero_table integer unique, identifiant bigint generated by default as identity, serveur_id bigint, statut enum ('LIBRE','OCCUPEE'), primary key (identifiant))
+Hibernate: create table "user" (id bigint generated by default as identity, email varchar(255) unique, full_name varchar(255), password varchar(255), role enum ('ADMIN','CHEF_CUISINIER','CLIENT','SERVEUR'), primary key (id))
+Hibernate: alter table if exists commande add constraint FKg76ff6hxnpsjd3rqc46og7sry foreign key (client_id) references "user"
+Hibernate: alter table if exists commande add constraint FKcftyslgou8oaosas6olstynly foreign key (serveur_id) references "user"
+Hibernate: alter table if exists commande add constraint FKh44pcfsk71nbauonlx7r91bb0 foreign key (table_id) references table_restaurant
+Hibernate: alter table if exists consommation_stock add constraint FKsy2tb9e7w1woeqct9imr593fp foreign key (format_produit_id) references format_produit
+Hibernate: alter table if exists consommation_stock add constraint FKpteju1hivbk2d4wrouf10ixex foreign key (ligne_commande_id) references ligne_commande
+Hibernate: alter table if exists consommation_stock add constraint FK98d5kabjf5mu3f8le7ekhv9fa foreign key (produit_id) references produit
+Hibernate: alter table if exists feedback add constraint FK3076dcf14b9viyrcknmhl1ymq foreign key (client_id) references "user"
+Hibernate: alter table if exists feedback add constraint FKcc5ivrkfx4qpkui6bboqa64gt foreign key (commande_id) references commande
+Hibernate: alter table if exists ingredient add constraint FKlyx7k4gerl3gbp13lnytdao51 foreign key (format_produit_id) references format_produit
+Hibernate: alter table if exists ingredient add constraint FKn0v9siygvbdwpf0xq0igpmhxy foreign key (plat_id) references plat
+Hibernate: alter table if exists ingredient add constraint FKnqg75sfr4j1w8fb68jod8exas foreign key (produit_id) references produit
+Hibernate: alter table if exists ligne_commande add constraint FKaff2bjyreiuyi723relg10spm foreign key (commande_id) references commande
+Hibernate: alter table if exists ligne_commande add constraint FKc6v2ya6vjyx6e757bw2rfr7if foreign key (menu_id) references menu
+Hibernate: alter table if exists ligne_commande add constraint FKoyts804r88llx3yoq5hvdmove foreign key (plat_id) references plat
+Hibernate: alter table if exists menu_plat add constraint FK5wijsn1ol92rwunymd51dlfwn foreign key (plat_id) references plat
+Hibernate: alter table if exists menu_plat add constraint FKtm1ww2v3ygjp8fi35v3yc2u4d foreign key (menu_id) references menu
+Hibernate: alter table if exists paiement add constraint FK7154xu8wk0uya9b09dg8pcedm foreign key (commande_id) references commande
+Hibernate: alter table if exists paiement add constraint FKjr19u0wyxdwr4ah086sovdhty foreign key (serveur_id) references "user"
+Hibernate: alter table if exists pourboire add constraint FKkr5abtg54s7nw9ijr6mwaav0j foreign key (paiement_id) references paiement
+Hibernate: alter table if exists stock_produit add constraint FKa2urdt3xbuumbfkxr0fp6kv09 foreign key (format_produit_id) references format_produit
+Hibernate: alter table if exists stock_produit add constraint FK1lnsn9h1evyxwnnktixqo2wc foreign key (produit_id) references produit
+Hibernate: alter table if exists table_restaurant add constraint FK7yshggfirc52bgwgsdink6ui2 foreign key (serveur_id) references "user"
+2026-04-06T23:32:16.642Z  INFO 130107 --- [demo-test] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-06T23:32:17.084Z  INFO 130107 --- [demo-test] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-06T23:32:20.041Z  WARN 130107 --- [demo-test] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-06T23:32:20.388Z  INFO 130107 --- [demo-test] [  restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2026-04-06T23:32:20.744Z  INFO 130107 --- [demo-test] [  restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-04-06T23:32:21.418Z  INFO 130107 --- [demo-test] [  restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:testdb'
+2026-04-06T23:32:21.527Z  INFO 130107 --- [demo-test] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-04-06T23:32:21.638Z  INFO 130107 --- [demo-test] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-04-06T23:32:21.650Z  INFO 130107 --- [demo-test] [  restartedMain] com.example.demo.DemoApplication         : Started DemoApplication in 10.492 seconds (process running for 10.977)
+Hibernate: select count(*) from produit p1_0
+Base de données vide, chargement des données de test...
+Hibernate: insert into "user" (email,full_name,password,role,id) values (?,?,?,?,default)
+Hibernate: insert into "user" (email,full_name,password,role,id) values (?,?,?,?,default)
+Hibernate: insert into "user" (email,full_name,password,role,id) values (?,?,?,?,default)
+Hibernate: insert into "user" (email,full_name,password,role,id) values (?,?,?,?,default)
+Hibernate: insert into "user" (email,full_name,password,role,id) values (?,?,?,?,default)
+Users created.
+Hibernate: insert into table_restaurant (nombre_personne,numero_table,serveur_id,statut,identifiant) values (?,?,?,?,default)
+Hibernate: insert into table_restaurant (nombre_personne,numero_table,serveur_id,statut,identifiant) values (?,?,?,?,default)
+Hibernate: insert into table_restaurant (nombre_personne,numero_table,serveur_id,statut,identifiant) values (?,?,?,?,default)
+Hibernate: insert into table_restaurant (nombre_personne,numero_table,serveur_id,statut,identifiant) values (?,?,?,?,default)
+Tables created.
+Hibernate: insert into format_produit (nom,quantite,identifiant) values (?,?,default)
+Hibernate: insert into format_produit (nom,quantite,identifiant) values (?,?,default)
+Hibernate: insert into format_produit (nom,quantite,identifiant) values (?,?,default)
+Hibernate: insert into format_produit (nom,quantite,identifiant) values (?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into plat (actif,categorie,description,image,nom,prix,identifiant) values (?,?,?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into plat (actif,categorie,description,image,nom,prix,identifiant) values (?,?,?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into plat (actif,categorie,description,image,nom,prix,identifiant) values (?,?,?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into plat (actif,categorie,description,image,nom,prix,identifiant) values (?,?,?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into plat (actif,categorie,description,image,nom,prix,identifiant) values (?,?,?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into plat (actif,categorie,description,image,nom,prix,identifiant) values (?,?,?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into menu (actif,date_debut,date_fin,description,image,nom,prix,id) values (?,?,?,?,?,?,?,default)
+Hibernate: insert into menu_plat (menu_id,plat_id) values (?,?)
+Hibernate: insert into menu_plat (menu_id,plat_id) values (?,?)
+Hibernate: insert into menu (actif,date_debut,date_fin,description,image,nom,prix,id) values (?,?,?,?,?,?,?,default)
+Hibernate: insert into menu_plat (menu_id,plat_id) values (?,?)
+Hibernate: insert into menu_plat (menu_id,plat_id) values (?,?)
+Hibernate: insert into menu (actif,date_debut,date_fin,description,image,nom,prix,id) values (?,?,?,?,?,?,?,default)
+Hibernate: insert into menu_plat (menu_id,plat_id) values (?,?)
+Hibernate: insert into menu_plat (menu_id,plat_id) values (?,?)
+Hibernate: insert into menu (actif,date_debut,date_fin,description,image,nom,prix,id) values (?,?,?,?,?,?,?,default)
+Hibernate: insert into menu_plat (menu_id,plat_id) values (?,?)
+Hibernate: insert into menu_plat (menu_id,plat_id) values (?,?)
+Test data loaded successfully!
+Mot de passe haché CLIENT: $2a$10$kpSuWbmLx307OnACmpkgIOD6AzlSc9rz0uCU8O3aTywJNmva7zZLK
+Mot de passe haché ADMIN: $2a$10$jiH.Wa32Ax4YVX33ZoQMbupDBpLrZaRVzGhWaIMV5V0lXSS8OzI.m
+Mot de passe haché CHEF CUISINIER: $2a$10$YnppY0nrhuMr4xFT5mI53ew6rbOkBEgJBJXiuxZAK.rtxSqJCaZ32
+Mot de passe haché SERVEUR: $2a$10$r1YLWYEDV3Y3e/PAnqb09OSmXkj8UwQQoKo3/SN8GT1474S7DEgay
+2026-04-06T23:33:00.965Z  INFO 130107 --- [demo-test] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-06T23:33:00.965Z  INFO 130107 --- [demo-test] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-06T23:33:00.967Z  INFO 130107 --- [demo-test] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+Hibernate: select u1_0.id,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role from "user" u1_0 where u1_0.email=?
+Hibernate: select count(u1_0.id) from "user" u1_0 where u1_0.role=?
+Hibernate: select count(c1_0.id) from commande c1_0 where c1_0.date_heure>=?
+Hibernate: select sum(c1_0.montant_total) from commande c1_0 where c1_0.date_heure>=? and c1_0.etat='PAYEE'
+Hibernate: select lc1_0.plat_id,p1_0.nom,sum(lc1_0.quantite) from ligne_commande lc1_0 join plat p1_0 on p1_0.identifiant=lc1_0.plat_id where lc1_0.type_ligne='PLAT' group by lc1_0.plat_id,p1_0.nom order by sum(lc1_0.quantite) desc
+Hibernate: select lc1_0.plat_id,p1_0.nom,sum(lc1_0.quantite) from ligne_commande lc1_0 join plat p1_0 on p1_0.identifiant=lc1_0.plat_id where lc1_0.type_ligne='PLAT' group by lc1_0.plat_id,p1_0.nom order by sum(lc1_0.quantite)
+Hibernate: select lc1_0.menu_id,m1_0.nom,sum(lc1_0.quantite) from ligne_commande lc1_0 join menu m1_0 on m1_0.id=lc1_0.menu_id where lc1_0.type_ligne='MENU' group by lc1_0.menu_id,m1_0.nom order by sum(lc1_0.quantite) desc
+Hibernate: select lc1_0.menu_id,m1_0.nom,sum(lc1_0.quantite) from ligne_commande lc1_0 join menu m1_0 on m1_0.id=lc1_0.menu_id where lc1_0.type_ligne='MENU' group by lc1_0.menu_id,m1_0.nom order by sum(lc1_0.quantite)
+Hibernate: select lc1_0.plat_id,p1_0.nom,avg(cast(f1_0.note as float(53))) from feedback f1_0 join commande c1_0 on c1_0.id=f1_0.commande_id join ligne_commande lc1_0 on c1_0.id=lc1_0.commande_id join plat p1_0 on p1_0.identifiant=lc1_0.plat_id where lc1_0.type_ligne='PLAT' group by lc1_0.plat_id,p1_0.nom order by avg(cast(f1_0.note as float(53))) desc
+Hibernate: select lc1_0.plat_id,p1_0.nom,avg(cast(f1_0.note as float(53))) from feedback f1_0 join commande c1_0 on c1_0.id=f1_0.commande_id join ligne_commande lc1_0 on c1_0.id=lc1_0.commande_id join plat p1_0 on p1_0.identifiant=lc1_0.plat_id where lc1_0.type_ligne='PLAT' group by lc1_0.plat_id,p1_0.nom order by avg(cast(f1_0.note as float(53)))
+Hibernate: select lc1_0.menu_id,m1_0.nom,avg(cast(f1_0.note as float(53))) from feedback f1_0 join commande c1_0 on c1_0.id=f1_0.commande_id join ligne_commande lc1_0 on c1_0.id=lc1_0.commande_id join menu m1_0 on m1_0.id=lc1_0.menu_id where lc1_0.type_ligne='MENU' group by lc1_0.menu_id,m1_0.nom order by avg(cast(f1_0.note as float(53))) desc
+Hibernate: select lc1_0.menu_id,m1_0.nom,avg(cast(f1_0.note as float(53))) from feedback f1_0 join commande c1_0 on c1_0.id=f1_0.commande_id join ligne_commande lc1_0 on c1_0.id=lc1_0.commande_id join menu m1_0 on m1_0.id=lc1_0.menu_id where lc1_0.type_ligne='MENU' group by lc1_0.menu_id,m1_0.nom order by avg(cast(f1_0.note as float(53)))
+Hibernate: select 1,cast(date(c1_0.date_heure) as varchar),count(c1_0.id) from commande c1_0 group by date(c1_0.date_heure) order by count(c1_0.id) desc
+2026-04-06T23:33:05.092Z  WARN 130107 --- [demo-test] [nio-8080-exec-5] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 90022, SQLState: 90022
+2026-04-06T23:33:05.093Z ERROR 130107 --- [demo-test] [nio-8080-exec-5] o.h.engine.jdbc.spi.SqlExceptionHelper   : Function "DATE" not found; SQL statement:
+select 1,cast(date(c1_0.date_heure) as varchar),count(c1_0.id) from commande c1_0 group by date(c1_0.date_heure) order by count(c1_0.id) desc [90022-232]
+2026-04-06T23:33:05.102Z ERROR 130107 --- [demo-test] [nio-8080-exec-5] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed: org.springframework.dao.InvalidDataAccessResourceUsageException: could not prepare statement [Function "DATE" not found; SQL statement:
+select 1,cast(date(c1_0.date_heure) as varchar),count(c1_0.id) from commande c1_0 group by date(c1_0.date_heure) order by count(c1_0.id) desc [90022-232]] [select 1,cast(date(c1_0.date_heure) as varchar),count(c1_0.id) from commande c1_0 group by date(c1_0.date_heure) order by count(c1_0.id) desc]; SQL [select 1,cast(date(c1_0.date_heure) as varchar),count(c1_0.id) from commande c1_0 group by date(c1_0.date_heure) order by count(c1_0.id) desc]] with root cause
+
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Function "DATE" not found; SQL statement:
+select 1,cast(date(c1_0.date_heure) as varchar),count(c1_0.id) from commande c1_0 group by date(c1_0.date_heure) order by count(c1_0.id) desc [90022-232]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:644) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.message.DbException.get(DbException.java:223) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.message.DbException.get(DbException.java:199) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.readFunction(Parser.java:3772) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.readTermWithIdentifier(Parser.java:5142) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.readTerm(Parser.java:4828) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.readFactor(Parser.java:3323) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.readSum(Parser.java:3310) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.readConcat(Parser.java:3275) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.readCondition(Parser.java:3065) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.readExpression(Parser.java:2985) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.readTermWithoutIdentifier(Parser.java:5035) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.readTerm(Parser.java:4828) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.readFactor(Parser.java:3323) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.readSum(Parser.java:3310) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.readConcat(Parser.java:3275) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.readCondition(Parser.java:3065) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.readExpression(Parser.java:2985) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.parseSelectExpressions(Parser.java:2785) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.parseSelect(Parser.java:2803) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.parseQueryPrimary(Parser.java:2692) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.parseQueryTerm(Parser.java:2547) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.parseQueryExpressionBody(Parser.java:2526) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.parseQueryExpressionBodyAndEndOfQuery(Parser.java:2519) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.parseQueryExpression(Parser.java:2512) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.parseQuery(Parser.java:2479) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.parsePrepared(Parser.java:610) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.parse(Parser.java:581) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.parse(Parser.java:556) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.command.Parser.prepareCommand(Parser.java:484) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:645) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:561) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1164) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.jdbc.JdbcPreparedStatement.<init>(JdbcPreparedStatement.java:93) ~[h2-2.3.232.jar:2.3.232]
+	at org.h2.jdbc.JdbcConnection.prepareStatement(JdbcConnection.java:687) ~[h2-2.3.232.jar:2.3.232]
+	at com.zaxxer.hikari.pool.ProxyConnection.prepareStatement(ProxyConnection.java:342) ~[HikariCP-6.3.1.jar:na]
+	at com.zaxxer.hikari.pool.HikariProxyConnection.prepareStatement(HikariProxyConnection.java) ~[HikariCP-6.3.1.jar:na]
+	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl$4.doPrepare(StatementPreparerImpl.java:151) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl$StatementPreparationTemplate.prepareStatement(StatementPreparerImpl.java:180) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.hibernate.engine.jdbc.internal.StatementPreparerImpl.prepareQueryStatement(StatementPreparerImpl.java:153) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.hibernate.sql.exec.internal.StandardStatementCreator.createStatement(StandardStatementCreator.java:49) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.hibernate.sql.results.jdbc.internal.DeferredResultSetAccess.executeQuery(DeferredResultSetAccess.java:236) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.hibernate.sql.results.jdbc.internal.DeferredResultSetAccess.getResultSet(DeferredResultSetAccess.java:172) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.hibernate.sql.results.jdbc.internal.JdbcValuesResultSetImpl.<init>(JdbcValuesResultSetImpl.java:74) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.hibernate.sql.exec.internal.JdbcSelectExecutorStandardImpl.resolveJdbcValuesSource(JdbcSelectExecutorStandardImpl.java:355) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.hibernate.sql.exec.internal.JdbcSelectExecutorStandardImpl.doExecuteQuery(JdbcSelectExecutorStandardImpl.java:137) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.hibernate.sql.exec.internal.JdbcSelectExecutorStandardImpl.executeQuery(JdbcSelectExecutorStandardImpl.java:102) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.hibernate.sql.exec.spi.JdbcSelectExecutor.executeQuery(JdbcSelectExecutor.java:91) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.hibernate.sql.exec.spi.JdbcSelectExecutor.list(JdbcSelectExecutor.java:165) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.hibernate.query.sqm.internal.ConcreteSqmSelectQueryPlan.lambda$new$1(ConcreteSqmSelectQueryPlan.java:149) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.hibernate.query.sqm.internal.ConcreteSqmSelectQueryPlan.withCacheableSqmInterpretation(ConcreteSqmSelectQueryPlan.java:439) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.hibernate.query.sqm.internal.ConcreteSqmSelectQueryPlan.performList(ConcreteSqmSelectQueryPlan.java:359) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.hibernate.query.sqm.internal.QuerySqmImpl.doList(QuerySqmImpl.java:380) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.hibernate.query.spi.AbstractSelectionQuery.list(AbstractSelectionQuery.java:143) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.hibernate.query.Query.getResultList(Query.java:120) ~[hibernate-core-6.6.22.Final.jar:6.6.22.Final]
+	at org.springframework.data.jpa.repository.query.JpaQueryExecution$CollectionExecution.doExecute(JpaQueryExecution.java:130) ~[spring-data-jpa-3.5.2.jar:3.5.2]
+	at org.springframework.data.jpa.repository.query.JpaQueryExecution.execute(JpaQueryExecution.java:93) ~[spring-data-jpa-3.5.2.jar:3.5.2]
+	at org.springframework.data.jpa.repository.query.AbstractJpaQuery.doExecute(AbstractJpaQuery.java:160) ~[spring-data-jpa-3.5.2.jar:3.5.2]
+	at org.springframework.data.jpa.repository.query.AbstractJpaQuery.execute(AbstractJpaQuery.java:148) ~[spring-data-jpa-3.5.2.jar:3.5.2]
+	at org.springframework.data.repository.core.support.RepositoryMethodInvoker.doInvoke(RepositoryMethodInvoker.java:170) ~[spring-data-commons-3.5.2.jar:3.5.2]
+	at org.springframework.data.repository.core.support.RepositoryMethodInvoker.invoke(RepositoryMethodInvoker.java:158) ~[spring-data-commons-3.5.2.jar:3.5.2]
+	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.doInvoke(QueryExecutorMethodInterceptor.java:170) ~[spring-data-commons-3.5.2.jar:3.5.2]
+	at org.springframework.data.repository.core.support.QueryExecutorMethodInterceptor.invoke(QueryExecutorMethodInterceptor.java:149) ~[spring-data-commons-3.5.2.jar:3.5.2]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184) ~[spring-aop-6.2.9.jar:6.2.9]
+	at org.springframework.data.projection.DefaultMethodInvokingMethodInterceptor.invoke(DefaultMethodInvokingMethodInterceptor.java:69) ~[spring-data-commons-3.5.2.jar:3.5.2]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184) ~[spring-aop-6.2.9.jar:6.2.9]
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:380) ~[spring-tx-6.2.9.jar:6.2.9]
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119) ~[spring-tx-6.2.9.jar:6.2.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184) ~[spring-aop-6.2.9.jar:6.2.9]
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:138) ~[spring-tx-6.2.9.jar:6.2.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184) ~[spring-aop-6.2.9.jar:6.2.9]
+	at org.springframework.data.jpa.repository.support.CrudMethodMetadataPostProcessor$CrudMethodMetadataPopulatingMethodInterceptor.invoke(CrudMethodMetadataPostProcessor.java:136) ~[spring-data-jpa-3.5.2.jar:3.5.2]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184) ~[spring-aop-6.2.9.jar:6.2.9]
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:223) ~[spring-aop-6.2.9.jar:6.2.9]
+	at jdk.proxy4/jdk.proxy4.$Proxy157.findCommandesPerDay(Unknown Source) ~[na:na]
+	at com.example.demo.service.StatistiqueService.getCommandesPerDay(StatistiqueService.java:57) ~[classes/:na]
+	at com.example.demo.controller.AdminController.showStatistiques(AdminController.java:134) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360) ~[spring-aop-6.2.9.jar:6.2.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196) ~[spring-aop-6.2.9.jar:6.2.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163) ~[spring-aop-6.2.9.jar:6.2.9]
+	at org.springframework.security.authorization.method.AuthorizationManagerBeforeMethodInterceptor.proceed(AuthorizationManagerBeforeMethodInterceptor.java:268) ~[spring-security-core-6.5.2.jar:6.5.2]
+	at org.springframework.security.authorization.method.AuthorizationManagerBeforeMethodInterceptor.attemptAuthorization(AuthorizationManagerBeforeMethodInterceptor.java:263) ~[spring-security-core-6.5.2.jar:6.5.2]
+	at org.springframework.security.authorization.method.AuthorizationManagerBeforeMethodInterceptor.invoke(AuthorizationManagerBeforeMethodInterceptor.java:196) ~[spring-security-core-6.5.2.jar:6.5.2]
+	at org.springframework.security.config.annotation.method.configuration.DeferringMethodInterceptor.invoke(DeferringMethodInterceptor.java:44) ~[spring-security-config-6.5.2.jar:6.5.2]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184) ~[spring-aop-6.2.9.jar:6.2.9]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728) ~[spring-aop-6.2.9.jar:6.2.9]
+	at com.example.demo.controller.AdminController$$SpringCGLIB$$0.showStatistiques(<generated>) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:258) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:191) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118) ~[spring-webmvc-6.2.9.jar:6.2.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:991) ~[spring-webmvc-6.2.9.jar:6.2.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:896) ~[spring-webmvc-6.2.9.jar:6.2.9]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87) ~[spring-webmvc-6.2.9.jar:6.2.9]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089) ~[spring-webmvc-6.2.9.jar:6.2.9]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979) ~[spring-webmvc-6.2.9.jar:6.2.9]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.2.9.jar:6.2.9]
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:903) ~[spring-webmvc-6.2.9.jar:6.2.9]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:564) ~[tomcat-embed-core-10.1.43.jar:6.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.2.9.jar:6.2.9]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.43.jar:6.0]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.43.jar:10.1.43]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:125) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:119) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:235) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:229) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:117) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191) ~[spring-security-web-6.5.2.jar:6.5.2]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.web.filter.ServletRequestPathFilter.doFilter(ServletRequestPathFilter.java:52) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebSecurityConfiguration.java:319) ~[spring-security-config-6.5.2.jar:6.5.2]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$4(HandlerMappingIntrospector.java:267) ~[spring-webmvc-6.2.9.jar:6.2.9]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:240) ~[spring-security-config-6.5.2.jar:6.5.2]
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:362) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:278) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.2.9.jar:6.2.9]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:116) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:398) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1769) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1189) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:658) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.43.jar:10.1.43]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:29 min
+[INFO] Finished at: 2026-04-06T23:33:33Z
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.5.4:run (default-cli) on project demo: Process terminated with exit code: 137 -> [Help 1]
+[ERROR]
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR]
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

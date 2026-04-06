@@ -1,0 +1,257 @@
+[INFO] Scanning for projects...
+[WARNING]
+[WARNING] Some problems were encountered while building the effective model for com.example:demo:jar:0.0.1-SNAPSHOT
+[WARNING] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: org.thymeleaf.extras:thymeleaf-extras-springsecurity6:jar -> duplicate declaration of version (?) @ line 116, column 21
+[WARNING]
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING]
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING]
+[INFO]
+[INFO] --------------------------< com.example:demo >--------------------------
+[INFO] Building demo 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] >>> spring-boot:3.5.4:run (default-cli) > test-compile @ demo >>>
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ demo ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 39 resources from src/main/resources to target/classes
+[INFO]
+[INFO] --- compiler:3.14.0:compile (default-compile) @ demo ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 67 source files with javac [debug parameters release 21] to target/classes
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ demo ---
+[INFO] Copying 1 resource from src/test/resources to target/test-classes
+[INFO]
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ demo ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 5 source files with javac [debug parameters release 21] to target/test-classes
+[INFO]
+[INFO] <<< spring-boot:3.5.4:run (default-cli) < test-compile @ demo <<<
+[INFO]
+[INFO]
+[INFO] --- spring-boot:3.5.4:run (default-cli) @ demo ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.4)
+
+2026-04-06T23:33:57.268Z  INFO 157046 --- [demo-test] [  restartedMain] com.example.demo.DemoApplication         : Starting DemoApplication using Java 21.0.10 with PID 157046 (/app/target/classes started by jules in /app)
+2026-04-06T23:33:57.272Z  INFO 157046 --- [demo-test] [  restartedMain] com.example.demo.DemoApplication         : The following 1 profile is active: "h2"
+2026-04-06T23:33:57.330Z  INFO 157046 --- [demo-test] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-04-06T23:33:57.330Z  INFO 157046 --- [demo-test] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-04-06T23:33:58.318Z  INFO 157046 --- [demo-test] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-06T23:33:58.320Z  INFO 157046 --- [demo-test] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
+2026-04-06T23:33:58.363Z  INFO 157046 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.CommandeRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:33:58.364Z  INFO 157046 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.ConsommationStockRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:33:58.366Z  INFO 157046 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.FeedbackRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:33:58.367Z  INFO 157046 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.FormatProduitRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:33:58.368Z  INFO 157046 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.IngredientRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:33:58.369Z  INFO 157046 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.LigneCommandeRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:33:58.370Z  INFO 157046 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.MenuRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:33:58.371Z  INFO 157046 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.PaiementRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:33:58.373Z  INFO 157046 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.PlatRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:33:58.374Z  INFO 157046 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.PourboireRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:33:58.375Z  INFO 157046 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.ProduitRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:33:58.376Z  INFO 157046 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.StockProduitRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:33:58.377Z  INFO 157046 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.TableRestaurantRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:33:58.380Z  INFO 157046 --- [demo-test] [  restartedMain] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.UserRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2026-04-06T23:33:58.381Z  INFO 157046 --- [demo-test] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 52 ms. Found 0 JDBC repository interfaces.
+2026-04-06T23:33:58.398Z  INFO 157046 --- [demo-test] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-06T23:33:58.399Z  INFO 157046 --- [demo-test] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-06T23:33:58.564Z  INFO 157046 --- [demo-test] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 159 ms. Found 14 JPA repository interfaces.
+2026-04-06T23:33:59.412Z  INFO 157046 --- [demo-test] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-04-06T23:33:59.429Z  INFO 157046 --- [demo-test] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-06T23:33:59.430Z  INFO 157046 --- [demo-test] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.43]
+2026-04-06T23:33:59.471Z  INFO 157046 --- [demo-test] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-06T23:33:59.472Z  INFO 157046 --- [demo-test] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2140 ms
+2026-04-06T23:33:59.795Z  INFO 157046 --- [demo-test] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-06T23:34:00.032Z  INFO 157046 --- [demo-test] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2026-04-06T23:34:00.035Z  INFO 157046 --- [demo-test] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-06T23:34:00.097Z  INFO 157046 --- [demo-test] [  restartedMain] org.flywaydb.core.FlywayExecutor         : Database: jdbc:h2:mem:testdb (H2 2.3)
+2026-04-06T23:34:00.128Z  INFO 157046 --- [demo-test] [  restartedMain] o.f.c.i.s.JdbcTableSchemaHistory         : Schema history table "PUBLIC"."flyway_schema_history" does not exist yet
+2026-04-06T23:34:00.129Z  INFO 157046 --- [demo-test] [  restartedMain] o.f.core.internal.command.DbValidate     : Successfully validated 0 migrations (execution time 00:00.008s)
+2026-04-06T23:34:00.130Z  WARN 157046 --- [demo-test] [  restartedMain] o.f.core.internal.command.DbValidate     : No migrations found. Are your locations set up correctly?
+2026-04-06T23:34:00.138Z  INFO 157046 --- [demo-test] [  restartedMain] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "PUBLIC"."flyway_schema_history" ...
+2026-04-06T23:34:00.186Z  INFO 157046 --- [demo-test] [  restartedMain] o.f.core.internal.command.DbMigrate      : Current version of schema "PUBLIC": << Empty Schema >>
+2026-04-06T23:34:00.190Z  INFO 157046 --- [demo-test] [  restartedMain] o.f.core.internal.command.DbMigrate      : Schema "PUBLIC" is up to date. No migration necessary.
+2026-04-06T23:34:00.308Z  INFO 157046 --- [demo-test] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-06T23:34:00.354Z  INFO 157046 --- [demo-test] [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.22.Final
+2026-04-06T23:34:00.387Z  INFO 157046 --- [demo-test] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-06T23:34:00.667Z  INFO 157046 --- [demo-test] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-06T23:34:00.713Z  WARN 157046 --- [demo-test] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-06T23:34:00.727Z  INFO 157046 --- [demo-test] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-06T23:34:02.076Z  INFO 157046 --- [demo-test] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: drop table if exists commande cascade
+Hibernate: drop table if exists consommation_stock cascade
+Hibernate: drop table if exists feedback cascade
+Hibernate: drop table if exists format_produit cascade
+Hibernate: drop table if exists ingredient cascade
+Hibernate: drop table if exists ligne_commande cascade
+Hibernate: drop table if exists menu cascade
+Hibernate: drop table if exists menu_plat cascade
+Hibernate: drop table if exists paiement cascade
+Hibernate: drop table if exists plat cascade
+Hibernate: drop table if exists pourboire cascade
+Hibernate: drop table if exists produit cascade
+Hibernate: drop table if exists stock_produit cascade
+Hibernate: drop table if exists table_restaurant cascade
+Hibernate: drop table if exists "user" cascade
+Hibernate: create table commande (is_emporter boolean, montant_total float(53), client_id bigint, date_heure timestamp(6), id bigint generated by default as identity, serveur_id bigint, table_id bigint, commentaire varchar(255), etat enum ('EN_COURS','EN_VALIDATION','PAYEE'), primary key (id))
+Hibernate: create table consommation_stock (quantite_utilisee float(53), format_produit_id bigint, identifiant bigint generated by default as identity, ligne_commande_id bigint, produit_id bigint, primary key (identifiant))
+Hibernate: create table feedback (note integer, client_id bigint, commande_id bigint unique, date_submitted timestamp(6), identifiant bigint generated by default as identity, commentaire varchar(255), primary key (identifiant))
+Hibernate: create table format_produit (quantite float(53), identifiant bigint generated by default as identity, nom varchar(255), primary key (identifiant))
+Hibernate: create table ingredient (quantite float(53), format_produit_id bigint, identifiant bigint generated by default as identity, plat_id bigint, produit_id bigint, primary key (identifiant))
+Hibernate: create table ligne_commande (quantite integer, commande_id bigint, identifiant bigint generated by default as identity, menu_id bigint, plat_id bigint, etat enum ('EN_ATTENTE','EN_PREPARATION','EN_VALIDATION','PREPARATION_TERMINEE','SERVIE'), type_ligne enum ('MENU','PLAT'), primary key (identifiant))
+Hibernate: create table menu (actif boolean not null, date_debut date, date_fin date, prix float(53), id bigint generated by default as identity, description varchar(255), image varchar(255), nom varchar(255), primary key (id))
+Hibernate: create table menu_plat (menu_id bigint not null, plat_id bigint not null, primary key (menu_id, plat_id))
+Hibernate: create table paiement (montant float(53), commande_id bigint, date_paiement timestamp(6), id bigint generated by default as identity, serveur_id bigint, mode_paiement enum ('CAISSE','CARTE_BANCAIRE','QR_CODE'), statut enum ('EN_COURS','PAYE','REFUSE'), primary key (id))
+Hibernate: create table plat (actif boolean not null, prix float(53), identifiant bigint generated by default as identity, description varchar(255), image varchar(255), nom varchar(255), categorie enum ('BOISSON','DESSERT','ENTREE','GLACE','PLAT_PRINCIPAL'), primary key (identifiant))
+Hibernate: create table pourboire (montant float(53), id bigint generated by default as identity, paiement_id bigint unique, primary key (id))
+Hibernate: create table produit (id bigint generated by default as identity, image varchar(255), nom varchar(255), type enum ('AUTRE','BOISSON','BOULANGERIE','CREMERIE','DESSERT','EPICERIE_SECHE','FRUIT','GLACE','LEGUME','POISSON','VIANDE'), primary key (id))
+Hibernate: create table stock_produit (stock_actuel float(53), stock_minimum float(53), format_produit_id bigint, id bigint generated by default as identity, produit_id bigint unique, primary key (id))
+Hibernate: create table table_restaurant (nombre_personne integer, numero_table integer unique, identifiant bigint generated by default as identity, serveur_id bigint, statut enum ('LIBRE','OCCUPEE'), primary key (identifiant))
+Hibernate: create table "user" (id bigint generated by default as identity, email varchar(255) unique, full_name varchar(255), password varchar(255), role enum ('ADMIN','CHEF_CUISINIER','CLIENT','SERVEUR'), primary key (id))
+Hibernate: alter table if exists commande add constraint FKg76ff6hxnpsjd3rqc46og7sry foreign key (client_id) references "user"
+Hibernate: alter table if exists commande add constraint FKcftyslgou8oaosas6olstynly foreign key (serveur_id) references "user"
+Hibernate: alter table if exists commande add constraint FKh44pcfsk71nbauonlx7r91bb0 foreign key (table_id) references table_restaurant
+Hibernate: alter table if exists consommation_stock add constraint FKsy2tb9e7w1woeqct9imr593fp foreign key (format_produit_id) references format_produit
+Hibernate: alter table if exists consommation_stock add constraint FKpteju1hivbk2d4wrouf10ixex foreign key (ligne_commande_id) references ligne_commande
+Hibernate: alter table if exists consommation_stock add constraint FK98d5kabjf5mu3f8le7ekhv9fa foreign key (produit_id) references produit
+Hibernate: alter table if exists feedback add constraint FK3076dcf14b9viyrcknmhl1ymq foreign key (client_id) references "user"
+Hibernate: alter table if exists feedback add constraint FKcc5ivrkfx4qpkui6bboqa64gt foreign key (commande_id) references commande
+Hibernate: alter table if exists ingredient add constraint FKlyx7k4gerl3gbp13lnytdao51 foreign key (format_produit_id) references format_produit
+Hibernate: alter table if exists ingredient add constraint FKn0v9siygvbdwpf0xq0igpmhxy foreign key (plat_id) references plat
+Hibernate: alter table if exists ingredient add constraint FKnqg75sfr4j1w8fb68jod8exas foreign key (produit_id) references produit
+Hibernate: alter table if exists ligne_commande add constraint FKaff2bjyreiuyi723relg10spm foreign key (commande_id) references commande
+Hibernate: alter table if exists ligne_commande add constraint FKc6v2ya6vjyx6e757bw2rfr7if foreign key (menu_id) references menu
+Hibernate: alter table if exists ligne_commande add constraint FKoyts804r88llx3yoq5hvdmove foreign key (plat_id) references plat
+Hibernate: alter table if exists menu_plat add constraint FK5wijsn1ol92rwunymd51dlfwn foreign key (plat_id) references plat
+Hibernate: alter table if exists menu_plat add constraint FKtm1ww2v3ygjp8fi35v3yc2u4d foreign key (menu_id) references menu
+Hibernate: alter table if exists paiement add constraint FK7154xu8wk0uya9b09dg8pcedm foreign key (commande_id) references commande
+Hibernate: alter table if exists paiement add constraint FKjr19u0wyxdwr4ah086sovdhty foreign key (serveur_id) references "user"
+Hibernate: alter table if exists pourboire add constraint FKkr5abtg54s7nw9ijr6mwaav0j foreign key (paiement_id) references paiement
+Hibernate: alter table if exists stock_produit add constraint FKa2urdt3xbuumbfkxr0fp6kv09 foreign key (format_produit_id) references format_produit
+Hibernate: alter table if exists stock_produit add constraint FK1lnsn9h1evyxwnnktixqo2wc foreign key (produit_id) references produit
+Hibernate: alter table if exists table_restaurant add constraint FK7yshggfirc52bgwgsdink6ui2 foreign key (serveur_id) references "user"
+2026-04-06T23:34:02.181Z  INFO 157046 --- [demo-test] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-06T23:34:02.587Z  INFO 157046 --- [demo-test] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-06T23:34:04.731Z  WARN 157046 --- [demo-test] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-06T23:34:05.058Z  INFO 157046 --- [demo-test] [  restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2026-04-06T23:34:05.391Z  INFO 157046 --- [demo-test] [  restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-04-06T23:34:05.997Z  INFO 157046 --- [demo-test] [  restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:testdb'
+2026-04-06T23:34:06.099Z  INFO 157046 --- [demo-test] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-04-06T23:34:06.185Z  INFO 157046 --- [demo-test] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-04-06T23:34:06.197Z  INFO 157046 --- [demo-test] [  restartedMain] com.example.demo.DemoApplication         : Started DemoApplication in 9.413 seconds (process running for 9.902)
+Hibernate: select count(*) from produit p1_0
+Base de données vide, chargement des données de test...
+Hibernate: insert into "user" (email,full_name,password,role,id) values (?,?,?,?,default)
+Hibernate: insert into "user" (email,full_name,password,role,id) values (?,?,?,?,default)
+Hibernate: insert into "user" (email,full_name,password,role,id) values (?,?,?,?,default)
+Hibernate: insert into "user" (email,full_name,password,role,id) values (?,?,?,?,default)
+Hibernate: insert into "user" (email,full_name,password,role,id) values (?,?,?,?,default)
+Users created.
+Hibernate: insert into table_restaurant (nombre_personne,numero_table,serveur_id,statut,identifiant) values (?,?,?,?,default)
+Hibernate: insert into table_restaurant (nombre_personne,numero_table,serveur_id,statut,identifiant) values (?,?,?,?,default)
+Hibernate: insert into table_restaurant (nombre_personne,numero_table,serveur_id,statut,identifiant) values (?,?,?,?,default)
+Hibernate: insert into table_restaurant (nombre_personne,numero_table,serveur_id,statut,identifiant) values (?,?,?,?,default)
+Tables created.
+Hibernate: insert into format_produit (nom,quantite,identifiant) values (?,?,default)
+Hibernate: insert into format_produit (nom,quantite,identifiant) values (?,?,default)
+Hibernate: insert into format_produit (nom,quantite,identifiant) values (?,?,default)
+Hibernate: insert into format_produit (nom,quantite,identifiant) values (?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into produit (image,nom,type,id) values (?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into stock_produit (format_produit_id,produit_id,stock_actuel,stock_minimum,id) values (?,?,?,?,default)
+Hibernate: insert into plat (actif,categorie,description,image,nom,prix,identifiant) values (?,?,?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into plat (actif,categorie,description,image,nom,prix,identifiant) values (?,?,?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into plat (actif,categorie,description,image,nom,prix,identifiant) values (?,?,?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into plat (actif,categorie,description,image,nom,prix,identifiant) values (?,?,?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into plat (actif,categorie,description,image,nom,prix,identifiant) values (?,?,?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into plat (actif,categorie,description,image,nom,prix,identifiant) values (?,?,?,?,?,?,default)
+Hibernate: insert into ingredient (format_produit_id,plat_id,produit_id,quantite,identifiant) values (?,?,?,?,default)
+Hibernate: insert into menu (actif,date_debut,date_fin,description,image,nom,prix,id) values (?,?,?,?,?,?,?,default)
+Hibernate: insert into menu_plat (menu_id,plat_id) values (?,?)
+Hibernate: insert into menu_plat (menu_id,plat_id) values (?,?)
+Hibernate: insert into menu (actif,date_debut,date_fin,description,image,nom,prix,id) values (?,?,?,?,?,?,?,default)
+Hibernate: insert into menu_plat (menu_id,plat_id) values (?,?)
+Hibernate: insert into menu_plat (menu_id,plat_id) values (?,?)
+Hibernate: insert into menu (actif,date_debut,date_fin,description,image,nom,prix,id) values (?,?,?,?,?,?,?,default)
+Hibernate: insert into menu_plat (menu_id,plat_id) values (?,?)
+Hibernate: insert into menu_plat (menu_id,plat_id) values (?,?)
+Hibernate: insert into menu (actif,date_debut,date_fin,description,image,nom,prix,id) values (?,?,?,?,?,?,?,default)
+Hibernate: insert into menu_plat (menu_id,plat_id) values (?,?)
+Hibernate: insert into menu_plat (menu_id,plat_id) values (?,?)
+Test data loaded successfully!
+Mot de passe haché CLIENT: $2a$10$uKW9d2l3ALMCgaVMJroABum.QdjMfRhX0iOgvFoQ0AO042YgfawH2
+Mot de passe haché ADMIN: $2a$10$GqAIoIyIX22WnLY5669/tuzf6BJk7sUQbhNvrPowvgLsFYkRZBUw6
+Mot de passe haché CHEF CUISINIER: $2a$10$JXRkUitpnCkeznLlvvxAhuyoFAQDmC1GJsj3ZC335SrxvbL.dyiaS
+Mot de passe haché SERVEUR: $2a$10$vaGFcFqQXTfFiK.SMC2Uu.M6nPUw9ogf9i9j.NotoViYnaRI8C1b.
+2026-04-06T23:34:28.727Z  INFO 157046 --- [demo-test] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-06T23:34:28.728Z  INFO 157046 --- [demo-test] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-06T23:34:28.730Z  INFO 157046 --- [demo-test] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+Hibernate: select u1_0.id,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role from "user" u1_0 where u1_0.email=?
+Hibernate: select count(u1_0.id) from "user" u1_0 where u1_0.role=?
+Hibernate: select count(c1_0.id) from commande c1_0 where c1_0.date_heure>=?
+Hibernate: select sum(c1_0.montant_total) from commande c1_0 where c1_0.date_heure>=? and c1_0.etat='PAYEE'
+Hibernate: select lc1_0.plat_id,p1_0.nom,sum(lc1_0.quantite) from ligne_commande lc1_0 join plat p1_0 on p1_0.identifiant=lc1_0.plat_id where lc1_0.type_ligne='PLAT' group by lc1_0.plat_id,p1_0.nom order by sum(lc1_0.quantite) desc
+Hibernate: select lc1_0.plat_id,p1_0.nom,sum(lc1_0.quantite) from ligne_commande lc1_0 join plat p1_0 on p1_0.identifiant=lc1_0.plat_id where lc1_0.type_ligne='PLAT' group by lc1_0.plat_id,p1_0.nom order by sum(lc1_0.quantite)
+Hibernate: select lc1_0.menu_id,m1_0.nom,sum(lc1_0.quantite) from ligne_commande lc1_0 join menu m1_0 on m1_0.id=lc1_0.menu_id where lc1_0.type_ligne='MENU' group by lc1_0.menu_id,m1_0.nom order by sum(lc1_0.quantite) desc
+Hibernate: select lc1_0.menu_id,m1_0.nom,sum(lc1_0.quantite) from ligne_commande lc1_0 join menu m1_0 on m1_0.id=lc1_0.menu_id where lc1_0.type_ligne='MENU' group by lc1_0.menu_id,m1_0.nom order by sum(lc1_0.quantite)
+Hibernate: select lc1_0.plat_id,p1_0.nom,avg(cast(f1_0.note as float(53))) from feedback f1_0 join commande c1_0 on c1_0.id=f1_0.commande_id join ligne_commande lc1_0 on c1_0.id=lc1_0.commande_id join plat p1_0 on p1_0.identifiant=lc1_0.plat_id where lc1_0.type_ligne='PLAT' group by lc1_0.plat_id,p1_0.nom order by avg(cast(f1_0.note as float(53))) desc
+Hibernate: select lc1_0.plat_id,p1_0.nom,avg(cast(f1_0.note as float(53))) from feedback f1_0 join commande c1_0 on c1_0.id=f1_0.commande_id join ligne_commande lc1_0 on c1_0.id=lc1_0.commande_id join plat p1_0 on p1_0.identifiant=lc1_0.plat_id where lc1_0.type_ligne='PLAT' group by lc1_0.plat_id,p1_0.nom order by avg(cast(f1_0.note as float(53)))
+Hibernate: select lc1_0.menu_id,m1_0.nom,avg(cast(f1_0.note as float(53))) from feedback f1_0 join commande c1_0 on c1_0.id=f1_0.commande_id join ligne_commande lc1_0 on c1_0.id=lc1_0.commande_id join menu m1_0 on m1_0.id=lc1_0.menu_id where lc1_0.type_ligne='MENU' group by lc1_0.menu_id,m1_0.nom order by avg(cast(f1_0.note as float(53))) desc
+Hibernate: select lc1_0.menu_id,m1_0.nom,avg(cast(f1_0.note as float(53))) from feedback f1_0 join commande c1_0 on c1_0.id=f1_0.commande_id join ligne_commande lc1_0 on c1_0.id=lc1_0.commande_id join menu m1_0 on m1_0.id=lc1_0.menu_id where lc1_0.type_ligne='MENU' group by lc1_0.menu_id,m1_0.nom order by avg(cast(f1_0.note as float(53)))
+Hibernate: select 1,cast(cast(c1_0.date_heure as date) as varchar),count(c1_0.id) from commande c1_0 group by cast(c1_0.date_heure as date) order by count(c1_0.id) desc
