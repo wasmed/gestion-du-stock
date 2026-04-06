@@ -219,14 +219,27 @@ public class OrderManagementController {
     @PreAuthorize("hasRole('SERVEUR')")
     public String createOrder(@RequestParam(required = false) Long tableId,
                               @RequestParam(required = false) Boolean isEmporter,
-                              @RequestParam(name = "platIds", required = false) List<Long> platIds,
-                              @RequestParam(name = "menuIds", required = false) List<Long> menuIds,
+                              @RequestParam Map<String, String> allParams,
                               @RequestParam(name = "clientEmail", required = false) String clientEmail,
                               @RequestParam(name = "commentaire", required = false) String commentaire,
                               RedirectAttributes redirectAttributes,
                               Principal principal) {
 
-        if ((platIds == null || platIds.isEmpty()) && (menuIds == null || menuIds.isEmpty())) {
+        boolean hasItems = false;
+        for (Map.Entry<String, String> entry : allParams.entrySet()) {
+            if ((entry.getKey().startsWith("platQty_") || entry.getKey().startsWith("menuQty_")) && !entry.getValue().isEmpty()) {
+                try {
+                    if (Integer.parseInt(entry.getValue()) > 0) {
+                        hasItems = true;
+                        break;
+                    }
+                } catch (NumberFormatException e) {
+                    // Ignore invalid numbers
+                }
+            }
+        }
+
+        if (!hasItems) {
             redirectAttributes.addFlashAttribute("errorMessage", "Impossible de créer la commande : vous devez ajouter au moins un produit.");
             return "redirect:/orders/create";
         }
@@ -269,25 +282,34 @@ public class OrderManagementController {
 
         double montantTotal = 0;
 
-        // Ajout des plats à la commande
-        if (platIds != null && !platIds.isEmpty()) {
-            for (Long platId : platIds) {
-                Plat plat = platService.findPlatById(platId);
-                if (plat != null) {
-                    commandeService.addPlatToCommande(commande, platId, 1); // Utilise la méthode du service
-                    montantTotal += plat.getPrix();
-                }
-            }
-        }
+        // Ajout des plats et menus à la commande
+        for (Map.Entry<String, String> entry : allParams.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
 
-        // Ajout des menus à la commande
-        if (menuIds != null && !menuIds.isEmpty()) {
-            for (Long menuId : menuIds) {
-                Menu menu = menuService.findMenuById(menuId);
-                if (menu != null) {
-                    commandeService.addMenuToCommande(commande, menuId, 1); // Utilise la méthode du service
-                    montantTotal += menu.getPrix();
+            if (value == null || value.isEmpty()) continue;
+
+            try {
+                int quantite = Integer.parseInt(value);
+                if (quantite > 0) {
+                    if (key.startsWith("platQty_")) {
+                        Long platId = Long.parseLong(key.substring(8));
+                        Plat plat = platService.findPlatById(platId);
+                        if (plat != null) {
+                            commandeService.addPlatToCommande(commande, platId, quantite); // Utilise la méthode du service
+                            montantTotal += plat.getPrix() * quantite;
+                        }
+                    } else if (key.startsWith("menuQty_")) {
+                        Long menuId = Long.parseLong(key.substring(8));
+                        Menu menu = menuService.findMenuById(menuId);
+                        if (menu != null) {
+                            commandeService.addMenuToCommande(commande, menuId, quantite); // Utilise la méthode du service
+                            montantTotal += menu.getPrix() * quantite;
+                        }
+                    }
                 }
+            } catch (NumberFormatException e) {
+                // Ignore invalid numbers
             }
         }
 
@@ -346,8 +368,7 @@ public class OrderManagementController {
     @PreAuthorize("hasRole('SERVEUR')")
     public String editOrder(@PathVariable Long id,
                             @RequestParam Long tableId,
-                            @RequestParam(name = "platIds", required = false) List<Long> platIds,
-                            @RequestParam(name = "menuIds", required = false) List<Long> menuIds,
+                            @RequestParam Map<String, String> allParams,
                             Principal principal) {
 
         Commande commande = commandeService.findCommandeById(id);
@@ -358,35 +379,49 @@ public class OrderManagementController {
         // Si on veut permettre la suppression, il faut le faire via une autre interface.
 
         // 2. Ajouter les nouvelles lignes de commande
-        if (platIds != null) {
-            for (Long platId : platIds) {
-                Plat plat = platService.findPlatById(platId);
-                LigneCommande ligne = new LigneCommande();
-                ligne.setCommande(commande);
-                ligne.setPlat(plat);
-                ligne.setQuantite(1); // Gérer la quantité si nécessaire
-                ligne.setTypeLigne(TypeLigneCommande.PLAT);
-                ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
-                montantTotal += plat.getPrix();
-                ligne = ligneCommandeRepository.save(ligne);
-                stockService.processStockDecrementForLigne(ligne);
-                commande.getLignesCommande().add(ligne); // <-- LA LIGNE CLÉ À AJOUTER
-            }
-        }
+        for (Map.Entry<String, String> entry : allParams.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
 
-        if (menuIds != null) {
-            for (Long menuId : menuIds) {
-                Menu menu = menuService.findMenuById(menuId);
-                LigneCommande ligne = new LigneCommande();
-                ligne.setCommande(commande);
-                ligne.setMenu(menu);
-                ligne.setQuantite(1); // Gérer la quantité si nécessaire
-                ligne.setTypeLigne(TypeLigneCommande.MENU);
-                ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
-                montantTotal += menu.getPrix();
-                ligne = ligneCommandeRepository.save(ligne);
-                stockService.processStockDecrementForLigne(ligne);
-                commande.getLignesCommande().add(ligne); // <-- LA LIGNE CLÉ À AJOUTER
+            if (value == null || value.isEmpty()) continue;
+
+            try {
+                int quantite = Integer.parseInt(value);
+                if (quantite > 0) {
+                    if (key.startsWith("platQty_")) {
+                        Long platId = Long.parseLong(key.substring(8));
+                        Plat plat = platService.findPlatById(platId);
+                        if (plat != null) {
+                            LigneCommande ligne = new LigneCommande();
+                            ligne.setCommande(commande);
+                            ligne.setPlat(plat);
+                            ligne.setQuantite(quantite);
+                            ligne.setTypeLigne(TypeLigneCommande.PLAT);
+                            ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
+                            montantTotal += plat.getPrix() * quantite;
+                            ligne = ligneCommandeRepository.save(ligne);
+                            stockService.processStockDecrementForLigne(ligne);
+                            commande.getLignesCommande().add(ligne); // <-- LA LIGNE CLÉ À AJOUTER
+                        }
+                    } else if (key.startsWith("menuQty_")) {
+                        Long menuId = Long.parseLong(key.substring(8));
+                        Menu menu = menuService.findMenuById(menuId);
+                        if (menu != null) {
+                            LigneCommande ligne = new LigneCommande();
+                            ligne.setCommande(commande);
+                            ligne.setMenu(menu);
+                            ligne.setQuantite(quantite);
+                            ligne.setTypeLigne(TypeLigneCommande.MENU);
+                            ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
+                            montantTotal += menu.getPrix() * quantite;
+                            ligne = ligneCommandeRepository.save(ligne);
+                            stockService.processStockDecrementForLigne(ligne);
+                            commande.getLignesCommande().add(ligne); // <-- LA LIGNE CLÉ À AJOUTER
+                        }
+                    }
+                }
+            } catch (NumberFormatException e) {
+                // Ignore invalid numbers
             }
         }
 
