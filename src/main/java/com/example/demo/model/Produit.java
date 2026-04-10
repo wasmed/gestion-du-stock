@@ -18,6 +18,7 @@ public class Produit {
     private String image;
 
     @OneToOne(mappedBy = "produit", cascade = CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private StockProduit stockProduit;
 
     public Long getId() {

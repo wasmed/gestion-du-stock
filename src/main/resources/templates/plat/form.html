@@ -91,16 +91,14 @@
             </div>
         </div>
     </div>
-</div>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var produits = /*[[${produits}]]*/ [];
+        var formats = /*[[${formats}]]*/ [];
+        /*]]>*/
 
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    var produits = /*[[${produits}]]*/ [];
-    var formats = /*[[${formats}]]*/ [];
-    /*]]>*/
-
-    function addIngredient() {
-        const container = document.getElementById('ingredientsContainer');
+        function addIngredient() {
+            const container = document.getElementById('ingredientsContainer');
         const alertBox = document.getElementById('noIngredientsAlert');
         if (alertBox) {
             alertBox.style.display = 'none';
@@ -150,31 +148,32 @@
         container.appendChild(newRow);
     }
 
-    function removeIngredient(btn) {
-        btn.closest('.ingredient-row').remove();
+        function removeIngredient(btn) {
+            btn.closest('.ingredient-row').remove();
 
-        // Check if we need to show the alert again
-        const container = document.getElementById('ingredientsContainer');
-        if (container.querySelectorAll('.ingredient-row').length === 0) {
-            const alertBox = document.getElementById('noIngredientsAlert');
-            if (alertBox) alertBox.style.display = 'block';
+            // Check if we need to show the alert again
+            const container = document.getElementById('ingredientsContainer');
+            if (container.querySelectorAll('.ingredient-row').length === 0) {
+                const alertBox = document.getElementById('noIngredientsAlert');
+                if (alertBox) alertBox.style.display = 'block';
+            }
+
+            // Re-index remaining inputs
+            const rows = container.querySelectorAll('.ingredient-row');
+            rows.forEach((row, idx) => {
+                // update name attributes
+                const selects = row.querySelectorAll('select');
+                const inputs = row.querySelectorAll('input');
+
+                selects.forEach(s => {
+                    s.name = s.name.replace(/ingredients\[\d+\]/, `ingredients[${idx}]`);
+                });
+                inputs.forEach(i => {
+                    i.name = i.name.replace(/ingredients\[\d+\]/, `ingredients[${idx}]`);
+                });
+            });
         }
-
-        // Re-index remaining inputs
-        const rows = container.querySelectorAll('.ingredient-row');
-        rows.forEach((row, idx) => {
-            // update name attributes
-            const selects = row.querySelectorAll('select');
-            const inputs = row.querySelectorAll('input');
-
-            selects.forEach(s => {
-                s.name = s.name.replace(/ingredients\[\d+\]/, `ingredients[${idx}]`);
-            });
-            inputs.forEach(i => {
-                i.name = i.name.replace(/ingredients\[\d+\]/, `ingredients[${idx}]`);
-            });
-        });
-    }
-</script>
+    </script>
+</div>
 </body>
 </html>
