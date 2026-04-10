@@ -120,6 +120,10 @@ public class OrderManagementController {
     public String chefDashboard(Model model) {
         List<Commande> commandesEnPreparation = commandeService.getCommandesEnAttenteEtEnPreparation();
         model.addAttribute("commandes", commandesEnPreparation);
+
+        List<StockProduit> lowStocks = stockService.findLowStocks();
+        model.addAttribute("lowStocks", lowStocks);
+
         return "orders/chef-dashboard";
     }
 
