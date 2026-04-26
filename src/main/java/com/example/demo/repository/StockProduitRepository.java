@@ -9,4 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface StockProduitRepository extends JpaRepository<StockProduit, Long> {
 
     StockProduit findByProduit(Produit produit);
+
+    @org.springframework.data.jpa.repository.Query("SELECT s FROM StockProduit s WHERE s.stockActuel <= s.stockMinimum")
+    java.util.List<StockProduit> findStocksCritiques();
 }

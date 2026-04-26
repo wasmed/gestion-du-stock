@@ -10,9 +10,6 @@ public class Ingredient {
     private Long identifiant;
 
     private Double quantite;
-        @ManyToOne
-    @JoinColumn(name = "format_produit_id")
-    private FormatProduit formatProduit;
 
     @ManyToOne
     @JoinColumn(name = "plat_id")
@@ -36,14 +33,6 @@ public class Ingredient {
 
     public void setQuantite(Double quantite) {
         this.quantite = quantite;
-    }
-
-    public FormatProduit getFormatProduit() {
-        return formatProduit;
-    }
-
-    public void setFormatProduit(FormatProduit formatProduit) {
-        this.formatProduit = formatProduit;
     }
 
     public Produit getProduit() {

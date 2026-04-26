@@ -24,8 +24,6 @@ public class PlatController {
     }
 
     @Autowired
-    private com.example.demo.repository.FormatProduitRepository formatProduitRepository;
-    @Autowired
     private com.example.demo.service.ProduitService produitService;
 
     // Affiche le formulaire d'ajout/modification
@@ -36,7 +34,6 @@ public class PlatController {
         model.addAttribute("plat", plat);
         model.addAttribute("categories", CategoriePlat.values());
         model.addAttribute("produits", produitService.findAllProduits());
-        model.addAttribute("formats", formatProduitRepository.findAll());
         return "plat/form"; // Renvoie vers plat/form.html
     }
 

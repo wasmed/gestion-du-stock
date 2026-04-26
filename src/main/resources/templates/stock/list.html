@@ -9,6 +9,31 @@
         </a>
     </div>
 
+    <!-- AI Assistant Widget -->
+    <div class="card mb-4 shadow-sm border-0 bg-light">
+        <div class="card-body">
+            <h4 class="text-primary fw-bold mb-3">
+                <i class="bi bi-robot me-2"></i> Analyse de l'Assistant Jules
+            </h4>
+            <div class="mb-3">
+                <button id="btnAnalyseIa" class="btn btn-outline-primary">
+                    <i class="bi bi-magic me-1"></i> Lancer l'analyse
+                </button>
+            </div>
+
+            <div id="iaLoadingSpinner" class="d-none mb-3">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+                <span class="ms-2">L'IA réfléchit...</span>
+            </div>
+
+            <div id="iaResultBox" class="d-none alert alert-info shadow-sm">
+                <!-- AI text will be injected here -->
+            </div>
+        </div>
+    </div>
+
     <div class="table-container">
 
         <div th:if="${#maps.isEmpty(stocksParCategorie)}" class="alert alert-warning text-center">
@@ -28,29 +53,34 @@
                         <table class="table table-hover align-middle mb-0">
                             <thead class="bg-light">
                             <tr>
-                                <th class="ps-4">Produit</th>
+                                <th class="ps-4">Nom du produit</th>
+                                <th class="text-center">Conditionnement</th>
                                 <th class="text-center">Stock Actuel</th>
-                                <th class="text-center">Stock Minimum</th>
+                                <th class="text-center">Statut</th>
                                 <th style="width: 35%;" class="text-center">Mouvement de Stock (Unité)</th>
                                 <th class="text-end pe-4">Actions</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="stock : ${entry.value}" th:classappend="${stock.stockActuel < stock.stockMinimum ? 'table-danger' : ''}">
+                            <tr th:each="stock : ${entry.value}" th:classappend="${stock.stockActuel <= stock.stockMinimum ? 'table-danger' : ''}">
                                 <td class="ps-4">
                                     <strong th:text="${stock.produit.nom}"></strong>
-                                    <div th:if="${stock.stockActuel < stock.stockMinimum}" class="text-danger small">
-                                        <i class="bi bi-exclamation-triangle-fill"></i> Stock bas !
-                                    </div>
                                 </td>
-                                <td class="text-center" th:text="${stock.stockActuel} + ' ' + ${stock.formatProduit?.nom}"></td>
-                                <td class="text-center" th:text="${stock.stockMinimum} + ' ' + ${stock.formatProduit?.nom}"></td>
+                                <td class="text-center">
+                                    <span th:if="${stock.produit.quantite != null}" th:text="${#numbers.formatDecimal(stock.produit.quantite, 1, 2)} + ' ' + ${stock.produit.unite}"></span>
+                                    <span th:if="${stock.produit.quantite == null}">-</span>
+                                </td>
+                                <td class="text-center" th:text="${#numbers.formatDecimal(stock.stockActuel, 1, 2)}"></td>
+                                <td class="text-center">
+                                    <span th:if="${stock.stockActuel <= stock.stockMinimum}" class="badge bg-danger">Alerte</span>
+                                    <span th:if="${stock.stockActuel > stock.stockMinimum}" class="badge bg-success">OK</span>
+                                </td>
                                 <td class="text-center">
                                     <form th:action="@{/stock/update}" method="post" class="d-flex flex-column align-items-center justify-content-center">
                                         <input type="hidden" name="stockId" th:value="${stock.id}" />
                                         <div class="input-group input-group-sm mb-2 w-75">
                                             <input type="number" name="quantiteSaisie" class="form-control text-center" placeholder="Nb d'unités" required step="1" min="1" />
-                                            <span class="input-group-text" th:text="${stock.formatProduit?.nom}">Unité</span>
+                                            <span class="input-group-text" th:text="${stock.produit.unite != null ? stock.produit.unite : 'Unité'}">Unité</span>
                                         </div>
                                         <div class="d-flex gap-2 w-75">
                                             <button type="submit" name="typeOperation" value="AJOUT" class="btn btn-success btn-sm flex-fill">
@@ -81,5 +111,43 @@
 
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const btnAnalyseIa = document.getElementById("btnAnalyseIa");
+        const iaLoadingSpinner = document.getElementById("iaLoadingSpinner");
+        const iaResultBox = document.getElementById("iaResultBox");
+
+        if (btnAnalyseIa) {
+            btnAnalyseIa.addEventListener("click", function() {
+                // Show spinner, hide previous result
+                iaLoadingSpinner.classList.remove("d-none");
+                iaResultBox.classList.add("d-none");
+                btnAnalyseIa.disabled = true;
+
+                fetch("/api/stock/alerte-ia")
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Erreur réseau");
+                        }
+                        return response.text();
+                    })
+                    .then(text => {
+                        iaLoadingSpinner.classList.add("d-none");
+                        iaResultBox.innerHTML = text.replace(/\n/g, "<br>");
+                        iaResultBox.classList.remove("d-none");
+                        btnAnalyseIa.disabled = false;
+                    })
+                    .catch(error => {
+                        iaLoadingSpinner.classList.add("d-none");
+                        iaResultBox.innerHTML = "<span class='text-danger'>Erreur lors de l'analyse IA : " + error.message + "</span>";
+                        iaResultBox.classList.remove("d-none");
+                        btnAnalyseIa.disabled = false;
+                    });
+            });
+        }
+    });
+</script>
+
 </body>
 </html>

@@ -18,7 +18,6 @@ public class DataLoader implements CommandLineRunner {
     private final MenuRepository menuRepository;
     private final ProduitRepository produitRepository;
     private final IngredientRepository ingredientRepository;
-    private final FormatProduitRepository formatProduitRepository;
     private final StockProduitRepository stockProduitRepository;
     private final UserRepository userRepository;
     private final TableRestaurantRepository tableRepository;
@@ -26,12 +25,12 @@ public class DataLoader implements CommandLineRunner {
 
     public DataLoader(PlatRepository platRepository, MenuRepository menuRepository,
                       ProduitRepository produitRepository, IngredientRepository ingredientRepository,
-                      FormatProduitRepository formatProduitRepository,StockProduitRepository stockProduitRepository,UserRepository userRepository, TableRestaurantRepository tableRepository, PasswordEncoder passwordEncoder) {
+                      StockProduitRepository stockProduitRepository, UserRepository userRepository,
+                      TableRestaurantRepository tableRepository, PasswordEncoder passwordEncoder) {
         this.platRepository = platRepository;
         this.menuRepository = menuRepository;
         this.produitRepository = produitRepository;
         this.ingredientRepository = ingredientRepository;
-        this.formatProduitRepository = formatProduitRepository;
         this.stockProduitRepository = stockProduitRepository;
         this.userRepository = userRepository;
         this.tableRepository = tableRepository;
@@ -102,27 +101,6 @@ public class DataLoader implements CommandLineRunner {
 
         tableRepository.saveAll(Arrays.asList(table1, table2, table3, table4));
         System.out.println("Tables created.");
-
-        // =================================================================
-        // 0. CREATE PRODUCT FORMATS
-        // =================================================================
-        FormatProduit formatKg = new FormatProduit();
-        formatKg.setNom("Kilogramme");
-        formatKg.setQuantite(1.0);
-
-        FormatProduit formatUnite = new FormatProduit();
-        formatUnite.setNom("Unité");
-        formatUnite.setQuantite(1.0);
-
-        FormatProduit formatBouteille50cl = new FormatProduit();
-        formatBouteille50cl.setNom("Bouteille 50cl");
-        formatBouteille50cl.setQuantite(0.5);
-
-        FormatProduit formatCanette33cl = new FormatProduit();
-        formatCanette33cl.setNom("Canette 33cl");
-        formatCanette33cl.setQuantite(0.33);
-
-        formatProduitRepository.saveAll(Arrays.asList(formatKg, formatUnite, formatBouteille50cl, formatCanette33cl));
 
         // =================================================================
         // 1. CREATE PRODUCTS
@@ -208,85 +186,85 @@ public class DataLoader implements CommandLineRunner {
         stockTomate.setProduit(tomate);
         stockTomate.setStockActuel(50.0);
         stockTomate.setStockMinimum(10.0);
-        stockTomate.setFormatProduit(formatKg);
+
 
         StockProduit stockSalade = new StockProduit();
         stockSalade.setProduit(salade);
         stockSalade.setStockActuel(20.0);
         stockSalade.setStockMinimum(5.0);
-        stockSalade.setFormatProduit(formatKg);
+
 
         StockProduit stockPatePizza = new StockProduit();
         stockPatePizza.setProduit(patePizza);
         stockPatePizza.setStockActuel(20.0);
         stockPatePizza.setStockMinimum(4.0);
-        stockPatePizza.setFormatProduit(formatKg);
+
 
         StockProduit stockMozzarella = new StockProduit();
         stockMozzarella.setProduit(mozzarella);
         stockMozzarella.setStockActuel(15.0);
         stockMozzarella.setStockMinimum(3.0);
-        stockMozzarella.setFormatProduit(formatKg);
+
 
         StockProduit stockEau = new StockProduit();
         stockEau.setProduit(eauPlateProduit);
         stockEau.setStockActuel(100.0);
         stockEau.setStockMinimum(24.0);
-        stockEau.setFormatProduit(formatBouteille50cl);
+
 
         StockProduit stockChocolat = new StockProduit();
         stockChocolat.setProduit(chocolatNoir);
         stockChocolat.setStockActuel(10.0);
         stockChocolat.setStockMinimum(2.0);
-        stockChocolat.setFormatProduit(formatKg);
+
 
         StockProduit stockPenne = new StockProduit();
         stockPenne.setProduit(penne);
         stockPenne.setStockActuel(30.0);
         stockPenne.setStockMinimum(5.0);
-        stockPenne.setFormatProduit(formatKg);
+
 
         StockProduit stockGlace = new StockProduit();
         stockGlace.setProduit(cremeGlacee);
         stockGlace.setStockActuel(10.0);
         stockGlace.setStockMinimum(2.0);
-        stockGlace.setFormatProduit(formatKg);
+
 
         StockProduit stockMascarpone = new StockProduit();
         stockMascarpone.setProduit(mascarpone);
         stockMascarpone.setStockActuel(8.0);
         stockMascarpone.setStockMinimum(2.0);
-        stockMascarpone.setFormatProduit(formatKg);
+
 
         StockProduit stockCafe = new StockProduit();
         stockCafe.setProduit(cafe);
         stockCafe.setStockActuel(5.0);
         stockCafe.setStockMinimum(1.0);
-        stockCafe.setFormatProduit(formatKg);
+
 
         StockProduit stockBoeuf = new StockProduit();
         stockBoeuf.setProduit(boeuf);
         stockBoeuf.setStockActuel(10.0);
         stockBoeuf.setStockMinimum(2.0);
-        stockBoeuf.setFormatProduit(formatKg);
+
 
         StockProduit stockSaumon = new StockProduit();
         stockSaumon.setProduit(saumon);
         stockSaumon.setStockActuel(5.0);
         stockSaumon.setStockMinimum(1.0);
-        stockSaumon.setFormatProduit(formatKg);
+
 
         StockProduit stockPomme = new StockProduit();
         stockPomme.setProduit(pomme);
         stockPomme.setStockActuel(15.0);
         stockPomme.setStockMinimum(3.0);
-        stockPomme.setFormatProduit(formatKg);
+
 
         StockProduit stockEmballage = new StockProduit();
         stockEmballage.setProduit(emballage);
         stockEmballage.setStockActuel(100.0);
         stockEmballage.setStockMinimum(20.0);
-        stockEmballage.setFormatProduit(formatUnite);
+
 
         List<StockProduit> stocks = Arrays.asList(stockTomate, stockSalade, stockPatePizza, stockMozzarella, stockEau, stockChocolat, stockPenne, stockGlace, stockMascarpone, stockCafe, stockBoeuf, stockSaumon, stockPomme, stockEmballage);
         stockProduitRepository.saveAll(stocks);
@@ -306,14 +284,14 @@ public class DataLoader implements CommandLineRunner {
         ingSalade.setPlat(saladeVerte);
         ingSalade.setProduit(salade);
         ingSalade.setQuantite(0.150);
-        ingSalade.setFormatProduit(formatKg);
+
         ingredientRepository.save(ingSalade);
 
         Ingredient ingTomateSalade = new Ingredient();
         ingTomateSalade.setPlat(saladeVerte);
         ingTomateSalade.setProduit(tomate);
         ingTomateSalade.setQuantite(0.080);
-        ingTomateSalade.setFormatProduit(formatKg);
+
         ingredientRepository.save(ingTomateSalade);
 
         Plat pizzaMargherita = new Plat();
@@ -328,21 +306,21 @@ public class DataLoader implements CommandLineRunner {
         ingPate.setPlat(pizzaMargherita);
         ingPate.setProduit(patePizza);
         ingPate.setQuantite(0.250);
-        ingPate.setFormatProduit(formatKg);
+
         ingredientRepository.save(ingPate);
 
         Ingredient ingMozzaPizza = new Ingredient();
         ingMozzaPizza.setPlat(pizzaMargherita);
         ingMozzaPizza.setProduit(mozzarella);
         ingMozzaPizza.setQuantite(0.120);
-        ingMozzaPizza.setFormatProduit(formatKg);
+
         ingredientRepository.save(ingMozzaPizza);
 
         Ingredient ingTomatePizza = new Ingredient();
         ingTomatePizza.setPlat(pizzaMargherita);
         ingTomatePizza.setProduit(tomate);
         ingTomatePizza.setQuantite(0.100);
-        ingTomatePizza.setFormatProduit(formatKg);
+
         ingredientRepository.save(ingTomatePizza);
 
         Plat boissonEau = new Plat();
@@ -357,7 +335,7 @@ public class DataLoader implements CommandLineRunner {
         ingEau.setPlat(boissonEau);
         ingEau.setProduit(eauPlateProduit);
         ingEau.setQuantite(1.0);
-        ingEau.setFormatProduit(formatBouteille50cl);
+
         ingredientRepository.save(ingEau);
 
         // NEW PLATS
@@ -373,14 +351,14 @@ public class DataLoader implements CommandLineRunner {
         ingPenne.setPlat(patesTomate);
         ingPenne.setProduit(penne);
         ingPenne.setQuantite(0.200);
-        ingPenne.setFormatProduit(formatKg);
+
         ingredientRepository.save(ingPenne);
 
         Ingredient ingTomatePenne = new Ingredient();
         ingTomatePenne.setPlat(patesTomate);
         ingTomatePenne.setProduit(tomate);
         ingTomatePenne.setQuantite(0.150);
-        ingTomatePenne.setFormatProduit(formatKg);
+
         ingredientRepository.save(ingTomatePenne);
 
         Plat tiramisu = new Plat();
@@ -395,21 +373,21 @@ public class DataLoader implements CommandLineRunner {
         ingMascarpone.setPlat(tiramisu);
         ingMascarpone.setProduit(mascarpone);
         ingMascarpone.setQuantite(0.100);
-        ingMascarpone.setFormatProduit(formatKg);
+
         ingredientRepository.save(ingMascarpone);
 
         Ingredient ingCafe = new Ingredient();
         ingCafe.setPlat(tiramisu);
         ingCafe.setProduit(cafe);
         ingCafe.setQuantite(0.020);
-        ingCafe.setFormatProduit(formatKg);
+
         ingredientRepository.save(ingCafe);
 
         Ingredient ingChocolat = new Ingredient();
         ingChocolat.setPlat(tiramisu);
         ingChocolat.setProduit(chocolatNoir);
         ingChocolat.setQuantite(0.010);
-        ingChocolat.setFormatProduit(formatKg);
+
         ingredientRepository.save(ingChocolat);
 
         Plat glaceVanille = new Plat();
@@ -424,7 +402,7 @@ public class DataLoader implements CommandLineRunner {
         ingGlace.setPlat(glaceVanille);
         ingGlace.setProduit(cremeGlacee);
         ingGlace.setQuantite(0.150);
-        ingGlace.setFormatProduit(formatKg);
+
         ingredientRepository.save(ingGlace);
 
         // =================================================================

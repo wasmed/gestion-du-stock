@@ -11,9 +11,6 @@ public class StockProduit {
 
     private Double stockActuel;
     private Double stockMinimum;
-        @ManyToOne
-    @JoinColumn(name = "format_produit_id")
-    private FormatProduit formatProduit;
 
     @OneToOne
     @JoinColumn(name = "produit_id")
@@ -41,14 +38,6 @@ public class StockProduit {
 
     public void setStockMinimum(Double stockMinimum) {
         this.stockMinimum = stockMinimum;
-    }
-
-    public FormatProduit getFormatProduit() {
-        return formatProduit;
-    }
-
-    public void setFormatProduit(FormatProduit formatProduit) {
-        this.formatProduit = formatProduit;
     }
 
     public Produit getProduit() {
