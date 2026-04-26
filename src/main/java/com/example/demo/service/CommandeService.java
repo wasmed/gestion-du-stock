@@ -40,6 +40,7 @@ public class CommandeService {
         commande.setServeur(serveur);
         commande.setTable(table);
         commande.setEtat(EtatCommande.EN_COURS);
+        commande.setDateHeure(java.time.LocalDateTime.now());
         return commandeRepository.save(commande);
     }
     public Commande createNewCommande(User client, User serveur) {
@@ -47,6 +48,7 @@ public class CommandeService {
         commande.setClient(client);
         commande.setServeur(serveur);
         commande.setEtat(EtatCommande.EN_COURS);
+        commande.setDateHeure(java.time.LocalDateTime.now());
         return commandeRepository.save(commande);
     }
 
