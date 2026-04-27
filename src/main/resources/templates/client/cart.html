@@ -111,8 +111,8 @@
 
                             <div class="mb-3" id="tableSelectionContainer">
                                 <label for="tableId" class="form-label">Votre Table</label>
-                                <select class="form-select" id="tableId" name="tableId" required>
-                                    <option value="" selected disabled>Choisir ma table...</option>
+                                <select class="form-select" id="tableId" name="tableId">
+                                    <option value="" selected>Laisser le serveur choisir...</option>
                                     <option th:each="tbl : ${tables}"
                                             th:value="${tbl.identifiant}"
                                             th:text="'Table ' + ${tbl.numeroTable} + ' (' + ${tbl.nombrePersonne} + ' pers.)'">
@@ -157,10 +157,8 @@
         if (tableContainer && tableSelect) {
             if (isEmporter) {
                 tableContainer.style.display = 'none';
-                tableSelect.removeAttribute('required');
             } else {
                 tableContainer.style.display = 'block';
-                tableSelect.setAttribute('required', 'required');
             }
         }
     }
