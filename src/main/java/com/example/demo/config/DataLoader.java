@@ -67,6 +67,12 @@ public class DataLoader implements CommandLineRunner {
         serveur.setPassword(passwordEncoder.encode("serveur123"));
         serveur.setRole(Role.SERVEUR);
 
+        User serveur2 = new User();
+        serveur2.setFullName("Serveur Deux");
+        serveur2.setEmail("serveur2@resto.com");
+        serveur2.setPassword(passwordEncoder.encode("serveur123"));
+        serveur2.setRole(Role.SERVEUR);
+
         User client = new User();
         client.setFullName("Jean Dupont");
         client.setEmail("client@resto.com");
@@ -79,7 +85,7 @@ public class DataLoader implements CommandLineRunner {
         guest.setPassword(passwordEncoder.encode("guest123"));
         guest.setRole(Role.CLIENT);
 
-        userRepository.saveAll(Arrays.asList(admin, chef, serveur, client, guest));
+        userRepository.saveAll(Arrays.asList(admin, chef, serveur, serveur2, client, guest));
         System.out.println("Users created.");
 
         // --- RESTAURANT TABLES ---
@@ -103,76 +109,104 @@ public class DataLoader implements CommandLineRunner {
         System.out.println("Tables created.");
 
         // =================================================================
-        // 1. CREATE PRODUCTS
+        // 1. CREATE PRODUCTS (Mis à jour avec quantite et unite)
         // =================================================================
         Produit tomate = new Produit();
         tomate.setNom("Tomate");
         tomate.setType(TypeProduit.LEGUME);
+        tomate.setQuantite(1.0);
+        tomate.setUnite("kg");
         tomate.setImage("https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500&q=80");
 
         Produit salade = new Produit();
         salade.setNom("Salade Laitue");
         salade.setType(TypeProduit.LEGUME);
+        salade.setQuantite(1.0);
+        salade.setUnite("Pièce");
         salade.setImage("https://images.unsplash.com/photo-1556801712-67c8c279a093?w=500&q=80");
 
         Produit patePizza = new Produit();
         patePizza.setNom("Pâte à Pizza");
         patePizza.setType(TypeProduit.BOULANGERIE);
+        patePizza.setQuantite(5.0);
+        patePizza.setUnite("kg");
         patePizza.setImage("https://images.unsplash.com/photo-1598155523122-38423bb4d6c1?w=500&q=80");
 
         Produit mozzarella = new Produit();
         mozzarella.setNom("Mozzarella");
         mozzarella.setType(TypeProduit.CREMERIE);
+        mozzarella.setQuantite(1.0);
+        mozzarella.setUnite("kg");
         mozzarella.setImage("https://images.unsplash.com/photo-1588612571212-320d7ee82596?w=500&q=80");
 
         Produit eauPlateProduit = new Produit();
         eauPlateProduit.setNom("Eau Plate 50cl");
         eauPlateProduit.setType(TypeProduit.BOISSON);
+        eauPlateProduit.setQuantite(1.0);
+        eauPlateProduit.setUnite("Bouteille");
         eauPlateProduit.setImage("https://images.unsplash.com/photo-1564419320461-6870880221ad?w=500&q=80");
 
         Produit chocolatNoir = new Produit();
         chocolatNoir.setNom("Chocolat Noir 70%");
         chocolatNoir.setType(TypeProduit.DESSERT);
+        chocolatNoir.setQuantite(1.0);
+        chocolatNoir.setUnite("kg");
         chocolatNoir.setImage("https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=500&q=80");
 
         Produit penne = new Produit();
         penne.setNom("Pâtes Penne");
         penne.setType(TypeProduit.EPICERIE_SECHE);
+        penne.setQuantite(5.0);
+        penne.setUnite("kg");
         penne.setImage("https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&q=80");
 
         Produit cremeGlacee = new Produit();
         cremeGlacee.setNom("Crème Glacée Vanille");
         cremeGlacee.setType(TypeProduit.DESSERT);
+        cremeGlacee.setQuantite(2.5);
+        cremeGlacee.setUnite("Litre");
         cremeGlacee.setImage("https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=500&q=80");
 
         Produit mascarpone = new Produit();
         mascarpone.setNom("Mascarpone");
         mascarpone.setType(TypeProduit.CREMERIE);
+        mascarpone.setQuantite(1.0);
+        mascarpone.setUnite("kg");
         mascarpone.setImage("https://images.unsplash.com/photo-1585671720293-1994627d7045?w=500&q=80");
 
         Produit cafe = new Produit();
         cafe.setNom("Café Grain");
         cafe.setType(TypeProduit.BOISSON);
+        cafe.setQuantite(1.0);
+        cafe.setUnite("kg");
         cafe.setImage("https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=500&q=80");
 
         Produit boeuf = new Produit();
         boeuf.setNom("Steak Haché de Boeuf");
         boeuf.setType(TypeProduit.VIANDE);
+        boeuf.setQuantite(1.0);
+        boeuf.setUnite("kg");
         boeuf.setImage("https://images.unsplash.com/photo-1551028150-64b9f398f678?w=500&q=80");
 
         Produit saumon = new Produit();
         saumon.setNom("Filet de Saumon");
         saumon.setType(TypeProduit.POISSON);
+        saumon.setQuantite(1.0);
+        saumon.setUnite("kg");
         saumon.setImage("https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=500&q=80");
 
         Produit pomme = new Produit();
         pomme.setNom("Pomme");
         pomme.setType(TypeProduit.FRUIT);
+        pomme.setQuantite(1.0);
+        pomme.setUnite("kg");
         pomme.setImage("https://images.unsplash.com/photo-1560806887-1e4cd0b6fac6?w=500&q=80");
 
         Produit emballage = new Produit();
         emballage.setNom("Boîte à Pizza");
         emballage.setType(TypeProduit.AUTRE);
+        emballage.setQuantite(100.0);
+        emballage.setUnite("Pièces");
         emballage.setImage("https://images.unsplash.com/photo-1587280510058-fdb9bc2d7877?w=500&q=80");
 
         // Save all products first to get their IDs
@@ -187,84 +221,70 @@ public class DataLoader implements CommandLineRunner {
         stockTomate.setStockActuel(50.0);
         stockTomate.setStockMinimum(10.0);
 
-
         StockProduit stockSalade = new StockProduit();
         stockSalade.setProduit(salade);
         stockSalade.setStockActuel(20.0);
         stockSalade.setStockMinimum(5.0);
-
 
         StockProduit stockPatePizza = new StockProduit();
         stockPatePizza.setProduit(patePizza);
         stockPatePizza.setStockActuel(20.0);
         stockPatePizza.setStockMinimum(4.0);
 
-
         StockProduit stockMozzarella = new StockProduit();
         stockMozzarella.setProduit(mozzarella);
         stockMozzarella.setStockActuel(15.0);
         stockMozzarella.setStockMinimum(3.0);
-
 
         StockProduit stockEau = new StockProduit();
         stockEau.setProduit(eauPlateProduit);
         stockEau.setStockActuel(100.0);
         stockEau.setStockMinimum(24.0);
 
-
         StockProduit stockChocolat = new StockProduit();
         stockChocolat.setProduit(chocolatNoir);
         stockChocolat.setStockActuel(10.0);
         stockChocolat.setStockMinimum(2.0);
-
 
         StockProduit stockPenne = new StockProduit();
         stockPenne.setProduit(penne);
         stockPenne.setStockActuel(30.0);
         stockPenne.setStockMinimum(5.0);
 
-
         StockProduit stockGlace = new StockProduit();
         stockGlace.setProduit(cremeGlacee);
         stockGlace.setStockActuel(10.0);
         stockGlace.setStockMinimum(2.0);
-
 
         StockProduit stockMascarpone = new StockProduit();
         stockMascarpone.setProduit(mascarpone);
         stockMascarpone.setStockActuel(8.0);
         stockMascarpone.setStockMinimum(2.0);
 
-
         StockProduit stockCafe = new StockProduit();
         stockCafe.setProduit(cafe);
         stockCafe.setStockActuel(5.0);
         stockCafe.setStockMinimum(1.0);
-
 
         StockProduit stockBoeuf = new StockProduit();
         stockBoeuf.setProduit(boeuf);
         stockBoeuf.setStockActuel(10.0);
         stockBoeuf.setStockMinimum(2.0);
 
-
         StockProduit stockSaumon = new StockProduit();
         stockSaumon.setProduit(saumon);
         stockSaumon.setStockActuel(5.0);
         stockSaumon.setStockMinimum(1.0);
-
 
         StockProduit stockPomme = new StockProduit();
         stockPomme.setProduit(pomme);
         stockPomme.setStockActuel(15.0);
         stockPomme.setStockMinimum(3.0);
 
-
         StockProduit stockEmballage = new StockProduit();
         stockEmballage.setProduit(emballage);
         stockEmballage.setStockActuel(100.0);
         stockEmballage.setStockMinimum(20.0);
-
 
         List<StockProduit> stocks = Arrays.asList(stockTomate, stockSalade, stockPatePizza, stockMozzarella, stockEau, stockChocolat, stockPenne, stockGlace, stockMascarpone, stockCafe, stockBoeuf, stockSaumon, stockPomme, stockEmballage);
         stockProduitRepository.saveAll(stocks);
@@ -284,14 +304,12 @@ public class DataLoader implements CommandLineRunner {
         ingSalade.setPlat(saladeVerte);
         ingSalade.setProduit(salade);
         ingSalade.setQuantite(0.150);
-
         ingredientRepository.save(ingSalade);
 
         Ingredient ingTomateSalade = new Ingredient();
         ingTomateSalade.setPlat(saladeVerte);
         ingTomateSalade.setProduit(tomate);
         ingTomateSalade.setQuantite(0.080);
-
         ingredientRepository.save(ingTomateSalade);
 
         Plat pizzaMargherita = new Plat();
@@ -306,21 +324,18 @@ public class DataLoader implements CommandLineRunner {
         ingPate.setPlat(pizzaMargherita);
         ingPate.setProduit(patePizza);
         ingPate.setQuantite(0.250);
-
         ingredientRepository.save(ingPate);
 
         Ingredient ingMozzaPizza = new Ingredient();
         ingMozzaPizza.setPlat(pizzaMargherita);
         ingMozzaPizza.setProduit(mozzarella);
         ingMozzaPizza.setQuantite(0.120);
-
         ingredientRepository.save(ingMozzaPizza);
 
         Ingredient ingTomatePizza = new Ingredient();
         ingTomatePizza.setPlat(pizzaMargherita);
         ingTomatePizza.setProduit(tomate);
         ingTomatePizza.setQuantite(0.100);
-
         ingredientRepository.save(ingTomatePizza);
 
         Plat boissonEau = new Plat();
@@ -335,7 +350,6 @@ public class DataLoader implements CommandLineRunner {
         ingEau.setPlat(boissonEau);
         ingEau.setProduit(eauPlateProduit);
         ingEau.setQuantite(1.0);
-
         ingredientRepository.save(ingEau);
 
         // NEW PLATS
@@ -351,14 +365,12 @@ public class DataLoader implements CommandLineRunner {
         ingPenne.setPlat(patesTomate);
         ingPenne.setProduit(penne);
         ingPenne.setQuantite(0.200);
-
         ingredientRepository.save(ingPenne);
 
         Ingredient ingTomatePenne = new Ingredient();
         ingTomatePenne.setPlat(patesTomate);
         ingTomatePenne.setProduit(tomate);
         ingTomatePenne.setQuantite(0.150);
-
         ingredientRepository.save(ingTomatePenne);
 
         Plat tiramisu = new Plat();
@@ -373,21 +385,18 @@ public class DataLoader implements CommandLineRunner {
         ingMascarpone.setPlat(tiramisu);
         ingMascarpone.setProduit(mascarpone);
         ingMascarpone.setQuantite(0.100);
-
         ingredientRepository.save(ingMascarpone);
 
         Ingredient ingCafe = new Ingredient();
         ingCafe.setPlat(tiramisu);
         ingCafe.setProduit(cafe);
         ingCafe.setQuantite(0.020);
-
         ingredientRepository.save(ingCafe);
 
         Ingredient ingChocolat = new Ingredient();
         ingChocolat.setPlat(tiramisu);
         ingChocolat.setProduit(chocolatNoir);
         ingChocolat.setQuantite(0.010);
-
         ingredientRepository.save(ingChocolat);
 
         Plat glaceVanille = new Plat();
@@ -402,7 +411,6 @@ public class DataLoader implements CommandLineRunner {
         ingGlace.setPlat(glaceVanille);
         ingGlace.setProduit(cremeGlacee);
         ingGlace.setQuantite(0.150);
-
         ingredientRepository.save(ingGlace);
 
         // =================================================================

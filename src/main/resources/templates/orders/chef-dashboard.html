@@ -46,7 +46,7 @@
             <li th:each="stock : ${lowStocks}">
                 <strong th:text="${stock.produit?.nom}">Produit</strong> :
                 Il reste <span th:text="${stock.stockActuel}">0</span>
-                <span th:text="${stock.formatProduit?.nom}"></span>.
+                <span th:text="${stock.produit?.quantite + ' ' + stock.produit?.unite}"></span>.
             </li>
         </ul>
     </div>

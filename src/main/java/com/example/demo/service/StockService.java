@@ -18,7 +18,7 @@ public class StockService {
     @Autowired
     private StockProduitRepository stockProduitRepository;
     @Autowired
-    private IngredientRepository ingredientRepository; // Inject the new repository
+    private IngredientRepository ingredientRepository;
 
     @Autowired
     private ConsommationStockRepository consommationStockRepository;
