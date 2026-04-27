@@ -24,11 +24,10 @@ public class CommandeService {
     @Autowired
     private PlatRepository platRepository;
 
-    public ConsommationStock createConsommation(LigneCommande ligneCommande, Produit produit, FormatProduit formatProduit, Double quantiteUtilisee) {
+    public ConsommationStock createConsommation(LigneCommande ligneCommande, Produit produit, Double quantiteUtilisee) {
         ConsommationStock consommation = new ConsommationStock();
         consommation.setLigneCommande(ligneCommande);
         consommation.setProduit(produit);
-        consommation.setFormatProduit(formatProduit);
         consommation.setQuantiteUtilisee(quantiteUtilisee);
         return consommationStockRepository.save(consommation);
     }

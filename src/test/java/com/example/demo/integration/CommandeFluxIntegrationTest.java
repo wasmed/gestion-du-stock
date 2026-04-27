@@ -46,9 +46,6 @@ public class CommandeFluxIntegrationTest {
     private IngredientRepository ingredientRepository;
 
     @Autowired
-    private FormatProduitRepository formatProduitRepository;
-
-    @Autowired
     private CommandeService commandeService;
 
     @Autowired
@@ -71,10 +68,6 @@ public class CommandeFluxIntegrationTest {
         userRepository.save(client);
 
         // Setup Produit & Stock
-        FormatProduit formatUnite = new FormatProduit();
-        formatUnite.setNom("Unité");
-        formatProduitRepository.save(formatUnite);
-
         tomate = new Produit();
         tomate.setNom("Tomate");
         tomate.setType(TypeProduit.LEGUME);
@@ -84,7 +77,6 @@ public class CommandeFluxIntegrationTest {
         stockTomate.setProduit(tomate);
         stockTomate.setStockActuel(50.0);
         stockTomate.setStockMinimum(10.0);
-        stockTomate.setFormatProduit(formatUnite);
         stockProduitRepository.save(stockTomate);
 
         // Setup Plat with Ingredients
@@ -98,7 +90,6 @@ public class CommandeFluxIntegrationTest {
         ingredient.setPlat(plat);
         ingredient.setProduit(tomate);
         ingredient.setQuantite(2.0); // 2 tomates par salade
-        ingredient.setFormatProduit(formatUnite);
 
         plat.setIngredients(new ArrayList<>(Arrays.asList(ingredient)));
         platRepository.save(plat);

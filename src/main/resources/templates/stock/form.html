@@ -48,10 +48,13 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="formatProduit" class="form-label">Unité / Format</label>
-                                <select class="form-select" id="formatProduit" th:field="*{formatProduit.identifiant}" required>
-                                    <option th:each="format : ${formats}" th:value="${format.identifiant}" th:text="${format.nom} + ' (' + ${format.quantite} + ')'"></option>
-                                </select>
+                                <label for="produitQuantite" class="form-label">Conditionnement (Qté)</label>
+                                <input type="number" class="form-control" id="produitQuantite" th:field="*{produit.quantite}" step="0.01">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="produitUnite" class="form-label">Unité (ex: kg, L)</label>
+                                <input type="text" class="form-control" id="produitUnite" th:field="*{produit.unite}">
                             </div>
                         </div>
 

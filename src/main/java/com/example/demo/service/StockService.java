@@ -78,8 +78,8 @@ public class StockService {
                 .orElseThrow(() -> new IllegalArgumentException("Stock non trouvé pour l'ID: " + stockId));
 
         double quantiteFormat = 1.0;
-        if (stockProduit.getFormatProduit() != null && stockProduit.getFormatProduit().getQuantite() != null) {
-            quantiteFormat = stockProduit.getFormatProduit().getQuantite();
+        if (stockProduit.getProduit() != null && stockProduit.getProduit().getQuantite() != null) {
+            quantiteFormat = stockProduit.getProduit().getQuantite();
         }
 
         double quantiteARajuster = quantiteSaisie * quantiteFormat;

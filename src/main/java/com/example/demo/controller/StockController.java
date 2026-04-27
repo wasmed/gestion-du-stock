@@ -29,8 +29,6 @@ public class StockController {
     @Autowired
     private ProduitService produitService;
     @Autowired
-    private com.example.demo.repository.FormatProduitRepository formatProduitRepository;
-    @Autowired
     private com.example.demo.repository.ProduitRepository produitRepository;
     @Autowired
     private StockAiService stockAiService;
@@ -66,7 +64,6 @@ public class StockController {
         stock.setProduit(new Produit()); // Initialize to avoid null pointer in view
 
         model.addAttribute("stock", stock);
-        model.addAttribute("formats", formatProduitRepository.findAll());
         model.addAttribute("types", TypeProduit.values());
         return "stock/form";
     }
@@ -92,7 +89,6 @@ public class StockController {
         List<Produit> produits = produitService.findAllProduits();
 
         model.addAttribute("stock", stock);
-        model.addAttribute("formats", formatProduitRepository.findAll());
         model.addAttribute("types", TypeProduit.values());
         return "stock/form"; // We use the same view for edit and new
     }

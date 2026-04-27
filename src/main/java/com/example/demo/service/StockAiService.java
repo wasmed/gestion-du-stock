@@ -1,7 +1,9 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Produit;
+import com.example.demo.model.StockProduit;
 import com.example.demo.repository.ProduitRepository;
+import com.example.demo.repository.StockProduitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -20,23 +22,28 @@ import java.util.stream.Collectors;
 public class StockAiService {
 
     @Autowired
-    private ProduitRepository produitRepository;
+    private StockProduitRepository stockProduitRepository;
 
     @Value("${gemini.api.key}")
     private String geminiApiKey;
 
     public String analyseStock() {
-        List<Produit> produitsCritiques = produitRepository.findProduitsWithStockCritique();
+        List<StockProduit> stocksCritiques = stockProduitRepository.findStocksCritiques();
 
-        if (produitsCritiques.isEmpty()) {
+        if (stocksCritiques.isEmpty()) {
             return "Le stock est bon.";
         }
 
-        String listeProduits = produitsCritiques.stream()
-                .map(Produit::getNom)
+        String listeProduits = stocksCritiques.stream()
+                .map(s -> {
+                    Produit p = s.getProduit();
+                    String unite = p.getUnite() != null ? p.getUnite() : "";
+                    String quantite = p.getQuantite() != null ? String.valueOf(p.getQuantite()) : "";
+                    return p.getNom() + " (Conditionnement: " + quantite + " " + unite + ", Stock actuel: " + s.getStockActuel() + ")";
+                })
                 .collect(Collectors.joining(", "));
 
-        String prompt = "Tu es le manager du restaurant. Voici les produits en stock critique : [" + listeProduits + "]. Rédige une courte alerte pour le patron et dresse une liste de courses pour le fournisseur.";
+        String prompt = "En tant qu'expert logistique, analyse ces stocks critiques : [" + listeProduits + "]. Rédige une alerte et une liste de courses précise.";
 
         return callGeminiApi(prompt);
     }

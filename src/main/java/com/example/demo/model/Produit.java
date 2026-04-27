@@ -17,6 +17,10 @@ public class Produit {
 
     private String image;
 
+    private Double quantite;
+
+    private String unite;
+
     @OneToOne(mappedBy = "produit", cascade = CascadeType.ALL, orphanRemoval = true)
     @com.fasterxml.jackson.annotation.JsonIgnore
     private StockProduit stockProduit;
@@ -59,5 +63,21 @@ public class Produit {
 
     public void setStockProduit(StockProduit stockProduit) {
         this.stockProduit = stockProduit;
+    }
+
+    public Double getQuantite() {
+        return quantite;
+    }
+
+    public void setQuantite(Double quantite) {
+        this.quantite = quantite;
+    }
+
+    public String getUnite() {
+        return unite;
+    }
+
+    public void setUnite(String unite) {
+        this.unite = unite;
     }
 }

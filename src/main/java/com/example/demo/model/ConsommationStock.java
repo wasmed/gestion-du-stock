@@ -19,10 +19,6 @@ public class ConsommationStock {
     @JoinColumn(name = "produit_id")
     private Produit produit;
 
-    @ManyToOne
-    @JoinColumn(name = "format_produit_id")
-    private FormatProduit formatProduit;
-
     public Long getIdentifiant() {
         return identifiant;
     }
@@ -53,13 +49,5 @@ public class ConsommationStock {
 
     public void setProduit(Produit produit) {
         this.produit = produit;
-    }
-
-    public FormatProduit getFormatProduit() {
-        return formatProduit;
-    }
-
-    public void setFormatProduit(FormatProduit formatProduit) {
-        this.formatProduit = formatProduit;
     }
 }
