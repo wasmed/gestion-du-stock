@@ -136,40 +136,43 @@
             }
         }
 
+        let timeout = null;
+
         window.updateTotal = function() {
             const montantInitial = parseFloat(document.getElementById('montantInitial').value) || 0;
             const pourboire = parseFloat(document.getElementById('pourboire').value) || 0;
             const total = montantInitial + pourboire;
 
-            // Format number to 2 decimal places with comma or dot (using local formatting if possible)
-            // But we keep it simple here matching server side standard format
             const formattedTotal = total.toFixed(2);
             document.getElementById('totalAPayerDisplay').innerText = formattedTotal.replace('.', ',') + ' €';
 
-            // Update simulation link if QR code mode is selected
-            updateSimulationLink();
+            // Debounce pour recharger le QR Code
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                if (modePaiementSelect.value === 'QR_CODE') {
+                    loadQrCode(pourboire);
+                }
+            }, 500);
         };
 
-        function updateSimulationLink() {
-            const pourboire = document.getElementById('pourboire').value || 0;
-            simulationLink.href = `/client/paiement/simulation/${commandeId}?pourboire=${pourboire}`;
-        }
-
-        function loadQrCode() {
-            // Set the simulation link even before loading image
-            updateSimulationLink();
-
-            if (qrCodeImg.src && qrCodeImg.src.startsWith('data:image')) return; // Already loaded
-
+        function loadQrCode(pourboire = 0) {
             qrLoading.style.display = 'block';
             qrCodeImg.style.display = 'none';
 
-            fetch(`/paiement/api/generate-qr/${commandeId}`)
+            fetch(`/paiement/api/generate-qr/${commandeId}?pourboire=${pourboire}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.qrCodeImage) {
                         qrCodeImg.src = "data:image/png;base64," + data.qrCodeImage;
                         qrCodeImg.style.display = 'block';
+
+                        // Met à jour le lien de simulation ou le vrai lien Mollie
+                        if (data.checkoutUrl) {
+                            simulationLink.href = data.checkoutUrl;
+                            simulationLink.innerText = data.checkoutUrl.includes("simulation")
+                                ? "Ouvrir le lien de simulation (Test local)"
+                                : "Ouvrir le paiement Mollie (Bancontact)";
+                        }
                     } else {
                         console.error("Erreur QR Code:", data.error);
                     }

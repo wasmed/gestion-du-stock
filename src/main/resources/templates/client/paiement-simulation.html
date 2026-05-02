@@ -24,6 +24,13 @@
                         </div>
                     </div>
 
+                    <div th:if="${errorMessage}" class="alert alert-danger d-flex align-items-center" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2 fs-4"></i>
+                        <div th:text="${errorMessage}">
+                            Erreur de paiement.
+                        </div>
+                    </div>
+
                     <div th:unless="${param.success}">
                         <h5 class="text-secondary mb-3">Commande #<span th:text="${commande.id}"></span></h5>
 

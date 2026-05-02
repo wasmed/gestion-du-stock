@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // --- LA LIGNE CLÉ À MODIFIER ---
                         // On ajoute /client/menu à la liste des pages publiques
-                        .requestMatchers("/", "/login", "/register", "/client/menu", "/client/paiement/simulation/**", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/", "/login", "/register", "/client/menu", "/client/paiement/**", "/css/**", "/js/**", "/images/**").permitAll()
 
                         // Pour tout le reste, l'utilisateur doit être authentifié
                         .anyRequest().authenticated()
