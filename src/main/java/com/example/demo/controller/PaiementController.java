@@ -31,6 +31,9 @@ public class PaiementController {
     @Autowired
     private QrCodeService qrCodeService;
 
+    @Autowired
+    private com.example.demo.service.MollieService mollieService;
+
     @GetMapping("/form/{commandeId}")
     public String showPaymentForm(@PathVariable Long commandeId, Model model) {
         Commande commande = commandeService.findCommandeById(commandeId);
@@ -51,15 +54,21 @@ public class PaiementController {
 
     @GetMapping("/api/generate-qr/{id}")
     @ResponseBody
-    public ResponseEntity<Map<String, String>> generateQrCode(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> generateQrCode(@PathVariable Long id, @RequestParam(required = false, defaultValue = "0.0") Double pourboire) {
         try {
-            // URL de simulation de paiement
+            Commande commande = commandeService.findCommandeById(id);
+            double totalAmount = commande.getMontantTotal() + pourboire;
+
             String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-            String qrContent = baseUrl + "/client/paiement/simulation/" + id;
-            String base64Image = qrCodeService.generateQrCodeImage(qrContent, 250, 250);
+            String redirectUrl = baseUrl + "/client/paiement/mollie-return/" + id + "?pourboire=" + pourboire;
+
+            String checkoutUrl = mollieService.createPaymentAndGetCheckoutUrl(id, totalAmount, redirectUrl, pourboire);
+
+            String base64Image = qrCodeService.generateQrCodeImage(checkoutUrl, 250, 250);
 
             Map<String, String> response = new HashMap<>();
             response.put("qrCodeImage", base64Image);
+            response.put("checkoutUrl", checkoutUrl); // Optionnel, pour ouvrir dans un nouvel onglet si besoin
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
