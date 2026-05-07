@@ -20,7 +20,7 @@ public class Menu {
 
     private String image;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "menu_plat",
             joinColumns = @JoinColumn(name = "menu_id"),
