@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/client/paiement/simulation")
+@RequestMapping("/client/paiement")
 public class PaiementClientController {
 
     @Autowired
@@ -20,14 +20,14 @@ public class PaiementClientController {
     @Autowired
     private PaiementService paiementService;
 
-    @GetMapping("/{commandeId}")
+    @GetMapping("/simulation/{commandeId}")
     public String showSimulationPage(@PathVariable Long commandeId, Model model) {
         Commande commande = commandeService.findCommandeById(commandeId);
         model.addAttribute("commande", commande);
         return "client/paiement-simulation";
     }
 
-    @PostMapping("/process")
+    @PostMapping("/simulation/process")
     public String processSimulationPayment(@RequestParam Long commandeId,
                                            @RequestParam(required = false, defaultValue = "0.0") Double pourboire,
                                            RedirectAttributes redirectAttributes) {
@@ -38,5 +38,26 @@ public class PaiementClientController {
 
         redirectAttributes.addFlashAttribute("successMessage", "Paiement simulé validé avec succès !");
         return "redirect:/client/paiement/simulation/" + commandeId + "?success";
+    }
+
+    @GetMapping("/mollie-return/{commandeId}")
+    public String mollieReturn(@PathVariable Long commandeId,
+                               @RequestParam(required = false, defaultValue = "0.0") Double pourboire,
+                               RedirectAttributes redirectAttributes) {
+        // Normalement on récupère le payment_id via session/cache ou webhook,
+        // ici pour un mode test ou sans webhook configuré, on simule la vérification.
+        // (La bonne pratique est d'utiliser le webhook de Mollie)
+
+        // Simuler le fait que le paiement est OK si on est redirigé ici dans le cadre de ce test local
+        // Dans la vraie vie, on vérifierait le statut du paiement avec l'ID Mollie.
+        boolean isPaid = true;
+
+        if (isPaid) {
+             paiementService.processPayment(commandeId, pourboire, ModePaiement.QR_CODE);
+             return "redirect:/client/paiement/simulation/" + commandeId + "?success";
+        } else {
+             redirectAttributes.addFlashAttribute("errorMessage", "Le paiement a été annulé ou a échoué.");
+             return "redirect:/client/paiement/simulation/" + commandeId + "?error=mollie_failed";
+        }
     }
 }
