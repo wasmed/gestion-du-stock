@@ -17,7 +17,7 @@
     <div th:if="${!groupedPlats.isEmpty() or !groupedMenus.isEmpty()}" class="alert alert-info d-flex align-items-center" role="alert">
         <i class="bi bi-info-circle-fill me-2"></i>
         <div>
-            <strong>Validation :</strong> Veuillez sélectionner votre table ci-dessous et envoyer la commande. Le serveur viendra valider avec vous.
+            <strong>Validation :</strong> Le serveur se chargera de vous attribuer une table lors de la validation de votre commande.
         </div>
     </div>
 
@@ -63,6 +63,16 @@
                                 <div>
                                     <span th:text="${entry.key.nom}"></span>
                                     <small class="text-muted" th:text="'x' + ${entry.value}"></small>
+
+                                    <!-- Détails des plats du menu dans le panier -->
+                                    <ul class="list-unstyled mb-0 ms-3 mt-1">
+                                        <li th:each="plat : ${entry.key.plats}">
+                                            <small class="text-muted">
+                                                <strong th:text="${#strings.capitalizeWords(#strings.toLowerCase(plat.categorie.name().replace('_', ' ')))}"></strong>:
+                                                <span th:text="${plat.nom}"></span>
+                                            </small>
+                                        </li>
+                                    </ul>
                                 </div>
                                 <div>
                                     <span class="fw-bold me-3" th:text="${#numbers.formatDecimal(entry.key.prix * entry.value, 1, 2)} + ' €'"></span>
@@ -100,32 +110,21 @@
                             <div class="mb-3">
                                 <label class="form-label d-block">Type de commande</label>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="isEmporter" id="surPlace" value="false" checked onchange="toggleTableSelection()">
+                                    <input class="form-check-input" type="radio" name="isEmporter" id="surPlace" value="false" checked>
                                     <label class="form-check-label" for="surPlace">Sur place</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="isEmporter" id="aEmporter" value="true" onchange="toggleTableSelection()">
+                                    <input class="form-check-input" type="radio" name="isEmporter" id="aEmporter" value="true">
                                     <label class="form-check-label" for="aEmporter">À emporter</label>
                                 </div>
                             </div>
 
-                            <div class="mb-3" id="tableSelectionContainer">
-                                <label for="tableId" class="form-label">Votre Table</label>
-                                <select class="form-select" id="tableId" name="tableId">
-                                    <option value="" selected>Laisser le serveur choisir...</option>
-                                    <option th:each="tbl : ${tables}"
-                                            th:value="${tbl.identifiant}"
-                                            th:text="'Table ' + ${tbl.numeroTable} + ' (' + ${tbl.nombrePersonne} + ' pers.)'">
-                                    </option>
-                                </select>
-                            </div>
                         </div>
                         <div th:if="${commandeActive != null}">
                             <div class="alert alert-warning mb-3" role="alert">
                                 Vous avez une commande en cours. Ces articles y seront ajoutés.
                             </div>
                             <input type="hidden" name="isEmporter" th:value="${commandeActive.isEmporter}">
-                            <input th:if="${commandeActive.table != null}" type="hidden" name="tableId" th:value="${commandeActive.table.identifiant}">
                         </div>
                         <div class="mb-3">
                             <label for="notes" class="form-label">Notes / Allergies</label>
@@ -145,27 +144,6 @@
         </div>
     </div>
 </div>
-<script>
-    function toggleTableSelection() {
-        const emporterEl = document.getElementById('aEmporter');
-        if (!emporterEl) return;
-
-        const isEmporter = emporterEl.checked;
-        const tableContainer = document.getElementById('tableSelectionContainer');
-        const tableSelect = document.getElementById('tableId');
-
-        if (tableContainer && tableSelect) {
-            if (isEmporter) {
-                tableContainer.style.display = 'none';
-            } else {
-                tableContainer.style.display = 'block';
-            }
-        }
-    }
-
-    // Initial check on load
-    document.addEventListener("DOMContentLoaded", toggleTableSelection);
-</script>
 </body>
 </html>
 
