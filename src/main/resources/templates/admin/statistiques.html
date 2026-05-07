@@ -8,6 +8,23 @@
     <div class="container-fluid">
         <h2 class="mb-4">Statistiques du Restaurant</h2>
 
+        <!-- AI Assistant Card -->
+        <div class="card shadow-sm border-primary mb-4">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-robot"></i> Assistant Manager IA
+            </div>
+            <div class="card-body">
+                <p>Besoin de conseils pour améliorer vos ventes et la satisfaction client ? Demandez à l'IA d'analyser vos statistiques hebdomadaires.</p>
+                <button id="btnAnalyseStats" class="btn btn-primary">
+                    <i class="bi bi-magic"></i> Générer le rapport stratégique par l'IA
+                </button>
+                <div id="loadingSpinner" class="spinner-border text-primary ms-3" role="status" style="display: none; vertical-align: middle;">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+                <div id="aiResult" class="mt-3 alert alert-info" style="display: none;"></div>
+            </div>
+        </div>
+
         <!-- Section Tops -->
         <h3 class="mb-3 text-success">Les Tops (Ce qui marche très bien)</h3>
         <div class="row mb-4">
@@ -234,8 +251,10 @@
             <div class="col-12 mb-3">
                 <div class="card shadow-sm border-info">
                     <div class="card-header bg-info text-white">Commandes par Jour</div>
-                    <div class="card-body p-0">
-                        <table class="table table-hover mb-0">
+                    <div class="card-body">
+                        <canvas id="commandesChart" style="max-height: 400px;"></canvas>
+
+                        <table class="table table-hover mt-4 mb-0">
                             <thead>
                             <tr>
                                 <th>Date</th>
@@ -258,6 +277,86 @@
         </div>
 
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener('DOMContentLoaded', function() {
+            // Chart.js Setup
+            var commandesData = /*[[${commandesPerDay}]]*/ [];
+
+            if (commandesData && commandesData.length > 0) {
+                var labels = commandesData.map(function(item) { return item.nom; });
+                var data = commandesData.map(function(item) { return item.valeur; });
+
+                var ctx = document.getElementById('commandesChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Nombre de Commandes',
+                            data: data,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.1,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                document.getElementById('commandesChart').style.display = 'none';
+            }
+
+            // AI Assistant logic
+            var btnAnalyse = document.getElementById('btnAnalyseStats');
+            var spinner = document.getElementById('loadingSpinner');
+            var resultDiv = document.getElementById('aiResult');
+
+            if(btnAnalyse) {
+                btnAnalyse.addEventListener('click', function() {
+                    btnAnalyse.disabled = true;
+                    spinner.style.display = 'inline-block';
+                    resultDiv.style.display = 'none';
+                    resultDiv.textContent = '';
+
+                    fetch('/api/stats/analyse-ia')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Erreur réseau');
+                            }
+                            return response.text();
+                        })
+                        .then(text => {
+                            resultDiv.style.display = 'block';
+                            resultDiv.innerHTML = '<strong>Recommandations de l\'IA :</strong><br>' + text.replace(/\n/g, '<br>');
+                        })
+                        .catch(error => {
+                            resultDiv.style.display = 'block';
+                            resultDiv.className = 'mt-3 alert alert-danger';
+                            resultDiv.textContent = 'Erreur lors de l\'analyse : ' + error.message;
+                        })
+                        .finally(() => {
+                            btnAnalyse.disabled = false;
+                            spinner.style.display = 'none';
+                        });
+                });
+            }
+        });
+        /*]]>*/
+    </script>
 </section>
 </body>
 </html>
