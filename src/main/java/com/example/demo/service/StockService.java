@@ -39,7 +39,12 @@ public class StockService {
         for (Ingredient ingredient : ingredients) {
             StockProduit stock = stockProduitRepository.findByProduit(ingredient.getProduit());
             if (stock != null) {
-                double quantiteAUtiliser = ingredient.getQuantite() * ligneCommande.getQuantite();
+                double produitQuantite = 1.0;
+                if (ingredient.getProduit() != null && ingredient.getProduit().getQuantite() != null && ingredient.getProduit().getQuantite() > 0) {
+                    produitQuantite = ingredient.getProduit().getQuantite();
+                }
+                double fractionToDeduct = (ingredient.getQuantite() / produitQuantite) * ligneCommande.getQuantite();
+                double quantiteAUtiliser = fractionToDeduct;
 
                 // Création d'un enregistrement ConsommationStock pour l'historique
                 ConsommationStock consommation = new ConsommationStock();
@@ -77,12 +82,7 @@ public class StockService {
         StockProduit stockProduit = stockProduitRepository.findById(stockId)
                 .orElseThrow(() -> new IllegalArgumentException("Stock non trouvé pour l'ID: " + stockId));
 
-        double quantiteFormat = 1.0;
-        if (stockProduit.getProduit() != null && stockProduit.getProduit().getQuantite() != null) {
-            quantiteFormat = stockProduit.getProduit().getQuantite();
-        }
-
-        double quantiteARajuster = quantiteSaisie * quantiteFormat;
+        double quantiteARajuster = quantiteSaisie;
 
         if ("AJOUT".equals(typeOperation)) {
             stockProduit.setStockActuel(stockProduit.getStockActuel() + quantiteARajuster);

@@ -70,7 +70,7 @@
                                     <span th:if="${stock.produit.quantite != null}" th:text="${#numbers.formatDecimal(stock.produit.quantite, 1, 2)} + ' ' + ${stock.produit.unite}"></span>
                                     <span th:if="${stock.produit.quantite == null}">-</span>
                                 </td>
-                                <td class="text-center" th:text="${#numbers.formatDecimal(stock.stockActuel, 1, 2)}"></td>
+                                <td class="text-center" th:text="${#numbers.formatDecimal(stock.stockActuel, 1, 3)}"></td>
                                 <td class="text-center">
                                     <span th:if="${stock.stockActuel <= stock.stockMinimum}" class="badge bg-danger">Alerte</span>
                                     <span th:if="${stock.stockActuel > stock.stockMinimum}" class="badge bg-success">OK</span>
