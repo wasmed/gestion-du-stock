@@ -59,7 +59,17 @@
                             </div>
                             <div class="card-body d-flex flex-column">
                                 <h5 class="card-title fw-bold" th:text="${menu.nom}">Nom du Menu</h5>
-                                <p class="card-text text-muted small flex-grow-1" th:text="${menu.description}">Description</p>
+                                <p class="card-text text-muted small mb-2" th:text="${menu.description}">Description</p>
+
+                                <!-- Détails des plats du menu -->
+                                <ul class="list-unstyled mb-3 flex-grow-1">
+                                    <li th:each="plat : ${menu.plats}">
+                                        <small class="text-muted">
+                                            <strong th:text="${#strings.capitalizeWords(#strings.toLowerCase(plat.categorie.name().replace('_', ' ')))}"></strong>:
+                                            <span th:text="${plat.nom}"></span>
+                                        </small>
+                                    </li>
+                                </ul>
 
                                 <div class="mt-3">
                                     <form sec:authorize="hasRole('CLIENT')" th:action="@{/client/add-to-cart}" method="get" class="d-flex align-items-center">

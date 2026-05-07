@@ -198,21 +198,7 @@ public class ClientController {
             if (Boolean.TRUE.equals(isEmporter)) {
                 // Pas de table nécessaire
             } else {
-                if (tableId == null) {
-                    redirectAttributes.addFlashAttribute("errorMessage", "Veuillez sélectionner une table ou choisir à emporter.");
-                    return "redirect:/client/cart";
-                }
-                table = tableRepository.findById(tableId).orElse(null);
-
-                if (table == null) {
-                    redirectAttributes.addFlashAttribute("errorMessage", "Table invalide.");
-                    return "redirect:/client/cart";
-                }
-
-                if (table.getStatut() != StatutTable.LIBRE) {
-                    redirectAttributes.addFlashAttribute("errorMessage", "Cette table est déjà occupée ou en cours de validation. Veuillez en choisir une autre.");
-                    return "redirect:/client/cart";
-                }
+                // Table null, le serveur la choisira plus tard
             }
 
             commande = new Commande();
@@ -223,10 +209,6 @@ public class ClientController {
                 commande.setEtat(EtatCommande.EN_COURS);
             } else {
                 commande.setEtat(EtatCommande.EN_VALIDATION);
-                if (table != null) {
-                    table.setStatut(StatutTable.OCCUPEE);
-                    tableRepository.save(table);
-                }
             }
             commande.setDateHeure(LocalDateTime.now());
             commande.setCommentaire(notes);
