@@ -5,7 +5,8 @@ import com.example.demo.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
+import java.time.LocalDateTime;
+import java.util.Random;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -21,12 +22,13 @@ public class DataLoader implements CommandLineRunner {
     private final StockProduitRepository stockProduitRepository;
     private final UserRepository userRepository;
     private final TableRestaurantRepository tableRepository;
+    private final CommandeRepository commandeRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DataLoader(PlatRepository platRepository, MenuRepository menuRepository,
                       ProduitRepository produitRepository, IngredientRepository ingredientRepository,
                       StockProduitRepository stockProduitRepository, UserRepository userRepository,
-                      TableRestaurantRepository tableRepository, PasswordEncoder passwordEncoder) {
+                      TableRestaurantRepository tableRepository,CommandeRepository commandeRepository, PasswordEncoder passwordEncoder) {
         this.platRepository = platRepository;
         this.menuRepository = menuRepository;
         this.produitRepository = produitRepository;
@@ -34,6 +36,7 @@ public class DataLoader implements CommandLineRunner {
         this.stockProduitRepository = stockProduitRepository;
         this.userRepository = userRepository;
         this.tableRepository = tableRepository;
+        this.commandeRepository = commandeRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -453,6 +456,89 @@ public class DataLoader implements CommandLineRunner {
         menuSaintValentin.setPlats(new HashSet<>(Arrays.asList(pizzaMargherita, tiramisu)));
         menuSaintValentin.setImage("https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=500&q=80");
         menuRepository.save(menuSaintValentin);
+
+        // =================================================================
+        // 5. NOUVEAUX CLIENTS
+        // =================================================================
+        User client1 = new User();
+        client1.setFullName("Alice Martin");
+        client1.setEmail("alice@resto.com");
+        client1.setPassword(passwordEncoder.encode("client123"));
+        client1.setRole(Role.CLIENT);
+
+        User client2 = new User();
+        client2.setFullName("Bob L'éponge");
+        client2.setEmail("bob@resto.com");
+        client2.setPassword(passwordEncoder.encode("client123"));
+        client2.setRole(Role.CLIENT);
+
+        User client3 = new User();
+        client3.setFullName("Charlie Chaplin");
+        client3.setEmail("charlie@resto.com");
+        client3.setPassword(passwordEncoder.encode("client123"));
+        client3.setRole(Role.CLIENT);
+
+        userRepository.saveAll(Arrays.asList(client1, client2, client3));
+        System.out.println("Nouveaux clients créés.");
+
+        // =================================================================
+        // 6. GÉNÉRATION DE L'HISTORIQUE DES COMMANDES (STATISTIQUES)
+        // =================================================================
+        List<User> allClients = Arrays.asList(client, guest, client1, client2, client3);
+        List<TableRestaurant> allTables = Arrays.asList(table1, table2, table3, table4);
+        List<Plat> allPlats = Arrays.asList(pizzaMargherita, patesTomate, saladeVerte, tiramisu, glaceVanille, boissonEau);
+        List<Menu> allMenus = Arrays.asList(menuDuJour, menuGourmand, menuEnfant);
+
+        Random random = new Random();
+
+        // On crée 15 fausses commandes
+        for (int i = 0; i < 15; i++) {
+            Commande cmd = new Commande();
+            cmd.setClient(allClients.get(random.nextInt(allClients.size())));
+            cmd.setEtat(EtatCommande.PAYEE); // Commandes terminées pour les stats
+
+            // Date aléatoire sur les 7 derniers jours
+            int daysAgo = random.nextInt(7);
+            cmd.setDateHeure(LocalDateTime.now().minusDays(daysAgo).minusHours(random.nextInt(12)));
+
+            boolean isEmporter = random.nextBoolean();
+            cmd.setIsEmporter(isEmporter);
+            if (!isEmporter) {
+                cmd.setTable(allTables.get(random.nextInt(allTables.size())));
+                cmd.setServeur(serveur);
+            } else {
+                cmd.setClient(cmd.getClient());
+            }
+
+            double total = 0.0;
+            int nbItems = random.nextInt(3) + 1; // Entre 1 et 3 articles par commande
+
+            for (int j = 0; j < nbItems; j++) {
+                LigneCommande ligne = new LigneCommande();
+                ligne.setCommande(cmd);
+                ligne.setEtat(EtatLigneCommande.SERVIE); // ou PAYEE selon ton Enum
+                ligne.setQuantite(random.nextInt(2) + 1); // 1 ou 2 fois le même article
+
+                // 70% de chance d'acheter un plat, 30% un menu (pour varier les stats)
+                if (random.nextInt(100) < 70) {
+                    Plat p = allPlats.get(random.nextInt(allPlats.size()));
+                    ligne.setPlat(p);
+                    ligne.setTypeLigne(TypeLigneCommande.PLAT);
+                    total += p.getPrix() * ligne.getQuantite();
+                } else {
+                    Menu m = allMenus.get(random.nextInt(allMenus.size()));
+                    ligne.setMenu(m);
+                    ligne.setTypeLigne(TypeLigneCommande.MENU);
+                    total += m.getPrix() * ligne.getQuantite();
+                }
+
+                cmd.getLignesCommande().add(ligne);
+            }
+
+            cmd.setMontantTotal(total);
+            commandeRepository.save(cmd); // Grâce au CascadeType.ALL, ça sauvegarde les lignes aussi !
+        }
+        System.out.println("Historique des commandes généré avec succès !");
 
         System.out.println("Test data loaded successfully!");
     }

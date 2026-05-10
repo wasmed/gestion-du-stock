@@ -41,7 +41,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="stat : ${topSellingPlats}">
+                            <tr th:each="stat, iter : ${topSellingPlats}" th:if="${iter.index < 5}">
                                 <td th:text="${stat.nom}"></td>
                                 <td th:text="${stat.valeur}"></td>
                             </tr>
@@ -67,7 +67,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="stat : ${topSellingMenus}">
+                            <tr th:each="stat, iter : ${topSellingMenus}" th:if="${iter.index < 5}">
                                 <td th:text="${stat.nom}"></td>
                                 <td th:text="${stat.valeur}"></td>
                             </tr>
@@ -95,7 +95,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="stat : ${topRatedPlats}">
+                            <tr th:each="stat, iter : ${topRatedPlats}" th:if="${iter.index < 5}">
                                 <td th:text="${stat.nom}"></td>
                                 <td th:text="${#numbers.formatDecimal(stat.valeur, 1, 2)} + ' / 5'"></td>
                             </tr>
@@ -121,7 +121,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="stat : ${topRatedMenus}">
+                            <tr th:each="stat, iter : ${topRatedMenus}" th:if="${iter.index < 5}">
                                 <td th:text="${stat.nom}"></td>
                                 <td th:text="${#numbers.formatDecimal(stat.valeur, 1, 2)} + ' / 5'"></td>
                             </tr>
@@ -151,8 +151,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="stat : ${bottomSellingPlats}">
-                                <td th:text="${stat.nom}"></td>
+                            <tr th:each="stat, iter : ${bottomSellingPlats}" th:if="${iter.index < 5}">                                <td th:text="${stat.nom}"></td>
                                 <td th:text="${stat.valeur}"></td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(bottomSellingPlats)}">
@@ -177,7 +176,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="stat : ${bottomSellingMenus}">
+                            <tr th:each="stat, iter : ${bottomSellingMenus}" th:if="${iter.index < 5}">
                                 <td th:text="${stat.nom}"></td>
                                 <td th:text="${stat.valeur}"></td>
                             </tr>
@@ -205,8 +204,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="stat : ${bottomRatedPlats}">
-                                <td th:text="${stat.nom}"></td>
+                            <tr th:each="stat, iter : ${bottomRatedPlats}" th:if="${iter.index < 5}">                                <td th:text="${stat.nom}"></td>
                                 <td th:text="${#numbers.formatDecimal(stat.valeur, 1, 2)} + ' / 5'"></td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(bottomRatedPlats)}">
@@ -231,8 +229,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="stat : ${bottomRatedMenus}">
-                                <td th:text="${stat.nom}"></td>
+                            <tr th:each="stat, iter : ${bottomRatedMenus}" th:if="${iter.index < 5}">                                <td th:text="${stat.nom}"></td>
                                 <td th:text="${#numbers.formatDecimal(stat.valeur, 1, 2)} + ' / 5'"></td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(bottomRatedMenus)}">

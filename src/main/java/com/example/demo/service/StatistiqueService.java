@@ -4,6 +4,7 @@ import com.example.demo.dto.ItemStatDTO;
 import com.example.demo.repository.CommandeRepository;
 import com.example.demo.repository.FeedbackRepository;
 import com.example.demo.repository.LigneCommandeRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -93,15 +94,18 @@ public class StatistiqueService {
                 .map(item -> item.getNom() + " (" + item.getValeur() + ")")
                 .collect(Collectors.joining(", "));
     }
-
     private String callGeminiApi(String prompt) {
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey;
+
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + geminiApiKey.trim();
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            String requestBody = "{ \"contents\": [{ \"parts\": [{ \"text\": \"" + prompt.replace("\"", "\\\"") + "\" }] }] }";
+            String cleanPrompt = prompt.replace("\"", "\\\"").replace("\n", " ").replace("\r", "");
+            String requestBody = "{ \"contents\": [{ \"parts\": [{ \"text\": \"" + cleanPrompt + "\" }] }] }";
+
             HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
 
             ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
@@ -114,4 +118,5 @@ public class StatistiqueService {
             return "Erreur lors de l'appel à l'API Gemini : " + e.getMessage();
         }
     }
+
 }
