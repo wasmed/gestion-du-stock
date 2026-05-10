@@ -66,7 +66,7 @@
 
                                     <!-- Détails des plats du menu dans le panier -->
                                     <ul class="list-unstyled mb-0 ms-3 mt-1">
-                                        <li th:each="plat : ${entry.key.plats}">
+                                        <li th:each="plat : ${entry.key.platsTries}">
                                             <small class="text-muted">
                                                 <strong th:text="${#strings.capitalizeWords(#strings.toLowerCase(plat.categorie.name().replace('_', ' ')))}"></strong>:
                                                 <span th:text="${plat.nom}"></span>

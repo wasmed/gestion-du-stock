@@ -2,7 +2,9 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.time.LocalDate;
 
@@ -106,5 +108,12 @@ public class Menu {
 
     public void setDateFin(LocalDate dateFin) {
         this.dateFin = dateFin;
+    }
+
+    public List<Plat> getPlatsTries() {
+        if (this.plats == null) return new ArrayList<>();
+        return this.plats.stream()
+                .sorted(java.util.Comparator.comparing(Plat::getCategorie))
+                .collect(java.util.stream.Collectors.toList());
     }
 }
