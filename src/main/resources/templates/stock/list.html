@@ -9,7 +9,6 @@
         </a>
     </div>
 
-    <!-- AI Assistant Widget -->
     <div class="card mb-4 shadow-sm border-0 bg-light">
         <div class="card-body">
             <h4 class="text-primary fw-bold mb-3">
@@ -29,7 +28,6 @@
             </div>
 
             <div id="iaResultBox" class="d-none alert alert-info shadow-sm">
-                <!-- AI text will be injected here -->
             </div>
         </div>
     </div>
@@ -66,21 +64,32 @@
                                 <td class="ps-4">
                                     <strong th:text="${stock.produit.nom}"></strong>
                                 </td>
+
                                 <td class="text-center">
                                     <span th:if="${stock.produit.quantite != null}" th:text="${#numbers.formatDecimal(stock.produit.quantite, 1, 2)} + ' ' + ${stock.produit.unite}"></span>
                                     <span th:if="${stock.produit.quantite == null}">-</span>
+                                    <br>
+                                    <small class="text-muted">/ unité</small>
                                 </td>
-                                <td class="text-center" th:text="${#numbers.formatDecimal(stock.stockActuel, 1, 3)}"></td>
+
+                                <td class="text-center">
+                                    <span class="fw-bold fs-5" th:text="${#numbers.formatDecimal(stock.stockActuel, 0, 0)}"></span>
+                                    <span class="text-secondary"> unité(s)</span>
+                                    <br>
+                                    <small class="text-info" th:if="${stock.produit.quantite != null}" th:text="'(Total : ' + ${#numbers.formatDecimal(stock.stockActuel * stock.produit.quantite, 1, 2)} + ' ' + ${stock.produit.unite} + ')'"></small>
+                                </td>
+
                                 <td class="text-center">
                                     <span th:if="${stock.stockActuel <= stock.stockMinimum}" class="badge bg-danger">Alerte</span>
                                     <span th:if="${stock.stockActuel > stock.stockMinimum}" class="badge bg-success">OK</span>
                                 </td>
+
                                 <td class="text-center">
                                     <form th:action="@{/stock/update}" method="post" class="d-flex flex-column align-items-center justify-content-center">
                                         <input type="hidden" name="stockId" th:value="${stock.id}" />
                                         <div class="input-group input-group-sm mb-2 w-75">
-                                            <input type="number" name="quantiteSaisie" class="form-control text-center" placeholder="Nb d'unités" required step="1" min="1" />
-                                            <span class="input-group-text" th:text="${stock.produit.unite != null ? stock.produit.unite : 'Unité'}">Unité</span>
+                                            <input type="number" name="quantiteSaisie" class="form-control text-center" placeholder="Quantité" required step="1" min="1" />
+                                            <span class="input-group-text bg-light text-secondary">unité(s)</span>
                                         </div>
                                         <div class="d-flex gap-2 w-75">
                                             <button type="submit" name="typeOperation" value="AJOUT" class="btn btn-success btn-sm flex-fill">
@@ -92,6 +101,7 @@
                                         </div>
                                     </form>
                                 </td>
+
                                 <td class="text-end pe-4">
                                     <a th:href="@{/stock/edit/{id}(id=${stock.id})}" class="btn btn-sm btn-outline-primary me-2">
                                         <i class="bi bi-pencil"></i>
@@ -111,42 +121,41 @@
 
     </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const btnAnalyseIa = document.getElementById("btnAnalyseIa");
-        const iaLoadingSpinner = document.getElementById("iaLoadingSpinner");
-        const iaResultBox = document.getElementById("iaResultBox");
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const btnAnalyseIa = document.getElementById("btnAnalyseIa");
+            const iaLoadingSpinner = document.getElementById("iaLoadingSpinner");
+            const iaResultBox = document.getElementById("iaResultBox");
 
-        if (btnAnalyseIa) {
-            btnAnalyseIa.addEventListener("click", function() {
-                // Show spinner, hide previous result
-                iaLoadingSpinner.classList.remove("d-none");
-                iaResultBox.classList.add("d-none");
-                btnAnalyseIa.disabled = true;
+            if (btnAnalyseIa) {
+                btnAnalyseIa.addEventListener("click", function() {
+                    iaLoadingSpinner.classList.remove("d-none");
+                    iaResultBox.classList.add("d-none");
+                    btnAnalyseIa.disabled = true;
 
-                fetch("/api/stock/alerte-ia")
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error("Erreur réseau");
-                        }
-                        return response.text();
-                    })
-                    .then(text => {
-                        iaLoadingSpinner.classList.add("d-none");
-                        iaResultBox.innerHTML = text.replace(/\n/g, "<br>");
-                        iaResultBox.classList.remove("d-none");
-                        btnAnalyseIa.disabled = false;
-                    })
-                    .catch(error => {
-                        iaLoadingSpinner.classList.add("d-none");
-                        iaResultBox.innerHTML = "<span class='text-danger'>Erreur lors de l'analyse IA : " + error.message + "</span>";
-                        iaResultBox.classList.remove("d-none");
-                        btnAnalyseIa.disabled = false;
-                    });
-            });
-        }
-    });
-</script>
+                    fetch("/api/stock/alerte-ia")
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error("Erreur réseau");
+                            }
+                            return response.text();
+                        })
+                        .then(text => {
+                            iaLoadingSpinner.classList.add("d-none");
+                            iaResultBox.innerHTML = text.replace(/\n/g, "<br>");
+                            iaResultBox.classList.remove("d-none");
+                            btnAnalyseIa.disabled = false;
+                        })
+                        .catch(error => {
+                            iaLoadingSpinner.classList.add("d-none");
+                            iaResultBox.innerHTML = "<span class='text-danger'>Erreur lors de l'analyse IA : " + error.message + "</span>";
+                            iaResultBox.classList.remove("d-none");
+                            btnAnalyseIa.disabled = false;
+                        });
+                });
+            }
+        });
+    </script>
 </div>
 </body>
 </html>

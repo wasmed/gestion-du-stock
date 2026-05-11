@@ -73,15 +73,26 @@ public class StatistiqueService {
     public String analyseStatistiques() {
         List<ItemStatDTO> topSellingPlats = getTopSellingPlats();
         List<ItemStatDTO> bottomSellingPlats = getBottomSellingPlats();
+        List<ItemStatDTO> topSellingMenus = getTopSellingMenus();
+        List<ItemStatDTO> bottomSellingMenus = getBottomSellingMenus();
         List<ItemStatDTO> topRatedPlats = getTopRatedPlats();
         List<ItemStatDTO> bottomRatedPlats = getBottomRatedPlats();
+        List<ItemStatDTO> topRatedMenus = getTopRatedMenus();
+        List<ItemStatDTO> bottomRatedMenus = getBottomRatedMenus();
 
-        String data = "Plats les plus vendus : " + formatList(topSellingPlats) + "; " +
-                "Plats les moins vendus : " + formatList(bottomSellingPlats) + "; " +
-                "Plats les mieux notés : " + formatList(topRatedPlats) + "; " +
-                "Plats les moins bien notés : " + formatList(bottomRatedPlats);
+        String data = "Plats top ventes : " + formatList(topSellingPlats) + " | " +
+                "Plats flops ventes : " + formatList(bottomSellingPlats) + " | " +
+                "Menus top ventes : " + formatList(topSellingMenus) + " | " +
+                "Menus flops ventes : " + formatList(bottomSellingMenus) + " | " +
+                "Plats mieux notés : " + formatList(topRatedPlats) + " | " +
+                "Plats moins bien notés : " + formatList(bottomRatedPlats) + " | " +
+                "Menus mieux notés : " + formatList(topRatedMenus) + " | " +
+                "Menus moins bien notés : " + formatList(bottomRatedMenus);
 
-        String prompt = "Tu es un expert en gestion de restaurant étoilé. Voici les données de mon restaurant cette semaine : [" + data + "]. Analyse ces données et donne-moi 3 recommandations marketing ou culinaires très courtes et concrètes pour augmenter mon chiffre d'affaires et satisfaire mes clients.";
+        String prompt = "Tu es un expert en gestion de restaurant étoilé. Voici les statistiques de la semaine : [" + data + "]. " +
+                "Rédige 3 recommandations marketing ou culinaires ULTRA-CONCISES pour augmenter le chiffre d'affaires. " +
+                "RÈGLES ABSOLUES : AUCUN bla-bla d'introduction (ne dis pas 'Voici 3 recommandations'). " +
+                "Fais uniquement une liste à puces directes avec du texte en gras pour le titre de l'idée.";
 
         return callGeminiApi(prompt);
     }
