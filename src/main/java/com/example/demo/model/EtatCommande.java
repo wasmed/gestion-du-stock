@@ -4,5 +4,6 @@ public enum EtatCommande {
 
     EN_VALIDATION,
     EN_COURS,
+    EN_PREPARATION,
     PAYEE
 }

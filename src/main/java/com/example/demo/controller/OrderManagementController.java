@@ -8,11 +8,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -71,6 +73,8 @@ public class OrderManagementController {
                 .filter(Commande::isPreteAServir)
                 .collect(Collectors.toList());
         model.addAttribute("commandesPretes", commandesPretes);
+
+        model.addAttribute("tablesDisponibles", tableRepository.findAvailableTablesNotInActiveOrders());
 
         return "serveur/dashboard";
     }
@@ -160,20 +164,26 @@ public class OrderManagementController {
         return "redirect:/orders";
     }
 
-    @GetMapping("/validate/{id}")
+    @RequestMapping(value = "/validate/{id}", method = {RequestMethod.GET, RequestMethod.POST})
     @PreAuthorize("hasRole('SERVEUR')")
-    public String validateOrder(@PathVariable Long id, Principal principal) {
+    public String validateOrder(@PathVariable Long id, @RequestParam(required = false) Long tableId, Principal principal, RedirectAttributes redirectAttributes) {
         Commande commande = commandeService.findCommandeById(id);
         if (commande != null && commande.getEtat() == EtatCommande.EN_VALIDATION) {
             User serveur = userService.findUserByEmail(principal.getName());
             commande.setServeur(serveur);
-            commande.setEtat(EtatCommande.EN_COURS);
+            commande.setEtat(EtatCommande.EN_PREPARATION);
 
-            TableRestaurant table = commande.getTable();
-            if (table != null && table.getStatut() == StatutTable.LIBRE) {
-                table.setStatut(StatutTable.OCCUPEE);
-                table.setServeur(serveur);
-                tableRepository.save(table);
+            if (!Boolean.TRUE.equals(commande.getIsEmporter()) && tableId != null) {
+                TableRestaurant table = tableRepository.findById(tableId).orElse(null);
+                if (table != null && table.getStatut() == StatutTable.LIBRE) {
+                    table.setStatut(StatutTable.OCCUPEE);
+                    table.setServeur(serveur);
+                    tableRepository.save(table);
+                    commande.setTable(table);
+                } else {
+                    redirectAttributes.addFlashAttribute("errorMessage", "La table sélectionnée n'est pas disponible.");
+                    return "redirect:/orders";
+                }
             }
             commandeService.saveCommande(commande);
 
@@ -406,31 +416,59 @@ public class OrderManagementController {
                         Long platId = Long.parseLong(key.substring(8));
                         Plat plat = platService.findPlatById(platId);
                         if (plat != null) {
-                            LigneCommande ligne = new LigneCommande();
-                            ligne.setCommande(commande);
-                            ligne.setPlat(plat);
-                            ligne.setQuantite(quantite);
-                            ligne.setTypeLigne(TypeLigneCommande.PLAT);
-                            ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
+                            Optional<LigneCommande> existingLigne = commande.getLignesCommande().stream()
+                                    .filter(l -> l.getPlat() != null && l.getPlat().getIdentifiant().equals(plat.getIdentifiant()) && l.getEtat() == EtatLigneCommande.EN_ATTENTE)
+                                    .findFirst();
+
+                            LigneCommande ligne;
+                            if (existingLigne.isPresent()) {
+                                ligne = existingLigne.get();
+                                ligne.setQuantite(ligne.getQuantite() + quantite);
+                            } else {
+                                ligne = new LigneCommande();
+                                ligne.setCommande(commande);
+                                ligne.setPlat(plat);
+                                ligne.setQuantite(quantite);
+                                ligne.setTypeLigne(TypeLigneCommande.PLAT);
+                                ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
+                                commande.getLignesCommande().add(ligne);
+                            }
                             montantTotal += plat.getPrix() * quantite;
                             ligne = ligneCommandeRepository.save(ligne);
-                            stockService.processStockDecrementForLigne(ligne);
-                            commande.getLignesCommande().add(ligne); // <-- LA LIGNE CLÉ À AJOUTER
+
+                            LigneCommande deltaLigne = new LigneCommande();
+                            deltaLigne.setPlat(plat);
+                            deltaLigne.setQuantite(quantite);
+                            stockService.processStockDecrementForLigne(deltaLigne);
                         }
                     } else if (key.startsWith("menuQty_")) {
                         Long menuId = Long.parseLong(key.substring(8));
                         Menu menu = menuService.findMenuById(menuId);
                         if (menu != null) {
-                            LigneCommande ligne = new LigneCommande();
-                            ligne.setCommande(commande);
-                            ligne.setMenu(menu);
-                            ligne.setQuantite(quantite);
-                            ligne.setTypeLigne(TypeLigneCommande.MENU);
-                            ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
+                            Optional<LigneCommande> existingLigne = commande.getLignesCommande().stream()
+                                    .filter(l -> l.getMenu() != null && l.getMenu().getId().equals(menu.getId()) && l.getEtat() == EtatLigneCommande.EN_ATTENTE)
+                                    .findFirst();
+
+                            LigneCommande ligne;
+                            if (existingLigne.isPresent()) {
+                                ligne = existingLigne.get();
+                                ligne.setQuantite(ligne.getQuantite() + quantite);
+                            } else {
+                                ligne = new LigneCommande();
+                                ligne.setCommande(commande);
+                                ligne.setMenu(menu);
+                                ligne.setQuantite(quantite);
+                                ligne.setTypeLigne(TypeLigneCommande.MENU);
+                                ligne.setEtat(EtatLigneCommande.EN_ATTENTE);
+                                commande.getLignesCommande().add(ligne);
+                            }
                             montantTotal += menu.getPrix() * quantite;
                             ligne = ligneCommandeRepository.save(ligne);
-                            stockService.processStockDecrementForLigne(ligne);
-                            commande.getLignesCommande().add(ligne); // <-- LA LIGNE CLÉ À AJOUTER
+
+                            LigneCommande deltaLigne = new LigneCommande();
+                            deltaLigne.setMenu(menu);
+                            deltaLigne.setQuantite(quantite);
+                            stockService.processStockDecrementForLigne(deltaLigne);
                         }
                     }
                 }
