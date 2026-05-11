@@ -1,14 +1,26 @@
-1. **Fix SQL `NOT IN` NULL Trap in `TableRestaurantRepository`**
-   - Update the `findAvailableTablesNotInActiveOrders()` query to explicitly filter out null tables from the subquery (`SELECT c.table FROM Commande c JOIN c.lignesCommande lc WHERE c.table IS NOT NULL AND ...`). This prevents the query from failing when there are takeaway orders.
-2. **Fix Validation Endpoint Regression for Takeaway Orders**
-   - In `OrderManagementController.validateOrder`, make `tableId` an optional parameter (`@RequestParam(required = false) Long tableId`). Ensure that takeaway orders (or orders not requiring a table) can still be validated. Wait, if it's a GET request for takeaway orders from the dashboard, maybe I should leave it as POST and make the takeaway validation also use a form? Or allow both? I will make it accept `GET` and `POST` by using `@RequestMapping(value = "/validate/{id}", method = {RequestMethod.GET, RequestMethod.POST})`. Alternatively, I can just change the takeaway validation link in the dashboard to use a POST form without a `tableId` field. Let's make the endpoint `@RequestMapping(value = "/validate/{id}", method = {RequestMethod.GET, RequestMethod.POST})` and `tableId` optional.
-3. **Fix JPA Collection Corruption in `ClientController`**
-   - In `ClientController.validateCart`, ensure that `lignes.add(ligne);` is only called when a *new* `LigneCommande` is created, not when updating an existing one. It should be inside the `else` block.
-4. **Fix Stock Double-Deduction in `OrderManagementController` (`editOrder`)**
-   - In `OrderManagementController.editOrder`, when an existing line is updated, only the *delta* (the newly added `quantite`) should be deducted from stock, OR a new temporary `LigneCommande` object should be created just for the `processStockDecrementForLigne` call with the delta quantity. Let's see: `stockService.processStockDecrementForLigne(ligne)` deducts based on `ligne.getQuantite()`. If we update the existing line, it's probably better to just create a dummy line with the delta quantity to pass to the stock service, or modify `processStockDecrementForLigne`? No, simpler: `LigneCommande deltaLigne = new LigneCommande(); deltaLigne.setPlat(plat); deltaLigne.setQuantite(quantite); stockService.processStockDecrementForLigne(deltaLigne);`
-5. **Verify Fixes**
-   - Run `mvn test` again.
-6. **Pre-commit Instructions**
-   - Complete pre-commit steps.
-7. **Submit**
-   - Submit the change.
+1. **Update `StockService.java` for Automated Deduction**:
+   - Edit the `processStockForPlat` method in `src/main/java/com/example/demo/service/StockService.java`.
+   - Update the calculation for `quantiteAUtiliser`. Instead of `ingredient.getQuantite() * ligneCommande.getQuantite()`, it should calculate the fraction used relative to the package quantity. The correct formula is `(ingredient.getQuantite() / ingredient.getProduit().getQuantite()) * ligneCommande.getQuantite()`. Note: handle the case where `ingredient.getProduit().getQuantite()` is null or 0 to avoid division by zero (defaulting to dividing by 1.0).
+
+2. **Verify `StockService.java` changes**:
+   - Use `read_file` to verify the modified `processStockForPlat` logic.
+
+3. **Update `StockService.java` for Manual Stock Movements**:
+   - Edit the `updateStockQuantity` method in `src/main/java/com/example/demo/service/StockService.java`.
+   - Change `double quantiteARajuster = quantiteSaisie * quantiteFormat;` to simply use `quantiteSaisie` so that the adjustment operates on the package level (ignoring `quantiteFormat`). Specifically, replace `double quantiteARajuster = quantiteSaisie * quantiteFormat;` with `double quantiteARajuster = quantiteSaisie;`.
+
+4. **Verify `StockService.java` manual movement changes**:
+   - Use `read_file` to verify the modified `updateStockQuantity` logic.
+
+5. **Update UI in `stock/list.html`**:
+   - Edit `src/main/resources/templates/stock/list.html`.
+   - At line 73, replace `<td class="text-center" th:text="${#numbers.formatDecimal(stock.stockActuel, 1, 2)}"></td>` with `<td class="text-center" th:text="${#numbers.formatDecimal(stock.stockActuel, 1, 3)}"></td>`.
+
+6. **Verify `stock/list.html` changes**:
+   - Use `read_file` to check that the decimal formatting in the Thymeleaf template was correctly updated to 3 decimal places.
+
+7. **Run Tests**:
+   - Run `mvn clean test` to confirm that the changes have not caused any regressions.
+
+8. **Pre-commit Checks**:
+   - Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.
