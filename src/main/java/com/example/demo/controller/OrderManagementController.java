@@ -171,7 +171,7 @@ public class OrderManagementController {
         if (commande != null && commande.getEtat() == EtatCommande.EN_VALIDATION) {
             User serveur = userService.findUserByEmail(principal.getName());
             commande.setServeur(serveur);
-            commande.setEtat(EtatCommande.EN_PREPARATION);
+            commande.setEtat(EtatCommande.EN_COURS);
 
             if (!Boolean.TRUE.equals(commande.getIsEmporter()) && tableId != null) {
                 TableRestaurant table = tableRepository.findById(tableId).orElse(null);
