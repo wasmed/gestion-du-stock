@@ -478,7 +478,13 @@ public class DataLoader implements CommandLineRunner {
         client3.setPassword(passwordEncoder.encode("client123"));
         client3.setRole(Role.CLIENT);
 
-        userRepository.saveAll(Arrays.asList(client1, client2, client3));
+        User client4 = new User();
+        client4.setFullName("samira");
+        client4.setEmail("samirahammoubxl@gmail.com");
+        client4.setPassword(passwordEncoder.encode("samira123"));
+        client4.setRole(Role.CLIENT);
+
+        userRepository.saveAll(Arrays.asList(client1, client2, client3, client4));
         System.out.println("Nouveaux clients créés.");
 
         // =================================================================
