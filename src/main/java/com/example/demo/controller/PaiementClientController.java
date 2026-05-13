@@ -37,30 +37,41 @@ public class PaiementClientController {
         ModePaiement mode = "CB".equals(methodePaiement) ? ModePaiement.CARTE_BANCAIRE : ModePaiement.QR_CODE;
 
         // On enregistre le paiement avec le bon mode !
-        paiementService.processPayment(commandeId, pourboire, mode);
-
-        redirectAttributes.addFlashAttribute("successMessage", "Paiement simulé validé avec succès !");
-        return "redirect:/client/paiement/simulation/" + commandeId + "?success";
+        try {
+            paiementService.processPayment(commandeId, pourboire, mode);
+            return "redirect:/client/paiement/succes/" + commandeId;
+        } catch (Exception e) {
+            return "redirect:/client/paiement/echec/" + commandeId;
+        }
     }
 
     @GetMapping("/mollie-return/{commandeId}")
     public String mollieReturn(@PathVariable Long commandeId,
                                @RequestParam(required = false, defaultValue = "0.0") Double pourboire,
                                RedirectAttributes redirectAttributes) {
-        // Normalement on récupère le payment_id via session/cache ou webhook,
-        // ici pour un mode test ou sans webhook configuré, on simule la vérification.
-        // (La bonne pratique est d'utiliser le webhook de Mollie)
-
-        // Simuler le fait que le paiement est OK si on est redirigé ici dans le cadre de ce test local
-        // Dans la vraie vie, on vérifierait le statut du paiement avec l'ID Mollie.
-        boolean isPaid = true;
+        boolean isPaid = true; // In a real scenario, verify via Mollie API
 
         if (isPaid) {
-             paiementService.processPayment(commandeId, pourboire, ModePaiement.QR_CODE);
-             return "redirect:/client/paiement/simulation/" + commandeId + "?success";
+             try {
+                 paiementService.processPayment(commandeId, pourboire, ModePaiement.QR_CODE);
+                 return "redirect:/client/paiement/succes/" + commandeId;
+             } catch (Exception e) {
+                 return "redirect:/client/paiement/echec/" + commandeId;
+             }
         } else {
-             redirectAttributes.addFlashAttribute("errorMessage", "Le paiement a été annulé ou a échoué.");
-             return "redirect:/client/paiement/simulation/" + commandeId + "?error=mollie_failed";
+             return "redirect:/client/paiement/echec/" + commandeId;
         }
+    }
+
+    @GetMapping("/succes/{commandeId}")
+    public String showSuccessPage(@PathVariable Long commandeId, Model model) {
+        model.addAttribute("commandeId", commandeId);
+        return "client/paiement-succes";
+    }
+
+    @GetMapping("/echec/{commandeId}")
+    public String showFailurePage(@PathVariable Long commandeId, Model model) {
+        model.addAttribute("commandeId", commandeId);
+        return "client/paiement-echec";
     }
 }

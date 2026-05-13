@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Facture - Commande #[[${commande.id}]]</title>
+    <!-- On utilise Bootstrap pour un rendu propre -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .invoice-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .invoice-header {
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .restaurant-details h2 {
+            margin: 0;
+            color: #333;
+            font-weight: bold;
+        }
+        .invoice-title {
+            color: #0d6efd;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            text-align: right;
+        }
+        .table th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .totals-row {
+            font-weight: bold;
+        }
+        .totals-row td {
+            border-top: 2px solid #dee2e6;
+        }
+        .grand-total {
+            font-size: 1.5rem;
+            color: #0d6efd;
+        }
+        .no-print {
+            margin-top: 30px;
+        }
+        @media print {
+            body {
+                background-color: white;
+            }
+            .invoice-container {
+                box-shadow: none;
+                margin: 0;
+                padding: 0;
+                max-width: 100%;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container invoice-container">
+
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show no-print" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show no-print" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Header -->
+    <div class="row invoice-header align-items-center">
+        <div class="col-sm-6 restaurant-details">
+            <h2>Le Bon Goût</h2>
+            <p class="mb-0 text-muted">123 Rue de la Gastronomie</p>
+            <p class="mb-0 text-muted">75000 Paris, France</p>
+            <p class="mb-0 text-muted">TVA: FR12345678901</p>
+        </div>
+        <div class="col-sm-6">
+            <h1 class="invoice-title">FACTURE</h1>
+            <div class="text-end mt-3">
+                <p class="mb-0"><strong>Facture N°:</strong> FAC-<span th:text="${commande.id}"></span></p>
+                <p class="mb-0"><strong>Date:</strong> <span th:text="${#temporals.format(commande.dateHeure, 'dd/MM/yyyy HH:mm')}"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Client & Commande -->
+    <div class="row mb-4">
+        <div class="col-sm-6">
+            <h5 class="text-muted mb-2">Facturé à:</h5>
+            <div th:if="${commande.client != null}">
+                <p class="mb-0 fw-bold" th:text="${commande.client.fullName}"></p>
+                <p class="mb-0 text-muted" th:text="${commande.client.email}"></p>
+            </div>
+            <div th:if="${commande.client == null}">
+                <p class="mb-0 fst-italic text-muted">Client de passage</p>
+            </div>
+        </div>
+        <div class="col-sm-6 text-end">
+            <h5 class="text-muted mb-2">Détails de la commande:</h5>
+            <p class="mb-0">
+                Type: <span class="badge bg-secondary" th:text="${commande.isEmporter ? 'À emporter' : 'Sur place'}"></span>
+            </p>
+            <p class="mb-0" th:if="${!commande.isEmporter && commande.tableRestaurant != null}">
+                Table: <span th:text="${commande.tableRestaurant.numeroTable}"></span>
+            </p>
+            <p class="mb-0" th:if="${paiement != null}">
+                Mode de paiement: <span th:text="${paiement.modePaiement}"></span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Lignes de commande -->
+    <div class="table-responsive mb-4">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th class="text-center">Qté</th>
+                    <th class="text-end">Prix Unitaire</th>
+                    <th class="text-end">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="ligne : ${commande.lignesCommande}">
+                    <td>
+                        <span th:if="${ligne.typeLigne.name() == 'PLAT'}" th:text="${ligne.plat.nom}"></span>
+                        <span th:if="${ligne.typeLigne.name() == 'MENU'}" th:text="${ligne.menu.nom}"></span>
+                    </td>
+                    <td class="text-center" th:text="${ligne.quantite}"></td>
+                    <td class="text-end">
+                        <span th:if="${ligne.typeLigne.name() == 'PLAT'}" th:text="${#numbers.formatDecimal(ligne.plat.prix, 1, 2)} + ' €'"></span>
+                        <span th:if="${ligne.typeLigne.name() == 'MENU'}" th:text="${#numbers.formatDecimal(ligne.menu.prix, 1, 2)} + ' €'"></span>
+                    </td>
+                    <td class="text-end">
+                        <span th:if="${ligne.typeLigne.name() == 'PLAT'}" th:text="${#numbers.formatDecimal(ligne.plat.prix * ligne.quantite, 1, 2)} + ' €'"></span>
+                        <span th:if="${ligne.typeLigne.name() == 'MENU'}" th:text="${#numbers.formatDecimal(ligne.menu.prix * ligne.quantite, 1, 2)} + ' €'"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Totaux -->
+    <div class="row">
+        <div class="col-sm-7">
+            <!-- Espace pour des notes éventuelles -->
+            <p class="text-muted small">Merci de votre visite ! À très bientôt.</p>
+        </div>
+        <div class="col-sm-5">
+            <table class="table table-sm table-borderless">
+                <tr>
+                    <td class="text-end">Sous-total HT:</td>
+                    <td class="text-end" th:text="${#numbers.formatDecimal(subtotal, 1, 2)} + ' €'"></td>
+                </tr>
+                <tr>
+                    <td class="text-end">TVA (12%):</td>
+                    <td class="text-end" th:text="${#numbers.formatDecimal(tva, 1, 2)} + ' €'"></td>
+                </tr>
+                <tr th:if="${paiement != null && paiement.pourboire != null && paiement.pourboire.montant > 0}">
+                    <td class="text-end text-muted">Pourboire (inclus):</td>
+                    <td class="text-end text-muted" th:text="${#numbers.formatDecimal(paiement.pourboire.montant, 1, 2)} + ' €'"></td>
+                </tr>
+                <tr class="totals-row">
+                    <td class="text-end pt-3">TOTAL TTC:</td>
+                    <td class="text-end pt-3 grand-total" th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + ' €'"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Actions (Non imprimées) -->
+    <div class="no-print d-flex justify-content-between align-items-center border-top pt-4">
+        <div>
+            <a href="/client/menu" class="btn btn-outline-secondary">
+                <i class="bi bi-house-door"></i> Retour à l'accueil
+            </a>
+        </div>
+        <div class="d-flex gap-2">
+            <!-- Formulaire pour envoyer par email -->
+            <form th:action="@{/client/facture/send-email}" method="post" class="d-flex gap-2 m-0">
+                <input type="hidden" name="commandeId" th:value="${commande.id}" />
+                <input type="email" name="email" class="form-control" placeholder="Adresse e-mail" required
+                       th:value="${commande.client != null ? commande.client.email : ''}" style="max-width: 250px;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-envelope"></i> Envoyer
+                </button>
+            </form>
+
+            <button onclick="window.print()" class="btn btn-dark">
+                <i class="bi bi-printer"></i> Imprimer
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
