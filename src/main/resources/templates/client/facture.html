@@ -118,8 +118,8 @@
             <p class="mb-0">
                 Type: <span class="badge bg-secondary" th:text="${commande.isEmporter ? 'À emporter' : 'Sur place'}"></span>
             </p>
-            <p class="mb-0" th:if="${!commande.isEmporter && commande.tableRestaurant != null}">
-                Table: <span th:text="${commande.tableRestaurant.numeroTable}"></span>
+            <p class="mb-0" th:if="${!commande.isEmporter && commande.table != null}">
+                Table: <span th:text="${commande.table.numeroTable}"></span>
             </p>
             <p class="mb-0" th:if="${paiement != null}">
                 Mode de paiement: <span th:text="${paiement.modePaiement}"></span>
