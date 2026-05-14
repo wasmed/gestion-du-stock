@@ -23,6 +23,10 @@ public interface TableRestaurantRepository  extends JpaRepository<TableRestauran
     List<TableRestaurant> findByStatutAndNombrePersonneGreaterThanEqual(StatutTable statut, int nombrePersonne);
 
     @Query("SELECT t FROM TableRestaurant t WHERE t.identifiant NOT IN (" +
-           "SELECT c.table.identifiant FROM Commande c WHERE c.table IS NOT NULL AND c.etat != 'PAYEE')")
+           "SELECT c.table.identifiant FROM Commande c WHERE c.table IS NOT NULL AND c.etat IN ('EN_VALIDATION', 'EN_COURS'))")
     List<TableRestaurant> findAvailableTablesNotInActiveOrders();
+
+    @Query("SELECT t FROM TableRestaurant t WHERE t.nombrePersonne >= :nombrePersonne AND t.identifiant NOT IN (" +
+           "SELECT c.table.identifiant FROM Commande c WHERE c.table IS NOT NULL AND c.etat IN ('EN_VALIDATION', 'EN_COURS'))")
+    List<TableRestaurant> findAvailableTablesNotInActiveOrdersWithCapacity(int nombrePersonne);
 }

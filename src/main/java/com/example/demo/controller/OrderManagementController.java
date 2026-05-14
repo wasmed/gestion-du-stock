@@ -175,11 +175,18 @@ public class OrderManagementController {
 
             if (!Boolean.TRUE.equals(commande.getIsEmporter()) && tableId != null) {
                 TableRestaurant table = tableRepository.findById(tableId).orElse(null);
-                if (table != null && table.getStatut() == StatutTable.LIBRE) {
-                    table.setStatut(StatutTable.OCCUPEE);
-                    table.setServeur(serveur);
-                    tableRepository.save(table);
-                    commande.setTable(table);
+                if (table != null) {
+                    List<TableRestaurant> availableTables = tableRepository.findAvailableTablesNotInActiveOrders();
+                    boolean isAvailable = availableTables.stream().anyMatch(t -> t.getIdentifiant().equals(table.getIdentifiant()));
+                    if (isAvailable) {
+                        table.setStatut(StatutTable.OCCUPEE);
+                        table.setServeur(serveur);
+                        tableRepository.save(table);
+                        commande.setTable(table);
+                    } else {
+                        redirectAttributes.addFlashAttribute("errorMessage", "La table sélectionnée n'est pas disponible.");
+                        return "redirect:/orders";
+                    }
                 } else {
                     redirectAttributes.addFlashAttribute("errorMessage", "La table sélectionnée n'est pas disponible.");
                     return "redirect:/orders";
@@ -208,15 +215,18 @@ public class OrderManagementController {
                                       Model model) {
         List<TableRestaurant> tablesDisponibles;
         if (nombrePersonne != null && nombrePersonne > 0) {
-            tablesDisponibles = tableRepository.findByStatutAndNombrePersonneGreaterThanEqual(StatutTable.LIBRE, nombrePersonne);
+            tablesDisponibles = tableRepository.findAvailableTablesNotInActiveOrdersWithCapacity(nombrePersonne);
         } else {
-            tablesDisponibles = tableRepository.findByStatut(StatutTable.LIBRE);
+            tablesDisponibles = tableRepository.findAvailableTablesNotInActiveOrders();
         }
 
         if (tableId != null) {
             TableRestaurant table = tableRepository.findById(tableId).orElse(null);
-            if (table != null && table.getStatut() == StatutTable.LIBRE) {
-                model.addAttribute("selectedTable", table);
+            if (table != null) {
+                boolean isAvailable = tablesDisponibles.stream().anyMatch(t -> t.getIdentifiant().equals(table.getIdentifiant()));
+                if (isAvailable) {
+                    model.addAttribute("selectedTable", table);
+                }
             }
         }
 
@@ -481,6 +491,21 @@ public class OrderManagementController {
         // Attention : la méthode est peut-être findById et non findByIdentifiant
         TableRestaurant table = tableRepository.findById(tableId).orElse(null);
         if (table != null) {
+            TableRestaurant oldTable = commande.getTable();
+            if (oldTable != null && !oldTable.getIdentifiant().equals(table.getIdentifiant())) {
+                // Libérer l'ancienne table
+                oldTable.setStatut(StatutTable.LIBRE);
+                oldTable.setServeur(null);
+                tableRepository.save(oldTable);
+            }
+
+            if (oldTable == null || !oldTable.getIdentifiant().equals(table.getIdentifiant())) {
+                // Occuper la nouvelle table
+                table.setStatut(StatutTable.OCCUPEE);
+                User serveur = userService.findUserByEmail(principal.getName());
+                table.setServeur(serveur);
+                tableRepository.save(table);
+            }
             commande.setTable(table);
         }
 
