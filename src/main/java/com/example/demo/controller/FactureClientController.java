@@ -45,10 +45,10 @@ public class FactureClientController {
 
     @PostMapping("/send-email")
     public String sendFactureEmail(@RequestParam String email, @RequestParam Long commandeId, RedirectAttributes redirectAttributes) {
-        String invoiceUrl = "http://localhost:8080/client/facture/" + commandeId;
 
         try {
-            emailService.sendInvoiceEmail(email, commandeId, invoiceUrl);
+            Commande commande = commandeService.findCommandeById(commandeId);
+            emailService.sendInvoiceEmail(email, commande);
             redirectAttributes.addFlashAttribute("successMessage", "La facture a été envoyée avec succès à " + email);
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Erreur lors de l'envoi de la facture.");
