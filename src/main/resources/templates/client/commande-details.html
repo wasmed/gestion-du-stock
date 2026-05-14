@@ -97,8 +97,14 @@
                     <hr class="text-muted opacity-25 mt-4 mb-4">
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="text-muted mb-0">Total Payé</h5>
+                        <h5 class="text-muted mb-0" th:text="${commande.etat == T(com.example.demo.model.EtatCommande).PAYEE ? 'Total Payé' : 'Total à Payer'}"></h5>
                         <h3 class="text-primary fw-bold mb-0" th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + ' €'"></h3>
+                    </div>
+
+                    <div th:if="${commande.etat != T(com.example.demo.model.EtatCommande).PAYEE}" class="mt-4 text-center">
+                        <a th:href="@{/client/paiement/init/{id}(id=${commande.id})}" class="btn btn-primary rounded-pill px-4 py-2 fw-bold" style="background-color: #00529e; border-color: #00529e;">
+                            <i class="bi bi-qr-code-scan me-2"></i> Payer avec Bancontact
+                        </a>
                     </div>
                 </div>
 

@@ -21,7 +21,7 @@ public class MollieService {
     private final RestTemplate restTemplate = new RestTemplate();
     private static final String MOLLIE_API_URL = "https://api.mollie.com/v2/payments";
 
-    public String createPaymentAndGetCheckoutUrl(Long commandeId, Double amount, String redirectUrl, Double pourboire) {
+    public String createPaymentAndGetCheckoutUrl(Long commandeId, Double amount, String redirectUrl, String webhookUrl, Double pourboire) {
         if ("test_dummy".equals(mollieApiKey) || mollieApiKey.isEmpty()) {
             return redirectUrl.replace("/mollie-return/", "/simulation/") + "?pourboire=" + pourboire;
         }
@@ -38,6 +38,9 @@ public class MollieService {
         body.put("amount", amountMap);
         body.put("description", "Commande #" + commandeId + (pourboire > 0 ? " (incl. pourboire)" : ""));
         body.put("redirectUrl", redirectUrl);
+        if (webhookUrl != null && !webhookUrl.isEmpty()) {
+            body.put("webhookUrl", webhookUrl);
+        }
         body.put("method", "bancontact");
 
         Map<String, Object> metadata = new HashMap<>();
@@ -87,5 +90,32 @@ public class MollieService {
             System.err.println("Erreur Mollie API check: " + e.getMessage());
         }
         return false;
+    }
+
+    public Map<String, Object> getPayment(String paymentId) {
+        if ("test_dummy".equals(mollieApiKey) || mollieApiKey.isEmpty()) {
+            // Mock payment object for testing
+            Map<String, Object> mockPayment = new HashMap<>();
+            mockPayment.put("status", "paid");
+            Map<String, Object> metadata = new HashMap<>();
+            metadata.put("commandeId", 1);
+            mockPayment.put("metadata", metadata);
+            return mockPayment;
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(mollieApiKey);
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(MOLLIE_API_URL + "/" + paymentId, HttpMethod.GET, request, Map.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                return response.getBody();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Erreur Mollie API check: " + e.getMessage());
+        }
+        return null;
     }
 }
