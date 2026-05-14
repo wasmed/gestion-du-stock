@@ -1,87 +1,240 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Nouvelle Commande | RestoApp</title>
+    <title>POS | Nouvelle Commande</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
     <style>
-        .btn-check:checked + .btn-outline-primary {
-            background-color: #0d6efd;
-            color: white;
-            border-color: #0d6efd;
+        :root {
+            --pos-bg: #f4f7f6;
+            --pos-text: #2b3440;
+            --pos-primary: #007aff;
         }
-        .card-check {
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--pos-bg);
+            color: var(--pos-text);
+        }
+
+        /* En-tête POS */
+        .pos-header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 15px 25px;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Cartes générales */
+        .card-pos {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            background: white;
+        }
+
+        .card-pos-header {
+            background: transparent;
+            border-bottom: 2px dashed #f0f0f0;
+            padding: 20px 24px;
+            border-radius: 20px 20px 0 0;
+        }
+
+        /* Sélecteur de type de commande (Toggle iOS style) */
+        .type-selector {
+            background: #e9ecef;
+            border-radius: 12px;
+            padding: 4px;
+            display: inline-flex;
+            width: 100%;
+        }
+
+        .btn-check-type:checked + .btn-type {
+            background-color: white;
+            color: var(--pos-primary);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            font-weight: 800;
+        }
+
+        .btn-type {
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            color: #6c757d;
+            font-weight: 600;
+            flex: 1;
+            transition: all 0.2s;
+        }
+
+        /* Sélection des tables */
+        .btn-check-table:checked + .table-label {
+            background-color: #e7f1ff;
+            border-color: var(--pos-primary);
+            color: var(--pos-primary);
+            transform: scale(0.98);
+        }
+
+        .table-label {
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            background: white;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.2s;
         }
-        .card-check:hover {
-            transform: translateY(-2px);
+
+        .table-label:hover { border-color: #b6d4fe; }
+
+        /* Navigation par onglets (Plats, Boissons...) */
+        .pos-tabs .nav-link {
+            color: #6c757d;
+            border-radius: 12px;
+            font-weight: 700;
+            padding: 12px 20px;
+            margin-right: 10px;
+            background: white;
+            border: 1px solid #e9ecef;
+            transition: all 0.2s;
         }
-        .form-check-input:checked ~ .card {
-            border-color: #0d6efd !important;
-            background-color: #e7f1ff !important;
+
+        .pos-tabs .nav-link.active {
+            background-color: var(--pos-primary);
+            color: white;
+            border-color: var(--pos-primary);
+            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3);
         }
+
+        /* Cartes d'articles (Item Cards) */
+        .item-card {
+            border: 1px solid #e9ecef;
+            border-radius: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            background: white;
+        }
+
+        .item-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+        }
+
+        /* Contrôle de quantité tactile (+ / -) */
+        .qty-control {
+            background: #f8f9fa;
+            border-radius: 50px;
+            padding: 4px;
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .btn-qty {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.1s;
+        }
+
+        .btn-qty-minus { background: white; color: #dc3545; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .btn-qty-minus:active { background: #dc3545; color: white; }
+
+        .btn-qty-plus { background: var(--pos-primary); color: white; box-shadow: 0 2px 4px rgba(0,122,255,0.2); }
+        .btn-qty-plus:active { transform: scale(0.9); }
+
+        .input-qty {
+            width: 40px;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--pos-text);
+        }
+
+        /* Masquer les flèches des inputs number natifs */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
+
     </style>
 </head>
-<body class="bg-light">
+<body>
 <div th:replace="~{fragments/navbar :: nav}"></div>
 
-<div class="container-fluid py-4">
-    <div class="alert alert-danger alert-dismissible fade show" th:if="${errorMessage}" role="alert">
-        <span th:text="${errorMessage}"></span>
+<div class="pos-header d-flex align-items-center gap-3">
+    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow" style="width: 50px; height: 50px;">
+        <i class="bi bi-pencil-square fs-4"></i>
+    </div>
+    <div>
+        <h2 class="fw-bold mb-0">Nouvelle Commande</h2>
+        <p class="text-muted mb-0 small">Sélectionnez la destination et ajoutez les articles au panier.</p>
+    </div>
+</div>
+
+<div class="container-fluid px-4 pb-5">
+    <div class="alert alert-danger fw-bold rounded-4 shadow-sm" th:if="${errorMessage}" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
-    <div class="mb-4">
-        <h2 class="fw-bold">Nouvelle Commande</h2>
-        <p class="text-muted">Sélectionnez une table et ajoutez des articles.</p>
-    </div>
+    <form th:action="@{/orders/create}" method="post" id="orderForm">
+        <div class="row g-4">
 
-    <form th:action="@{/orders/create}" method="post">
-        <div class="row">
-            <!-- LEFT COLUMN: SELECTION -->
             <div class="col-lg-8">
 
-                <!-- TABLE SELECTION -->
-                <div class="card shadow-sm mb-4 border-0">
-                    <div class="card-header bg-white border-bottom-0 pt-4 px-4">
-                        <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-shop me-2"></i>1. Choisir une Table ou À Emporter</h5>
+                <div class="card card-pos mb-4">
+                    <div class="card-pos-header">
+                        <h4 class="mb-0 fw-bold"><i class="bi bi-1-circle-fill text-primary me-2"></i>Destination</h4>
                     </div>
-                    <div class="card-body px-4 pb-4">
+                    <div class="card-body p-4">
+
                         <div th:if="${selectedTable != null}">
-                            <div class="alert alert-info">
-                                <i class="bi bi-info-circle-fill me-2"></i>
-                                <strong>Installation sur la Table <span th:text="${selectedTable.numeroTable}"></span></strong>
-                                (<span th:text="${selectedTable.nombrePersonne}"></span> places).
+                            <div class="alert alert-success d-flex align-items-center border-0 rounded-4">
+                                <i class="bi bi-check-circle-fill fs-3 me-3"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-0">Table <span th:text="${selectedTable.numeroTable}"></span></h5>
+                                    <small>Installation pour <span th:text="${selectedTable.nombrePersonne}"></span> couverts</small>
+                                </div>
                             </div>
                             <input type="hidden" name="tableId" th:value="${selectedTable.identifiant}">
                             <input type="hidden" name="isEmporter" value="false">
                         </div>
 
                         <div th:if="${selectedTable == null}">
-                            <div class="mb-3">
-                                <label class="form-label d-block fw-bold">Type de commande</label>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="isEmporter" id="surPlace" value="false" checked onchange="toggleTableSelection()">
-                                    <label class="form-check-label" for="surPlace">Sur place</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="isEmporter" id="aEmporter" value="true" onchange="toggleTableSelection()">
-                                    <label class="form-check-label" for="aEmporter">À emporter</label>
+                            <div class="row mb-4">
+                                <div class="col-md-6 mx-auto">
+                                    <div class="type-selector">
+                                        <input class="btn-check-type d-none" type="radio" name="isEmporter" id="surPlace" value="false" checked onchange="toggleTableSelection()">
+                                        <label class="btn-type text-center" for="surPlace"><i class="bi bi-shop me-2"></i>Sur place</label>
+
+                                        <input class="btn-check-type d-none" type="radio" name="isEmporter" id="aEmporter" value="true" onchange="toggleTableSelection()">
+                                        <label class="btn-type text-center" for="aEmporter"><i class="bi bi-bag me-2"></i>À emporter</label>
+                                    </div>
                                 </div>
                             </div>
 
                             <div id="tableSelectionContainer">
-                                <div th:if="${tables.isEmpty()}" class="alert alert-warning">
-                                    Aucune table disponible.
+                                <div th:if="${tables.isEmpty()}" class="alert alert-warning rounded-4 border-0">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Aucune table libre actuellement.
                                 </div>
                                 <div class="row row-cols-2 row-cols-md-4 row-cols-xl-5 g-3">
                                     <div th:each="table : ${tables}" class="col">
-                                        <input type="radio" name="tableId" th:value="${table.identifiant}" th:id="'table-'+${table.identifiant}" class="btn-check table-radio" required>
-                                        <label th:for="'table-'+${table.identifiant}" class="btn btn-outline-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3 shadow-sm border-2">
-                                            <i class="bi bi-square fs-1 mb-2"></i>
-                                            <span class="fw-bold fs-5">Table <span th:text="${table.numeroTable}"></span></span>
-                                            <small class=""><span th:text="${table.nombrePersonne}"></span> places</small>
+                                        <input type="radio" name="tableId" th:value="${table.identifiant}" th:id="'table-'+${table.identifiant}" class="d-none btn-check-table" required>
+                                        <label th:for="'table-'+${table.identifiant}" class="table-label w-100 h-100 p-3 text-center d-flex flex-column align-items-center">
+                                            <i class="bi bi-geo-alt-fill fs-3 mb-1 text-muted"></i>
+                                            <span class="fw-bold fs-5">T<span th:text="${table.numeroTable}"></span></span>
+                                            <span class="badge bg-light text-secondary rounded-pill mt-1"><span th:text="${table.nombrePersonne}"></span> pers.</span>
                                         </label>
                                     </div>
                                 </div>
@@ -90,45 +243,37 @@
                     </div>
                 </div>
 
-                <!-- ITEMS SELECTION -->
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-white border-bottom-0 pt-4 px-4">
-                        <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-basket2 me-2"></i>2. Choisir les Articles</h5>
+                <div class="card card-pos">
+                    <div class="card-pos-header">
+                        <h4 class="mb-0 fw-bold"><i class="bi bi-2-circle-fill text-primary me-2"></i>Articles</h4>
                     </div>
-                    <div class="card-body px-4 pb-4">
-                        <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
+                    <div class="card-body p-4">
+
+                        <ul class="nav nav-pills pos-tabs mb-4" id="pills-tab" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link active rounded-pill px-4" id="pills-plats-tab" data-bs-toggle="pill" data-bs-target="#pills-plats" type="button" role="tab">
-                                    <i class="bi bi-egg-fried me-2"></i>Plats Cuisinés
-                                </button>
+                                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#pills-plats" type="button"><i class="bi bi-egg-fried me-2"></i>Plats</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link rounded-pill px-4" id="pills-boissons-tab" data-bs-toggle="pill" data-bs-target="#pills-boissons" type="button" role="tab">
-                                    <i class="bi bi-cup-straw me-2"></i>Boissons
-                                </button>
+                                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-boissons" type="button"><i class="bi bi-cup-straw me-2"></i>Boissons</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link rounded-pill px-4" id="pills-menus-tab" data-bs-toggle="pill" data-bs-target="#pills-menus" type="button" role="tab">
-                                    <i class="bi bi-journal-text me-2"></i>Menus
-                                </button>
+                                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-menus" type="button"><i class="bi bi-journal-text me-2"></i>Menus</button>
                             </li>
                         </ul>
 
                         <div class="tab-content" id="pills-tabContent">
-                            <!-- PLATS -->
-                            <div class="tab-pane fade show active" id="pills-plats" role="tabpanel">
-                                <div class="row row-cols-1 row-cols-md-3 g-3">
+                            <div class="tab-pane fade show active" id="pills-plats">
+                                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
                                     <div th:each="plat : ${platsCuisines}" class="col">
-                                        <div class="card h-100 border-0 shadow-sm">
-                                            <div class="card-body d-flex flex-column">
-                                                <span class="fw-bold mb-2" th:text="${plat.nom}"></span>
-                                                <div class="mt-auto d-flex justify-content-between align-items-center">
-                                                    <div class="text-primary fw-bold fs-5">
-                                                        <span th:text="${plat.prix} + ' €'"></span>
-                                                    </div>
-                                                    <div style="width: 80px;">
-                                                        <input type="number" th:name="'platQty_' + ${plat.identifiant}" class="form-control form-control-sm text-center" min="0" value="0">
-                                                    </div>
+                                        <div class="item-card p-3 h-100 d-flex flex-column">
+                                            <h6 class="fw-bold mb-1 text-dark" th:text="${plat.nom}">Nom Plat</h6>
+                                            <span class="text-primary fw-bold mb-3 d-block" th:text="${#numbers.formatDecimal(plat.prix, 1, 2)} + ' €'">Prix</span>
+
+                                            <div class="mt-auto d-flex justify-content-center">
+                                                <div class="qty-control">
+                                                    <button type="button" class="btn-qty btn-qty-minus" th:attr="onclick=|updateQty('platQty_${plat.identifiant}', -1)|">-</button>
+                                                    <input type="number" th:id="'platQty_' + ${plat.identifiant}" th:name="'platQty_' + ${plat.identifiant}" class="input-qty" min="0" value="0" readonly>
+                                                    <button type="button" class="btn-qty btn-qty-plus" th:attr="onclick=|updateQty('platQty_${plat.identifiant}', 1)|">+</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -136,20 +281,18 @@
                                 </div>
                             </div>
 
-                            <!-- BOISSONS -->
-                            <div class="tab-pane fade" id="pills-boissons" role="tabpanel">
-                                 <div class="row row-cols-1 row-cols-md-3 g-3">
+                            <div class="tab-pane fade" id="pills-boissons">
+                                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
                                     <div th:each="boisson : ${boissons}" class="col">
-                                        <div class="card h-100 border-0 shadow-sm">
-                                            <div class="card-body d-flex flex-column">
-                                                <span class="fw-bold mb-2" th:text="${boisson.nom}"></span>
-                                                <div class="mt-auto d-flex justify-content-between align-items-center">
-                                                    <div class="text-primary fw-bold fs-5">
-                                                        <span th:text="${boisson.prix} + ' €'"></span>
-                                                    </div>
-                                                    <div style="width: 80px;">
-                                                        <input type="number" th:name="'platQty_' + ${boisson.identifiant}" class="form-control form-control-sm text-center" min="0" value="0">
-                                                    </div>
+                                        <div class="item-card p-3 h-100 d-flex flex-column">
+                                            <h6 class="fw-bold mb-1 text-dark" th:text="${boisson.nom}">Nom Boisson</h6>
+                                            <span class="text-primary fw-bold mb-3 d-block" th:text="${#numbers.formatDecimal(boisson.prix, 1, 2)} + ' €'">Prix</span>
+
+                                            <div class="mt-auto d-flex justify-content-center">
+                                                <div class="qty-control">
+                                                    <button type="button" class="btn-qty btn-qty-minus" th:attr="onclick=|updateQty('platQty_${boisson.identifiant}', -1)|">-</button>
+                                                    <input type="number" th:id="'platQty_' + ${boisson.identifiant}" th:name="'platQty_' + ${boisson.identifiant}" class="input-qty" min="0" value="0" readonly>
+                                                    <button type="button" class="btn-qty btn-qty-plus" th:attr="onclick=|updateQty('platQty_${boisson.identifiant}', 1)|">+</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -157,20 +300,19 @@
                                 </div>
                             </div>
 
-                            <!-- MENUS -->
-                            <div class="tab-pane fade" id="pills-menus" role="tabpanel">
+                            <div class="tab-pane fade" id="pills-menus">
                                 <div class="row row-cols-1 row-cols-md-2 g-3">
                                     <div th:each="menu : ${menus}" class="col">
-                                        <div class="card h-100 border-0 shadow-sm">
-                                            <div class="card-body d-flex flex-column">
-                                                <span class="fw-bold mb-2" th:text="${menu.nom}"></span>
-                                                <div class="mt-auto d-flex justify-content-between align-items-center">
-                                                    <div class="text-primary fw-bold fs-5">
-                                                        <span th:text="${menu.prix} + ' €'"></span>
-                                                    </div>
-                                                    <div style="width: 80px;">
-                                                        <input type="number" th:name="'menuQty_' + ${menu.id}" class="form-control form-control-sm text-center" min="0" value="0">
-                                                    </div>
+                                        <div class="item-card p-3 h-100 d-flex flex-column">
+                                            <h6 class="fw-bold mb-1 text-dark" th:text="${menu.nom}">Nom Menu</h6>
+                                            <p class="text-muted small mb-2 lh-sm" th:text="${#strings.abbreviate(menu.description, 50)}">Description...</p>
+                                            <span class="text-primary fw-bold mb-3 d-block" th:text="${#numbers.formatDecimal(menu.prix, 1, 2)} + ' €'">Prix</span>
+
+                                            <div class="mt-auto d-flex justify-content-between align-items-center">
+                                                <div class="qty-control">
+                                                    <button type="button" class="btn-qty btn-qty-minus" th:attr="onclick=|updateQty('menuQty_${menu.id}', -1)|">-</button>
+                                                    <input type="number" th:id="'menuQty_' + ${menu.id}" th:name="'menuQty_' + ${menu.id}" class="input-qty" min="0" value="0" readonly>
+                                                    <button type="button" class="btn-qty btn-qty-plus" th:attr="onclick=|updateQty('menuQty_${menu.id}', 1)|">+</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -182,43 +324,47 @@
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN: SUMMARY & SUBMIT -->
             <div class="col-lg-4">
-                 <div class="card shadow border-0 sticky-top" style="top: 20px; z-index: 100;">
-                    <div class="card-header bg-primary text-white py-3">
-                        <h5 class="mb-0 fw-bold"><i class="bi bi-receipt me-2"></i>Résumé</h5>
+                <div class="card card-pos sticky-top" style="top: 20px; z-index: 100;">
+                    <div class="card-header bg-primary text-white p-4" style="border-radius: 20px 20px 0 0;">
+                        <h4 class="mb-0 fw-bold d-flex align-items-center justify-content-between">
+                            <span><i class="bi bi-receipt-cutoff me-2"></i>Le Ticket</span>
+                            <i class="bi bi-send-check"></i>
+                        </h4>
                     </div>
-                    <div class="card-body p-4">
-                        <div class="mb-4">
-                            <label for="clientEmail" class="form-label fw-bold">Client (Email)</label>
-                             <div class="input-group">
-                                <span class="input-group-text bg-white"><i class="bi bi-envelope"></i></span>
-                                <input type="email" id="clientEmail" name="clientEmail" class="form-control" placeholder="guest@resto.com">
-                             </div>
-                             <div class="form-text">Laisser vide pour "Invité"</div>
-                        </div>
+
+                    <div class="card-body p-4 bg-light" style="border-radius: 0 0 20px 20px;">
 
                         <div class="mb-4">
-                            <label for="commentaire" class="form-label fw-bold">Note pour le serveur</label>
-                            <textarea id="commentaire" name="commentaire" class="form-control" rows="3" placeholder="Allergies, préférences, etc."></textarea>
+                            <label class="form-label fw-bold text-dark small text-uppercase">Email Client (Optionnel)</label>
+                            <div class="input-group input-group-lg shadow-sm rounded-3">
+                                <span class="input-group-text bg-white border-end-0"><i class="bi bi-envelope text-muted"></i></span>
+                                <input type="email" id="clientEmail" name="clientEmail" class="form-control border-start-0" placeholder="guest@resto.com">
+                            </div>
                         </div>
 
-                        <div class="alert alert-light border small text-muted">
-                            <i class="bi bi-info-circle me-1"></i> Sélectionnez les articles dans la liste à gauche.
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark small text-uppercase">Commentaire Cuisine</label>
+                            <textarea id="commentaire" name="commentaire" class="form-control shadow-sm rounded-3" rows="3" placeholder="Allergies, cuissons spécifiques..."></textarea>
                         </div>
 
-                        <hr>
+                        <div class="d-flex align-items-center gap-3 p-3 bg-white rounded-3 shadow-sm mb-4 border border-info border-opacity-25">
+                            <i class="bi bi-info-circle-fill text-info fs-3"></i>
+                            <p class="mb-0 small text-muted lh-sm">Sélectionnez les quantités à l'aide des boutons <strong class="text-dark">+</strong> et <strong class="text-dark">-</strong> dans la liste des articles.</p>
+                        </div>
+
+                        <hr class="border-secondary opacity-25 mb-4">
 
                         <div class="d-grid gap-3">
-                            <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm">
-                                <i class="bi bi-check-lg me-2"></i>Valider la Commande
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold shadow p-3 rounded-4" style="font-size: 1.1rem; text-transform: uppercase;">
+                                Envoyer en Cuisine <i class="bi bi-fire ms-2"></i>
                             </button>
-                            <a th:href="@{/orders}" class="btn btn-outline-secondary">
-                                <i class="bi bi-x-lg me-2"></i>Annuler
+                            <a th:href="@{/orders}" class="btn btn-light fw-bold rounded-4 p-3 text-secondary border">
+                                <i class="bi bi-arrow-left me-2"></i>Retour Salle
                             </a>
                         </div>
                     </div>
-                 </div>
+                </div>
             </div>
         </div>
     </form>
@@ -226,10 +372,11 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // Logique d'affichage des tables
     function toggleTableSelection() {
         const isEmporter = document.getElementById('aEmporter').checked;
         const tableContainer = document.getElementById('tableSelectionContainer');
-        const tableRadios = document.querySelectorAll('.table-radio');
+        const tableRadios = document.querySelectorAll('.btn-check-table');
 
         if (isEmporter) {
             if (tableContainer) tableContainer.style.display = 'none';
@@ -240,7 +387,27 @@
         }
     }
 
-    // Initial check on load
+    // Logique pour les boutons tactiles + et -
+    function updateQty(inputId, change) {
+        const input = document.getElementById(inputId);
+        let currentValue = parseInt(input.value) || 0;
+        let newValue = currentValue + change;
+
+        // Empêcher les valeurs négatives
+        if (newValue < 0) {
+            newValue = 0;
+        }
+
+        input.value = newValue;
+
+        // Petit effet visuel pour montrer que l'action est prise en compte
+        if(change > 0) {
+            input.parentElement.style.transform = "scale(1.05)";
+            setTimeout(() => input.parentElement.style.transform = "scale(1)", 150);
+        }
+    }
+
+    // Initialisation au chargement
     document.addEventListener("DOMContentLoaded", toggleTableSelection);
 </script>
 </body>

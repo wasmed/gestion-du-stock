@@ -174,10 +174,6 @@
                     <td class="text-end">TVA (12%):</td>
                     <td class="text-end" th:text="${#numbers.formatDecimal(tva, 1, 2)} + ' €'"></td>
                 </tr>
-                <tr th:if="${paiement != null && paiement.pourboire != null && paiement.pourboire.montant > 0}">
-                    <td class="text-end text-muted">Pourboire (inclus):</td>
-                    <td class="text-end text-muted" th:text="${#numbers.formatDecimal(paiement.pourboire.montant, 1, 2)} + ' €'"></td>
-                </tr>
                 <tr class="totals-row">
                     <td class="text-end pt-3">TOTAL TTC:</td>
                     <td class="text-end pt-3 grand-total" th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + ' €'"></td>

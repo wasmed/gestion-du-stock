@@ -1,325 +1,339 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Tableau de Bord Serveur | RestoApp</title>
+    <title>Salle | Serveur POS</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+
     <style>
+        :root {
+            --pos-bg: #f4f7f6;
+            --pos-text: #2b3440;
+            --table-free-bg: #e8f5e9;
+            --table-free-border: #4caf50;
+            --table-occ-bg: #ffebee;
+            --table-occ-border: #f44336;
+            --action-color: #007aff;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--pos-bg);
+            color: var(--pos-text);
+        }
+
+        /* En-tête POS */
+        .pos-header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 15px 25px;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 30px;
+        }
+
+        .btn-massive {
+            font-size: 1.1rem;
+            font-weight: 800;
+            padding: 12px 24px;
+            border-radius: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: transform 0.1s;
+        }
+        .btn-massive:active { transform: scale(0.95); }
+
+        /* --- Sections d'Alerte (Priorité du Serveur) --- */
+        .alert-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-bottom: 30px;
+        }
+
+        .card-alert {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .card-alert:hover { transform: translateY(-5px); }
+
+        .card-alert .card-header {
+            border-radius: 15px 15px 0 0;
+            border-bottom: none;
+            padding: 15px;
+        }
+
+        /* Animation pour les plats prêts (Urgence positive) */
+        @keyframes pulse-serve {
+            0% { box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(25, 135, 84, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(25, 135, 84, 0); }
+        }
+        .pulse-serve-card { animation: pulse-serve 2s infinite; }
+
+        /* --- Plan de Salle (Grille de Tables) --- */
         .table-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
         }
-        .table-status-icon {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
+
+        .pos-table-card {
+            border: 2px solid transparent;
+            border-radius: 20px;
+            background: white;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
-        .occupied .table-status-icon { color: #dc3545; }
-        .free .table-status-icon { color: #198754; }
+
+        /* Bande de couleur en haut de la carte pour la visibilité de loin */
+        .pos-table-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 12px;
+        }
+
+        .pos-table-card.free::before { background-color: var(--table-free-border); }
+        .pos-table-card.occupied::before { background-color: var(--table-occ-border); }
+
+        .table-number-large {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin: 15px 0 5px 0;
+        }
+
+        .free .table-number-large { color: var(--table-free-border); }
+        .occupied .table-number-large { color: var(--table-occ-border); }
+
+        /* Tickets de commande sur la table */
+        .order-ticket {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 15px;
+        }
+
+        .item-list {
+            max-height: 150px;
+            overflow-y: auto;
+            border-left: 3px solid #dee2e6;
+            padding-left: 10px;
+        }
+
+        /* Scrollbar invisible pour les listes */
+        .item-list::-webkit-scrollbar { width: 4px; }
+        .item-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+        /* Boutons tactiles internes */
+        .btn-touch {
+            border-radius: 10px;
+            padding: 8px 15px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
     </style>
 </head>
 <body>
 <div th:replace="~{fragments/navbar :: nav}"></div>
 
-<div class="container-fluid py-4">
-    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <span th:text="${errorMessage}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-
-    <div class="d-flex justify-content-between align-items-center mb-5 page-header pb-3 border-bottom">
-        <div>
-            <h1 class="fw-bold mb-1">Salle</h1>
-            <p class="text-muted mb-0">Vue d'ensemble des tables et commandes en cours.</p>
+<div class="pos-header d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+    <div class="d-flex align-items-center gap-3">
+        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow" style="width: 50px; height: 50px;">
+            <i class="bi bi-grid-fill fs-4"></i>
         </div>
-        <a th:href="@{/orders/create}" class="btn btn-primary btn-modern shadow-sm">
-            <i class="bi bi-plus-lg me-2"></i> Nouvelle Commande
-        </a>
+        <div>
+            <h2 class="fw-bold mb-0">Salle & Tables</h2>
+            <p class="text-muted mb-0 small">Connecté en tant que : <strong th:text="${#authentication.name}">Serveur</strong></p>
+        </div>
+    </div>
+    <a th:href="@{/orders/create}" class="btn btn-primary btn-massive shadow">
+        <i class="bi bi-plus-lg fs-5 me-1"></i> Nouvelle Commande
+    </a>
+</div>
+
+<div class="container-fluid px-4 pb-5">
+
+    <div th:if="${errorMessage}" class="alert alert-danger fw-bold rounded-4 shadow-sm" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
     </div>
 
-    <!-- Section Commandes Prêtes à Servir (NOUVELLE SECTION) -->
-    <div th:if="${!commandesPretes.isEmpty()}" class="mb-5">
-        <h3 class="text-success mb-3 fw-bold"><i class="bi bi-check-circle-fill me-2"></i> Commandes prêtes à servir</h3>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div th:if="${!commandesPretes.isEmpty()}" class="alert-section bg-success bg-opacity-10 border border-success border-opacity-25">
+        <h4 class="text-success fw-bold mb-3 d-flex align-items-center gap-2">
+            <i class="bi bi-bell-fill fs-3"></i> À SERVIR IMMÉDIATEMENT
+        </h4>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3">
             <div th:each="cmd : ${commandesPretes}" class="col">
-                <div class="card border-success shadow-sm h-100" style="background-color: #f0fff4;">
-                    <div class="card-header bg-success text-white fw-bold d-flex justify-content-between align-items-center">
-                        <span th:if="${cmd.isEmporter}" class="badge bg-info">🛍️ À Emporter</span>
-                        <span th:unless="${cmd.isEmporter}">
-                            <span th:if="${cmd.table != null}">Table <span th:text="${cmd.table.numeroTable}"></span></span>
-                            <span th:if="${cmd.table == null}">Table ?</span>
+                <div class="card card-alert pulse-serve-card h-100">
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                        <span class="fw-bold fs-5">
+                            <span th:if="${cmd.isEmporter}"><i class="bi bi-bag-fill"></i> Emporter</span>
+                            <span th:unless="${cmd.isEmporter}">Table <span th:text="${cmd.table?.numeroTable ?: '?'}"></span></span>
                         </span>
-                        <span class="badge bg-light text-success" th:text="${#temporals.format(cmd.dateHeure, 'HH:mm')}"></span>
+                        <span class="badge bg-white text-success rounded-pill px-2" th:text="${#temporals.format(cmd.dateHeure, 'HH:mm')}"></span>
                     </div>
-                    <div class="card-body">
-                        <div class="mb-2">
-                            <i class="bi bi-person-fill text-muted"></i>
-                            <span th:text="${cmd.client.fullName}" class="fw-bold">Client</span>
+                    <div class="card-body p-3">
+                        <p class="text-muted small mb-2"><i class="bi bi-person-fill"></i> <span th:text="${cmd.client.fullName}">Client</span></p>
+                        <div class="item-list mb-3">
+                            <div th:each="ligne : ${cmd.lignesCommande}" class="d-flex justify-content-between small fw-bold text-dark mb-1">
+                                <span><span class="text-success me-1" th:text="${ligne.quantite} + 'x'"></span> <span th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}"></span></span>
+                            </div>
                         </div>
-
-                        <h6 class="card-subtitle mb-2 text-muted border-bottom pb-1">Contenu</h6>
-                        <ul class="list-group list-group-flush small mb-3 bg-transparent">
-                            <li th:each="ligne : ${cmd.lignesCommande}" class="list-group-item px-0 py-1 d-flex justify-content-between bg-transparent">
-                                <div>
-                                    <span class="fw-bold me-1" th:text="${ligne.quantite} + 'x'"></span>
-                                    <span th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}">Item</span>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="card-footer bg-white border-top-0 pb-3">
-                        <a th:href="@{/orders/serve/{id}(id=${cmd.id})}" class="btn btn-success w-100 fw-bold shadow-sm">
-                            <i class="bi bi-hand-thumbs-up-fill me-1"></i> Servir maintenant
+                        <a th:href="@{/orders/serve/{id}(id=${cmd.id})}" class="btn btn-success w-100 btn-touch">
+                            <i class="bi bi-check2-circle fs-5"></i> C'est servi !
                         </a>
                     </div>
                 </div>
             </div>
         </div>
-        <hr class="my-5 text-muted">
     </div>
 
-    <!-- Section Commandes à Valider -->
-    <div th:if="${!commandesAValider.isEmpty()}" class="mb-5">
-        <h3 class="text-warning mb-3 fw-bold"><i class="bi bi-bell-fill me-2"></i> Commandes en attente de validation</h3>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div th:if="${!commandesAValider.isEmpty()}" class="alert-section bg-warning bg-opacity-10 border border-warning border-opacity-25">
+        <h4 class="text-warning-emphasis fw-bold mb-3 d-flex align-items-center gap-2">
+            <i class="bi bi-hourglass-split fs-3"></i> EN ATTENTE DE VALIDATION (Table)
+        </h4>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3">
             <div th:each="cmd : ${commandesAValider}" class="col">
-                <div class="card border-warning shadow-sm h-100">
-                    <div class="card-header bg-warning text-dark fw-bold d-flex justify-content-between align-items-center">
-                        <span th:if="${cmd.isEmporter}" class="badge bg-info">🛍️ À Emporter</span>
-                        <span th:unless="${cmd.isEmporter}">
-                            <span th:if="${cmd.table != null}">Table <span th:text="${cmd.table.numeroTable}"></span></span>
-                            <span th:if="${cmd.table == null}">Table ?</span>
-                        </span>
-                        <span class="badge bg-dark text-warning" th:text="${#temporals.format(cmd.dateHeure, 'HH:mm')}"></span>
+                <div class="card card-alert border-warning h-100">
+                    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                        <span class="fw-bold fs-5">Nouvelle Commande</span>
+                        <span class="badge bg-dark text-warning rounded-pill px-2" th:text="${#temporals.format(cmd.dateHeure, 'HH:mm')}"></span>
                     </div>
-                    <div class="card-body">
-                        <div class="mb-2">
-                            <i class="bi bi-person-fill text-muted"></i>
-                            <span th:text="${cmd.client.fullName}" class="fw-bold">Client</span>
-                        </div>
-
-                        <div th:if="${cmd.commentaire != null and !cmd.commentaire.isEmpty()}" class="alert alert-danger p-2 mb-3 small">
-                            <i class="bi bi-exclamation-triangle-fill me-1"></i>
-                            <strong>Note :</strong> <span th:text="${cmd.commentaire}"></span>
-                        </div>
-
-                        <h6 class="card-subtitle mb-2 text-muted border-bottom pb-1">Détails</h6>
-                        <ul class="list-group list-group-flush small mb-3">
-                            <li th:each="ligne : ${cmd.lignesCommande}" class="list-group-item px-0 py-1 d-flex justify-content-between">
-                                <div>
-                                    <span class="fw-bold me-1" th:text="${ligne.quantite} + 'x'"></span>
-                                    <span th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}">Item</span>
-                                </div>
-                                <span class="text-muted" th:text="${#numbers.formatDecimal((ligne.plat != null ? ligne.plat.prix : ligne.menu.prix) * ligne.quantite, 1, 2)} + '€'"></span>
-                            </li>
-                        </ul>
-                        <div class="d-flex justify-content-between fw-bold border-top pt-2">
-                            <span>Total</span>
+                    <div class="card-body p-3">
+                        <p class="text-muted small mb-2"><i class="bi bi-person-fill"></i> <span th:text="${cmd.client.fullName}">Client</span></p>
+                        <div class="d-flex justify-content-between fw-bold fs-5 mb-3 text-primary">
+                            <span>Total:</span>
                             <span th:text="${#numbers.formatDecimal(cmd.montantTotal, 1, 2)} + ' €'"></span>
                         </div>
-                    </div>
-                    <div class="card-footer bg-white border-top-0 d-flex gap-2 pb-3">
-                        <button type="button" class="btn btn-success flex-grow-1 fw-bold shadow-sm" data-bs-toggle="modal" th:data-bs-target="'#validateModal' + ${cmd.id}">
-                            <i class="bi bi-check-circle-fill me-1"></i> Valider
-                        </button>
-                        <a th:href="@{/orders/delete/{id}(id=${cmd.id})}" class="btn btn-outline-danger shadow-sm" title="Refuser / Supprimer" onclick="return confirm('Voulez-vous vraiment refuser cette commande ?');">
-                            <i class="bi bi-x-lg"></i>
-                        </a>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-warning flex-grow-1 btn-touch" data-bs-toggle="modal" th:data-bs-target="'#validateModal' + ${cmd.id}">
+                                <i class="bi bi-table"></i> Assigner
+                            </button>
+                            <a th:href="@{/orders/delete/{id}(id=${cmd.id})}" class="btn btn-outline-danger btn-touch" onclick="return confirm('Refuser ?');">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div th:each="cmd : ${commandesAValider}" class="modal fade" th:id="'validateModal' + ${cmd.id}" tabindex="-1" aria-labelledby="validateModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
+
+        <div th:each="cmd : ${commandesAValider}" class="modal fade" th:id="'validateModal' + ${cmd.id}" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content rounded-4 border-0 shadow-lg">
                     <form th:action="@{/orders/validate/{id}(id=${cmd.id})}" method="post">
-                        <div class="modal-header bg-success text-white">
-                            <h5 class="modal-title" id="validateModalLabel">Assigner une table</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="modal-header bg-warning border-0 rounded-top-4">
+                            <h5 class="modal-title fw-bold text-dark">Assigner une table</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
-                        <div class="modal-body">
-                            <p>Veuillez sélectionner une table disponible pour cette commande.</p>
-                            <select name="tableId" class="form-select" required>
-                                <option value="" disabled selected>Sélectionner une table...</option>
+                        <div class="modal-body p-4">
+                            <select name="tableId" class="form-select form-select-lg mb-3 shadow-sm" required>
+                                <option value="" disabled selected>Où installer le client ?</option>
                                 <option th:each="table : ${tablesDisponibles}" th:value="${table.identifiant}" th:text="'Table ' + ${table.numeroTable} + ' (' + ${table.nombrePersonne} + ' pers)'"></option>
                             </select>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                            <button type="submit" class="btn btn-success">Valider et Assigner</button>
+                        <div class="modal-footer border-0">
+                            <button type="submit" class="btn btn-warning btn-massive w-100">Confirmer</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        <hr class="my-5 text-muted">
     </div>
 
-    <!-- Section Commandes À Emporter -->
     <div th:if="${!commandesAEmporter.isEmpty()}" class="mb-5">
-        <h3 class="text-info mb-3 fw-bold"><i class="bi bi-bag-fill me-2"></i> Commandes À Emporter</h3>
+        <h4 class="fw-bold mb-3 d-flex align-items-center gap-2"><i class="bi bi-bag-fill text-info"></i> Espace "À Emporter"</h4>
         <div class="table-grid">
-            <div th:each="commande : ${commandesAEmporter}">
-                <div class="card card-modern h-100 table-card position-relative shadow-sm border-0 occupied">
-                    <span class="table-number"><i class="bi bi-bag"></i></span>
-                    <div class="card-body text-center d-flex flex-column justify-content-center p-4">
-                        <i class="bi bi-bag-check-fill table-status-icon text-info"></i>
-                        <h5 class="card-title fw-bold mb-1">🛍️ À EMPORTER</h5>
-                        <span class="badge rounded-pill mb-3 bg-info text-dark" th:text="'Commande #' + ${commande.id}">ID</span>
+            <div th:each="commande : ${commandesAEmporter}" class="pos-table-card occupied pt-3">
+                <div class="card-body p-3 text-center">
+                    <div class="text-info mb-1"><i class="bi bi-bag-check-fill fs-1"></i></div>
+                    <h4 class="fw-bold text-dark mb-0">EMPORTER</h4>
+                    <span class="text-muted small fw-bold">#<span th:text="${commande.id}"></span></span>
 
-                        <div class="w-100 text-start mt-3">
-                            <div class="bg-white p-3 rounded shadow-sm border">
-                                <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
-                                    <span class="fw-bold text-dark small">Commande #<span th:text="${commande.id}"></span></span>
-                                    <span class="badge badge-modern small"
-                                          th:classappend="${
-                                            commande.isPreteAServir() ? 'bg-success' : (commande.isToutesLignesServies() ? 'bg-primary' : 'bg-warning text-dark')
-                                          }"
-                                          th:text="${commande.isPreteAServir() ? 'PRÊT' : (commande.isToutesLignesServies() ? 'SERVIE' : 'EN COURS')}">Statut</span>
-                                </div>
+                    <div class="order-ticket text-start">
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                            <span class="text-muted small"><i class="bi bi-person"></i> <span th:text="${commande.client.fullName}"></span></span>
+                            <span class="badge rounded-pill" th:classappend="${commande.isPreteAServir() ? 'bg-success' : (commande.isToutesLignesServies() ? 'bg-primary' : 'bg-warning text-dark')}" th:text="${commande.isPreteAServir() ? 'PRÊT' : (commande.isToutesLignesServies() ? 'SERVIE' : 'CUISINE')}"></span>
+                        </div>
 
-                                <div class="mb-2 text-muted small">
-                                    <i class="bi bi-person me-1"></i> <span th:text="${commande.client.fullName}">Client</span>
-                                </div>
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                            <span class="fs-5 fw-bold text-primary" th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + '€'"></span>
 
-                                <ul class="list-unstyled mb-3 small text-secondary ps-3 border-start border-3 border-light">
-                                    <li th:each="ligne : ${commande.lignesCommande}" class="mb-1 d-flex justify-content-between">
-                                        <div>
-                                            <span class="fw-bold" th:text="${ligne.quantite} + 'x'"></span>
-                                            <span th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}">Item</span>
-                                        </div>
-                                        <span class="badge" th:classappend="${ligne.etat.toString() == 'SERVIE' ? 'bg-success' : (ligne.etat.toString() == 'EN_VALIDATION' ? 'bg-warning text-dark' : 'bg-secondary')}" th:text="${ligne.etat.toString()}">Statut</span>
-                                    </li>
-                                </ul>
-
-                                <div th:if="${commande.lignesCommande.![etat.toString()].contains('EN_VALIDATION')}" class="mt-2 text-center">
-                                    <a th:href="@{/orders/validate-lines/{id}(id=${commande.id})}" class="btn btn-sm btn-warning fw-bold w-100 mb-2">
-                                        <i class="bi bi-check2-circle"></i> Valider l'ajout
-                                    </a>
-                                </div>
-
-                                <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
-                                    <span class="fw-bold text-primary" th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + ' €'"></span>
-
-                                    <div class="btn-group btn-group-sm">
-                                        <!-- Actions -->
-                                        <a th:if="${commande.etat.toString() == 'EN_COURS'}"
-                                           th:href="@{/orders/edit/{id}(id=${commande.id})}"
-                                           class="btn btn-outline-warning" title="Ajouter / Modifier">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <a th:if="${commande.etat.toString() == 'EN_COURS'}"
-                                           th:href="@{/orders/delete/{id}(id=${commande.id})}"
-                                           class="btn btn-outline-danger" title="Annuler"
-                                           onclick="return confirm('Annuler cette commande ?');">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
-
-                                        <a th:if="${commande.lignesCommande.![etat.toString()].contains('PREPARATION_TERMINEE')}"
-                                           th:href="@{/orders/serve/{id}(id=${commande.id})}"
-                                           class="btn btn-success fw-bold">Servir</a>
-
-                                        <a th:if="${commande.isToutesLignesServies() and commande.etat.toString() == 'EN_COURS'}"
-                                           th:href="@{/orders/pay/{id}(id=${commande.id})}"
-                                           class="btn btn-primary fw-bold">Encaisser</a>
-                                    </div>
-                                </div>
+                            <div class="d-flex gap-1">
+                                <a th:if="${commande.etat.toString() == 'EN_COURS'}" th:href="@{/orders/edit/{id}(id=${commande.id})}" class="btn btn-light btn-sm btn-touch border"><i class="bi bi-pencil"></i></a>
+                                <a th:if="${commande.isToutesLignesServies() and commande.etat.toString() == 'EN_COURS'}" th:href="@{/orders/pay/{id}(id=${commande.id})}" class="btn btn-primary btn-sm btn-touch">Payer</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <hr class="my-5 text-muted">
     </div>
 
-    <!-- Section Tables Classiques -->
-    <h3 class="mb-3 fw-bold"><i class="bi bi-grid-3x3-gap-fill me-2"></i> Plan de Salle</h3>
+    <h4 class="fw-bold mb-3 d-flex align-items-center gap-2"><i class="bi bi-grid-3x3-gap-fill text-secondary"></i> Plan de Salle</h4>
     <div class="table-grid">
-        <div th:each="table : ${toutesLesTables}" th:with="estOccupee=${tablesOccupees.contains(table)}">
-            <div class="card card-modern h-100 table-card position-relative shadow-sm border-0"
-                 th:classappend="${estOccupee ? 'occupied' : 'free'}">
+        <div th:each="table : ${toutesLesTables}" th:with="estOccupee=${tablesOccupees.contains(table)}" class="pos-table-card pt-3" th:classappend="${estOccupee ? 'occupied' : 'free'}">
 
-                <span class="table-number" th:text="${table.numeroTable}">1</span>
+            <div class="card-body p-3 text-center d-flex flex-column h-100">
+                <div class="table-number-large" th:text="${table.numeroTable}">1</div>
 
-                <div class="card-body text-center d-flex flex-column justify-content-center p-4">
-                    <i class="bi table-status-icon" th:classappend="${estOccupee ? 'bi-person-fill-slash' : 'bi-check-circle-fill'}"></i>
+                <div th:if="${!estOccupee}" class="mt-auto pt-4">
+                    <p class="text-success fw-bold mb-2"><i class="bi bi-check-circle-fill"></i> Libre</p>
+                    <p class="text-muted small mb-3"><span th:text="${table.nombrePersonne}"></span> couverts max</p>
+                    <a th:href="@{/orders/create(tableId=${table.identifiant})}" class="btn btn-outline-success btn-touch w-100 border-2">
+                        <i class="bi bi-person-plus-fill fs-5"></i> Installer
+                    </a>
+                </div>
 
-                    <h5 class="card-title fw-bold mb-1">Table <span th:text="${table.numeroTable}"></span></h5>
-                    <span class="badge rounded-pill mb-3"
-                          th:classappend="${estOccupee ? 'bg-danger' : 'bg-success'}"
-                          th:text="${estOccupee ? 'Occupée' : 'Libre'}">Statut</span>
+                <div th:if="${estOccupee}" class="w-100 flex-grow-1 d-flex flex-column">
+                    <p class="text-danger fw-bold small mb-0"><i class="bi bi-people-fill"></i> Occupée</p>
+                    <p class="text-muted small mb-1" style="font-size: 0.75rem;"><i class="bi bi-person-badge"></i> <span th:text="${table.serveur?.fullName}"></span></p>
 
-                    <div th:if="${estOccupee and table.serveur != null}" class="mb-3 text-muted small">
-                        <i class="bi bi-person-badge"></i> <span th:text="${table.serveur.fullName}">Serveur</span>
-                    </div>
+                    <div th:each="commande : ${commandesParTable.get(table)}" class="order-ticket text-start mt-auto">
+                        <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
+                            <span class="text-dark fw-bold small">#<span th:text="${commande.id}"></span></span>
+                            <span class="badge rounded-pill" th:classappend="${commande.isPreteAServir() ? 'bg-success' : (commande.isToutesLignesServies() ? 'bg-primary' : 'bg-warning text-dark')}" th:text="${commande.isPreteAServir() ? 'PRÊT' : (commande.isToutesLignesServies() ? 'SERVIE' : 'CUISINE')}"></span>
+                        </div>
 
-                    <div th:if="${estOccupee}" class="w-100 text-start mt-3">
-                        <div th:each="commande : ${commandesParTable.get(table)}" class="bg-white p-3 rounded shadow-sm mb-2 border">
-                            <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
-                                <span class="fw-bold text-dark small">Commande #<span th:text="${commande.id}"></span></span>
-                                <span class="badge badge-modern small"
-                                      th:classappend="${
-                                            commande.isPreteAServir() ? 'bg-success' : (commande.isToutesLignesServies() ? 'bg-primary' : 'bg-warning text-dark')
-                                      }"
-                                          th:text="${commande.isPreteAServir() ? 'PRÊT' : (commande.isToutesLignesServies() ? 'SERVIE' : 'EN COURS')}">Statut</span>
-                            </div>
-
-                            <div class="mb-2 text-muted small">
-                                <i class="bi bi-person me-1"></i> <span th:text="${commande.client.fullName}">Client</span>
-                            </div>
-
-                            <ul class="list-unstyled mb-3 small text-secondary ps-3 border-start border-3 border-light">
-                                <li th:each="ligne : ${commande.lignesCommande}" class="mb-1 d-flex justify-content-between">
-                                    <div>
-                                        <span class="fw-bold" th:text="${ligne.quantite} + 'x'"></span>
-                                        <span th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}">Item</span>
-                                    </div>
-                                    <span class="badge" th:classappend="${ligne.etat.toString() == 'SERVIE' ? 'bg-success' : (ligne.etat.toString() == 'EN_VALIDATION' ? 'bg-warning text-dark' : 'bg-secondary')}" th:text="${ligne.etat.toString()}">Statut</span>
-                                </li>
-                            </ul>
-
-                            <div th:if="${commande.lignesCommande.![etat.toString()].contains('EN_VALIDATION')}" class="mt-2 text-center">
-                                <a th:href="@{/orders/validate-lines/{id}(id=${commande.id})}" class="btn btn-sm btn-warning fw-bold w-100 mb-2">
-                                    <i class="bi bi-check2-circle"></i> Valider l'ajout
-                                </a>
-                            </div>
-
-                            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
-                                <span class="fw-bold text-primary" th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + ' €'"></span>
-
-                                <div class="btn-group btn-group-sm">
-                                    <!-- Actions -->
-                                    <a th:if="${commande.etat.toString() == 'EN_COURS'}"
-                                       th:href="@{/orders/edit/{id}(id=${commande.id})}"
-                                       class="btn btn-outline-warning" title="Ajouter / Modifier">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <a th:if="${commande.etat.toString() == 'EN_COURS'}"
-                                       th:href="@{/orders/delete/{id}(id=${commande.id})}"
-                                       class="btn btn-outline-danger" title="Annuler"
-                                       onclick="return confirm('Annuler cette commande ?');">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
-
-                                    <a th:if="${commande.lignesCommande.![etat.toString()].contains('PREPARATION_TERMINEE')}"
-                                       th:href="@{/orders/serve/{id}(id=${commande.id})}"
-                                       class="btn btn-success fw-bold">Servir</a>
-
-                                    <a th:if="${commande.isToutesLignesServies() and commande.etat.toString() == 'EN_COURS'}"
-                                       th:href="@{/orders/pay/{id}(id=${commande.id})}"
-                                       class="btn btn-primary fw-bold">Encaisser</a>
-                                </div>
+                        <div class="item-list mb-2">
+                            <div th:each="ligne : ${commande.lignesCommande}" class="d-flex justify-content-between small text-secondary">
+                                <span><span class="fw-bold text-dark" th:text="${ligne.quantite} + 'x'"></span> <span th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}"></span></span>
                             </div>
                         </div>
-                    </div>
 
-                    <div th:if="${!estOccupee}" class="mt-auto">
-                        <p class="text-muted small mb-0">Prête à accueillir des clients.</p>
-                        <a th:href="@{/orders/create(tableId=${table.identifiant})}" class="btn btn-outline-success btn-sm mt-3 w-100 rounded-pill">
-                            <i class="bi bi-plus-circle me-1"></i> Installer Clients
-                        </a>
+                        <div th:if="${commande.lignesCommande.![etat.toString()].contains('EN_VALIDATION')}" class="mt-2 mb-2">
+                            <a th:href="@{/orders/validate-lines/{id}(id=${commande.id})}" class="btn btn-warning btn-sm btn-touch w-100">
+                                <i class="bi bi-check-circle"></i> Valider ajouts
+                            </a>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
+                            <span class="fs-5 fw-bold text-primary" th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + '€'"></span>
+
+                            <div class="d-flex gap-1">
+                                <a th:if="${commande.etat.toString() == 'EN_COURS'}" th:href="@{/orders/edit/{id}(id=${commande.id})}" class="btn btn-light btn-sm btn-touch border"><i class="bi bi-plus-lg text-dark"></i></a>
+
+                                <a th:if="${commande.isToutesLignesServies() and commande.etat.toString() == 'EN_COURS'}" th:href="@{/orders/pay/{id}(id=${commande.id})}" class="btn btn-primary btn-sm btn-touch">
+                                    <i class="bi bi-credit-card-fill"></i> Payer
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,102 +1,357 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Mon Espace Client</title>
+    <title>Mon Espace Privé - Le Bon Goût</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
     <style>
+        :root {
+            --bg-creme: #fdfcfb;
+            --text-dark: #1a1a1a;
+            --text-muted: #6c757d;
+            --luxe-blue: #04152e; /* Bleu nuit profond */
+            --luxe-gold: #bfa071; /* Bronze/Or doux */
+            --luxe-gold-light: rgba(191, 160, 113, 0.1);
+            --glass: rgba(255, 255, 255, 0.8);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-creme);
+            color: var(--text-dark);
+            /* Fond artistique subtil */
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 800 800"><g fill="%23bfa071" fill-opacity="0.03"><path d="M400 120a280 280 0 1 0 0 560 280 280 0 0 0 0-560zm0 480a200 200 0 1 1 0-400 200 200 0 0 1 0 400z"/><path d="M400 220a180 180 0 1 0 0 360 180 180 0 0 0 0-360zm0 280a100 100 0 1 1 0-200 100 100 0 0 1 0 200z"/></g></svg>');
+        }
+
+        h1, h2, h3, .h1, .h2, .h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--luxe-blue);
+        }
+
+        /* Container principal plus large pour un feeling 'aéré' */
+        .premium-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* --- Style Carte Action (Menu / Historique) --- */
         .card-link { text-decoration: none; color: inherit; }
-        .card-link .card:hover { transform: translateY(-5px); box-shadow: 0 4px 15px rgba(0,0,0,.1); transition: all 0.2s ease-in-out; }
+        .action-card {
+            border: none;
+            border-radius: 20px;
+            background: white;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            overflow: hidden; /* Pour l'effet shimmer */
+            position: relative;
+        }
+
+        /* Effet de Shimmer (Reflet brillant) au survol */
+        .action-card::after {
+            content: "";
+            position: absolute;
+            top: -50%; font-weight: 500;
+            left: -60%;
+            width: 20%;
+            height: 200%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(30deg);
+            transition: none;
+        }
+
+        .action-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(4, 21, 46, 0.1);
+        }
+
+        .action-card:hover::after {
+            left: 110%;
+            transition: all 0.7s ease-in-out;
+        }
+
+        .action-card .bi {
+            font-size: 4rem;
+            color: var(--luxe-gold);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .action-card:hover .bi {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .action-card .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--luxe-blue);
+            margin-bottom: 10px;
+        }
+
+        /* --- Style Commande en Cours (Glassmorphism Gold) --- */
+        .current-order-card {
+            border: 1px solid rgba(191, 160, 113, 0.3);
+            border-radius: 20px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(191, 160, 113, 0.1);
+            position: relative;
+        }
+
+        .current-order-card::before {
+            content: '';
+            position: absolute;
+            top:0; left:0; right:0; bottom:0;
+            border-radius: 20px;
+            box-shadow: inset 0 0 15px rgba(191, 160, 113, 0.1);
+            pointer-events: none;
+        }
+
+        /* --- Style Tableau Moderne (Premium) --- */
+        .table-premium-wrapper {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        }
+
+        .table-premium {
+            margin-bottom: 0;
+            border-collapse: separate;
+            border-spacing: 0 10px; /* Espace entre les lignes */
+        }
+
+        .table-premium thead th {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            border: none;
+            padding: 15px 20px;
+        }
+
+        .table-premium tbody tr {
+            background-color: white;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .table-premium tbody tr:hover {
+            background-color: var(--luxe-gold-light);
+            transform: scale(1.01);
+        }
+
+        .table-premium tbody td {
+            padding: 20px;
+            border: none;
+            color: var(--text-dark);
+            border-top: 1px solid transparent;
+            border-bottom: 1px solid transparent;
+        }
+
+        /* Arrondir les coins des lignes du tableau */
+        .table-premium tbody tr td:first-child { border-left: 1px solid transparent; border-radius: 10px 0 0 10px; }
+        .table-premium tbody tr td:last-child { border-right: 1px solid transparent; border-radius: 0 10px 10px 0; }
+
+        /* Badges d'état Luxe */
+        .badge-luxe {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .badge-luxe-primary {
+            background-color: var(--luxe-gold);
+            color: white;
+        }
+
+        .badge-luxe-secondary {
+            background-color: #e0e0e0;
+            color: var(--text-dark);
+        }
+
+        /* Animations */
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 0 rgba(191, 160, 113, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(191, 160, 113, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(191, 160, 113, 0); }
+        }
+        .icon-pulse-gold {
+            color: var(--luxe-gold);
+            animation: pulse-gold 2s infinite;
+            border-radius: 50%;
+            padding: 5px;
+        }
+
+        /* Boutons Premium */
+        .btn-luxe-gold {
+            background-color: var(--luxe-gold);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 24px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        .btn-luxe-gold:hover {
+            background-color: #a68b61;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(191, 160, 113, 0.3);
+        }
+
+        .btn-luxe-outline {
+            background-color: transparent;
+            color: var(--luxe-gold);
+            border: 2px solid var(--luxe-gold);
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        .btn-luxe-outline:hover {
+            background-color: var(--luxe-gold);
+            color: white;
+        }
+
     </style>
 </head>
 <body>
 <div th:replace="~{fragments/navbar :: nav}"></div>
 
-<div class="container mt-4">
-    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <span th:text="${errorMessage}"></span>
+<div class="premium-container mt-5 mb-5">
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-pill px-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i>
+        <span th:text="${errorMessage}" class="text-danger fw-medium"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
-    <h1 class="mb-4">
-        Bienvenue,
-        <span th:if="${!isGuest}" th:text="${client.fullName}"></span>
-        <span th:if="${isGuest}">cher client</span> !
-    </h1>
-
-    <!-- ========================================================== -->
-    <!--     NOUVELLE SECTION QUI AFFICHE LA COMMANDE EN COURS      -->
-    <!-- ========================================================== -->
-    <div th:if="${commandeEnCours != null}" class="card text-white bg-primary mb-4 shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="bi bi-clock-history"></i> Votre commande en cours</h5>
-            <span class="badge bg-light text-primary fs-6" th:text="${commandeEnCours.etat.toString().replace('_', ' ')}"></span>
-        </div>
-        <div class="card-body">
-            <p class="card-text mb-2">
-                Suivez ici l'état d'avancement de votre commande n°<strong th:text="${commandeEnCours.id}"></strong>.
-            </p>
-            <a th:href="@{/client/commande/{id}(id=${commandeEnCours.id})}" class="btn btn-light btn-sm mt-1">Voir le détail</a>
+    <div class="row mb-5 py-4 align-items-center">
+        <div class="col-md-9">
+            <h1 class="display-5 mb-2">
+                Bienvenue,
+                <span th:if="${!isGuest}" th:text="${client.fullName}" style="color: var(--luxe-gold);"></span>
+                <span th:if="${isGuest}" style="color: var(--luxe-gold);">cher gourmet</span> 👋
+            </h1>
+            <p class="text-muted fs-5 fw-light">C'est un honneur de vous accueillir. Que pouvons-nous préparer pour vous aujourd'hui ?</p>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-6 mb-4">
+    <div th:if="${commandeEnCours != null}" class="card current-order-card mb-5 p-2">
+        <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-clock-fill icon-pulse-gold fs-1 me-4"></i>
+                <div>
+                    <h4 class="card-title fw-bold mb-1">Votre création est en route</h4>
+                    <p class="card-text text-muted mb-0">
+                        Commande n°<strong th:text="${commandeEnCours.id}" class="text-dark"></strong> • Notre chef y apporte la touche finale.
+                    </p>
+                </div>
+            </div>
+            <div class="d-flex align-items-center mt-3 mt-md-0 gap-3">
+                <span class="badge badge-luxe badge-luxe-primary"
+                      th:text="${commandeEnCours.etat.toString().replace('_', ' ')}">
+                </span>
+                <a th:href="@{/client/commande/{id}(id=${commandeEnCours.id})}" class="btn-luxe-gold">
+                    Suivre <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-5 mb-5 py-3">
+        <div class="col-md-6">
             <a th:href="@{/client/menu}" class="card-link">
-                <div class="card text-center h-100">
-                    <div class="card-body d-flex flex-column justify-content-center">
-                        <h5 class="card-title">Consulter le Menu</h5>
-                        <p class="card-text">Découvrez nos plats et menus du moment.</p>
+                <div class="card text-center h-100 action-card p-5">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="bi bi-journal-richtext"></i>
+                        <h3 class="card-title">L'Art de notre Carte</h3>
+                        <p class="card-text text-muted fw-light px-2">Explorez nos plats signatures, nos menus d'exception et laissez-vous tenter.</p>
+                        <span class="btn-luxe-outline mt-3">Découvrir</span>
                     </div>
                 </div>
             </a>
         </div>
-        <div class="col-md-6 mb-4">
+        <div class="col-md-6">
             <a th:href="@{/client/historique}" class="card-link">
-                <div class="card text-center h-100">
-                    <div class="card-body d-flex flex-column justify-content-center">
-                        <h5 class="card-title">Mon Historique</h5>
-                        <p class="card-text">Retrouvez toutes vos commandes passées et laissez un avis.</p>
+                <div class="card text-center h-100 action-card p-5">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="bi bi-clock-history"></i>
+                        <h3 class="card-title">Vos Expériences</h3>
+                        <p class="card-text text-muted fw-light px-2">Retrouvez vos émotions passées, vos factures et partagez votre avis précieux.</p>
+                        <span class="btn-luxe-outline mt-3">Revoir</span>
                     </div>
                 </div>
             </a>
         </div>
     </div>
-
-    <hr th:if="${!isGuest}"/>
 
     <div th:if="${!isGuest}">
-        <h3 class="mt-4 mb-3">Votre historique récent</h3>
-        <div th:if="${!dernieresCommandes.isEmpty()}" class="table-responsive">
-            <table class="table table-hover mt-3 align-middle">
-                <thead class="table-light">
-                <tr>
-                    <th>Numéro</th>
-                    <th>Date</th>
-                    <th>Montant</th>
-                    <th>État</th>
-                    <th class="text-end">Action</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="commande : ${dernieresCommandes}">
-                    <td th:text="${commande.id}"></td>
-                    <td th:text="${#temporals.format(commande.dateHeure, 'dd/MM/yyyy HH:mm')}"></td>
-                    <td th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + ' €'"></td>
-                    <td><span class="badge bg-secondary" th:text="${commande.etat}"></span></td>
-                    <td class="text-end">
-                        <a th:href="@{/client/commande/{id}(id=${commande.id})}" class="btn btn-outline-primary btn-sm" title="Voir les détails">
-                            <i class="bi bi-eye"></i>
-                        </a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+        <div class="d-flex justify-content-between align-items-end mb-4 pb-2">
+            <h2 class="h3 mb-0">Vos derniers instants chez nous</h2>
+            <a th:href="@{/client/historique}" class="text-decoration-none fw-medium" style="color: var(--luxe-gold);" th:if="${!dernieresCommandes.isEmpty()}">
+                Voir l'intégralité <i class="bi bi-chevron-right fs-7 ms-1"></i>
+            </a>
         </div>
-        <div th:if="${dernieresCommandes.isEmpty()}">
-            <p class="text-muted">Vous n'avez pas encore de commande dans votre historique.</p>
+
+        <div class="table-premium-wrapper" th:if="${!dernieresCommandes.isEmpty()}">
+            <div class="table-responsive">
+                <table class="table table-premium align-middle">
+                    <thead>
+                    <tr>
+                        <th>Référence</th>
+                        <th>Date & Heure</th>
+                        <th>Montant</th>
+                        <th>État</th>
+                        <th class="text-end">Détails</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="commande : ${dernieresCommandes}">
+                        <td><strong class="text-dark">#[[${commande.id}]]</strong></td>
+                        <td th:text="${#temporals.format(commande.dateHeure, 'dd/MM/yyyy HH:mm')}" class="text-muted fw-light"></td>
+                        <td class="fw-semibold fs-5" th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + ' €'"></td>
+                        <td>
+                            <span class="badge badge-luxe badge-luxe-secondary" th:text="${commande.etat.toString().replace('_', ' ')}"></span>
+                        </td>
+                        <td class="text-end">
+                            <a th:href="@{/client/commande/{id}(id=${commande.id})}" class="btn-luxe-outline btn-sm" title="Consulter cette commande">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="text-center py-5 table-premium-wrapper" th:if="${dernieresCommandes.isEmpty()}">
+            <i class="bi bi-receipt-cutoff text-muted" style="font-size: 4rem; opacity: 0.5;"></i>
+            <h4 class="mt-4 text-dark fw-bold">Votre histoire commence ici</h4>
+            <p class="text-muted fw-light max-width-500 mx-auto">Vous n'avez pas encore passé de commande. Notre chef est impatient de créer pour vous.</p>
+            <a th:href="@{/client/menu}" class="btn-luxe-gold mt-3">Passer ma première commande</a>
         </div>
     </div>
+
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

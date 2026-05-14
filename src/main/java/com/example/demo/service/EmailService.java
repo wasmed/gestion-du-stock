@@ -25,6 +25,7 @@ import java.io.ByteArrayOutputStream;
 @Service
 public class EmailService {
 
+
     @Autowired
     private JavaMailSender javaMailSender;
 
