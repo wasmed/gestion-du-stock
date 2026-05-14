@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import java.security.Principal;
 import java.util.List;
@@ -173,19 +174,24 @@ public class OrderManagementController {
             commande.setServeur(serveur);
             commande.setEtat(EtatCommande.EN_COURS);
 
-            if (!Boolean.TRUE.equals(commande.getIsEmporter()) && tableId != null) {
-                TableRestaurant table = tableRepository.findById(tableId).orElse(null);
-                if (table != null && table.getStatut() == StatutTable.LIBRE) {
-                    table.setStatut(StatutTable.OCCUPEE);
-                    table.setServeur(serveur);
-                    tableRepository.save(table);
-                    commande.setTable(table);
-                } else {
-                    redirectAttributes.addFlashAttribute("errorMessage", "La table sélectionnée n'est pas disponible.");
-                    return "redirect:/orders";
+            try {
+                if (!Boolean.TRUE.equals(commande.getIsEmporter()) && tableId != null) {
+                    TableRestaurant table = tableRepository.findById(tableId).orElse(null);
+                    if (table != null && table.getStatut() == StatutTable.LIBRE) {
+                        table.setStatut(StatutTable.OCCUPEE);
+                        table.setServeur(serveur);
+                        tableRepository.save(table);
+                        commande.setTable(table);
+                    } else {
+                        redirectAttributes.addFlashAttribute("errorMessage", "La table sélectionnée n'est pas disponible.");
+                        return "redirect:/orders";
+                    }
                 }
+                commandeService.saveCommande(commande);
+            } catch (ObjectOptimisticLockingFailureException e) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Désolé, cette table vient d'être assignée par un autre serveur.");
+                return "redirect:/orders";
             }
-            commandeService.saveCommande(commande);
 
             // Decrement stock for all lines since they are now validated and sent to kitchen
             if (commande.getLignesCommande() != null) {
@@ -338,20 +344,25 @@ public class OrderManagementController {
         }
 
         TableRestaurant table = null;
-        if (tableId != null) {
-            table = tableRepository.findById(tableId).orElse(null);
-            if (table != null) {
-                // ON MET LA TABLE EN STATUT OCCUPÉE
-                table.setStatut(StatutTable.OCCUPEE);
-                table.setServeur(serveur);
-                tableRepository.save(table);
+        try {
+            if (tableId != null) {
+                table = tableRepository.findById(tableId).orElse(null);
+                if (table != null) {
+                    // ON MET LA TABLE EN STATUT OCCUPÉE
+                    table.setStatut(StatutTable.OCCUPEE);
+                    table.setServeur(serveur);
+                    tableRepository.save(table);
+                }
             }
+            // Mise à jour du montant total de la commande et sauvegarde
+            commande.setMontantTotal(montantTotal);
+            commande.setTable(table);
+            commande.setCommentaire(commentaire);
+            commandeService.saveCommande(commande);
+        } catch (ObjectOptimisticLockingFailureException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Désolé, cette table vient d'être assignée par un autre serveur.");
+            return "redirect:/orders";
         }
-        // Mise à jour du montant total de la commande et sauvegarde
-        commande.setMontantTotal(montantTotal);
-        commande.setTable(table);
-        commande.setCommentaire(commentaire);
-        commandeService.saveCommande(commande);
 
         return "redirect:/orders";
     }

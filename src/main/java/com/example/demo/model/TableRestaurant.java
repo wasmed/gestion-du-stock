@@ -17,6 +17,9 @@ public class TableRestaurant {
     @Enumerated(EnumType.STRING)
     private StatutTable statut;
 
+    @Version
+    private Long version;
+
     @ManyToOne
     @JoinColumn(name = "serveur_id")
     private User serveur;
@@ -55,6 +58,14 @@ public class TableRestaurant {
 
     public void setNombrePersonne(Integer nombrePersonne) {
         this.nombrePersonne = nombrePersonne;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     public StatutTable getStatut() {

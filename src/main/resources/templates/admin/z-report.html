@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{admin/layout :: layout(~{::div})}">
+<body>
+<div>
+    <h2 class="mb-4">Clôture de Caisse (Ticket Z)</h2>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Rapport du <span th:text="${date}"></span></h5>
+        </div>
+        <div class="card-body">
+            <p class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Le rapport a été envoyé par e-mail au gérant.</p>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Mode de Paiement</th>
+                        <th class="text-end">Montant Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="entry : ${report}">
+                        <td th:text="${entry.key}"></td>
+                        <td class="text-end fw-bold" th:text="${#numbers.formatDecimal(entry.value, 1, 2)} + ' €'"></td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="table-dark">
+                        <th>TOTAL</th>
+                        <th class="text-end text-warning fs-5" th:text="${#numbers.formatDecimal(total, 1, 2)} + ' €'"></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <a th:href="@{/admin/dashboard}" class="btn btn-secondary">Retour au Dashboard</a>
+</div>
+</body>
+</html>
