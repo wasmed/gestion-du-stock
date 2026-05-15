@@ -27,109 +27,171 @@
 
         <!-- Section Tops -->
         <h3 class="mb-3 text-success">Les Tops (Ce qui marche très bien)</h3>
-        <div class="row mb-4">
-            <!-- Plats les plus vendus -->
-            <div class="col-md-6 mb-3">
-                <div class="card shadow-sm border-success h-100">
-                    <div class="card-header bg-success text-white">Plats les plus commandés</div>
-                    <div class="card-body p-0">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                            <tr>
-                                <th>Plat</th>
-                                <th>Quantité</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="stat, iter : ${topSellingPlats}" th:if="${iter.index < 5}">
-                                <td th:text="${stat.nom}"></td>
-                                <td th:text="${stat.valeur}"></td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(topSellingPlats)}">
-                                <td colspan="2" class="text-center">Aucune donnée</td>
-                            </tr>
-                            </tbody>
-                        </table>
+
+        <ul class="nav nav-tabs mb-4" id="topsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active text-success" id="plats-top-tab" data-bs-toggle="tab" data-bs-target="#plats-top" type="button" role="tab"><i class="bi bi-egg-fried"></i> Plats</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link text-success" id="boissons-top-tab" data-bs-toggle="tab" data-bs-target="#boissons-top" type="button" role="tab"><i class="bi bi-cup-straw"></i> Boissons</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link text-success" id="desserts-top-tab" data-bs-toggle="tab" data-bs-target="#desserts-top" type="button" role="tab"><i class="bi bi-cake2"></i> Desserts</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link text-success" id="menus-top-tab" data-bs-toggle="tab" data-bs-target="#menus-top" type="button" role="tab"><i class="bi bi-journal-check"></i> Menus</button>
+            </li>
+        </ul>
+
+        <div class="tab-content mb-5" id="topsTabsContent">
+            <!-- Plats Tops -->
+            <div class="tab-pane fade show active" id="plats-top" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-success h-100">
+                            <div class="card-header bg-success text-white"><i class="bi bi-egg-fried"></i> Plats Principaux les plus commandés</div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th>Plat</th><th>Quantité</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="stat, iter : ${topSellingPlats}" th:if="${iter.index < 5}">
+                                        <td th:text="${stat.nom}"></td><td th:text="${stat.valeur}"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(topSellingPlats)}"><td colspan="2" class="text-center">Aucune donnée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-success h-100">
+                            <div class="card-header bg-success text-white"><i class="bi bi-egg-fried"></i> Plats Principaux les mieux notés</div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th>Plat</th><th>Note Moyenne</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="stat, iter : ${topRatedPlats}" th:if="${iter.index < 5}">
+                                        <td th:text="${stat.nom}"></td><td th:text="${#numbers.formatDecimal(stat.valeur, 1, 2)} + ' / 5'"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(topRatedPlats)}"><td colspan="2" class="text-center">Aucune donnée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Menus les plus vendus -->
-            <div class="col-md-6 mb-3">
-                <div class="card shadow-sm border-success h-100">
-                    <div class="card-header bg-success text-white">Menus les plus commandés</div>
-                    <div class="card-body p-0">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                            <tr>
-                                <th>Menu</th>
-                                <th>Quantité</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="stat, iter : ${topSellingMenus}" th:if="${iter.index < 5}">
-                                <td th:text="${stat.nom}"></td>
-                                <td th:text="${stat.valeur}"></td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(topSellingMenus)}">
-                                <td colspan="2" class="text-center">Aucune donnée</td>
-                            </tr>
-                            </tbody>
-                        </table>
+            <!-- Boissons Tops -->
+            <div class="tab-pane fade" id="boissons-top" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-success h-100">
+                            <div class="card-header bg-success text-white"><i class="bi bi-cup-straw"></i> Boissons les plus commandées</div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th>Boisson</th><th>Quantité</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="stat, iter : ${topSellingBoissons}" th:if="${iter.index < 5}">
+                                        <td th:text="${stat.nom}"></td><td th:text="${stat.valeur}"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(topSellingBoissons)}"><td colspan="2" class="text-center">Aucune donnée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mb-5">
-            <!-- Plats les mieux notés -->
-            <div class="col-md-6 mb-3">
-                <div class="card shadow-sm border-success h-100">
-                    <div class="card-header bg-success text-white">Plats les mieux notés</div>
-                    <div class="card-body p-0">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                            <tr>
-                                <th>Plat</th>
-                                <th>Note Moyenne</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="stat, iter : ${topRatedPlats}" th:if="${iter.index < 5}">
-                                <td th:text="${stat.nom}"></td>
-                                <td th:text="${#numbers.formatDecimal(stat.valeur, 1, 2)} + ' / 5'"></td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(topRatedPlats)}">
-                                <td colspan="2" class="text-center">Aucune donnée</td>
-                            </tr>
-                            </tbody>
-                        </table>
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-success h-100">
+                            <div class="card-header bg-success text-white"><i class="bi bi-cup-straw"></i> Boissons les mieux notées</div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th>Boisson</th><th>Note Moyenne</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="stat, iter : ${topRatedBoissons}" th:if="${iter.index < 5}">
+                                        <td th:text="${stat.nom}"></td><td th:text="${#numbers.formatDecimal(stat.valeur, 1, 2)} + ' / 5'"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(topRatedBoissons)}"><td colspan="2" class="text-center">Aucune donnée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Menus les mieux notés -->
-            <div class="col-md-6 mb-3">
-                <div class="card shadow-sm border-success h-100">
-                    <div class="card-header bg-success text-white">Menus les mieux notés</div>
-                    <div class="card-body p-0">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                            <tr>
-                                <th>Menu</th>
-                                <th>Note Moyenne</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="stat, iter : ${topRatedMenus}" th:if="${iter.index < 5}">
-                                <td th:text="${stat.nom}"></td>
-                                <td th:text="${#numbers.formatDecimal(stat.valeur, 1, 2)} + ' / 5'"></td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(topRatedMenus)}">
-                                <td colspan="2" class="text-center">Aucune donnée</td>
-                            </tr>
-                            </tbody>
-                        </table>
+            <!-- Desserts Tops -->
+            <div class="tab-pane fade" id="desserts-top" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-success h-100">
+                            <div class="card-header bg-success text-white"><i class="bi bi-cake2"></i> Desserts les plus commandés</div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th>Dessert</th><th>Quantité</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="stat, iter : ${topSellingDesserts}" th:if="${iter.index < 5}">
+                                        <td th:text="${stat.nom}"></td><td th:text="${stat.valeur}"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(topSellingDesserts)}"><td colspan="2" class="text-center">Aucune donnée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-success h-100">
+                            <div class="card-header bg-success text-white"><i class="bi bi-cake2"></i> Desserts les mieux notés</div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th>Dessert</th><th>Note Moyenne</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="stat, iter : ${topRatedDesserts}" th:if="${iter.index < 5}">
+                                        <td th:text="${stat.nom}"></td><td th:text="${#numbers.formatDecimal(stat.valeur, 1, 2)} + ' / 5'"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(topRatedDesserts)}"><td colspan="2" class="text-center">Aucune donnée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menus Tops -->
+            <div class="tab-pane fade" id="menus-top" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-success h-100">
+                            <div class="card-header bg-success text-white"><i class="bi bi-journal-check"></i> Menus les plus commandés</div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th>Menu</th><th>Quantité</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="stat, iter : ${topSellingMenus}" th:if="${iter.index < 5}">
+                                        <td th:text="${stat.nom}"></td><td th:text="${stat.valeur}"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(topSellingMenus)}"><td colspan="2" class="text-center">Aucune donnée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-success h-100">
+                            <div class="card-header bg-success text-white"><i class="bi bi-journal-check"></i> Menus les mieux notés</div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th>Menu</th><th>Note Moyenne</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="stat, iter : ${topRatedMenus}" th:if="${iter.index < 5}">
+                                        <td th:text="${stat.nom}"></td><td th:text="${#numbers.formatDecimal(stat.valeur, 1, 2)} + ' / 5'"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(topRatedMenus)}"><td colspan="2" class="text-center">Aucune donnée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -137,106 +199,171 @@
 
         <!-- Section Flops -->
         <h3 class="mb-3 text-danger">Les Points d'Alerte (Ce qui marche moins bien)</h3>
-        <div class="row mb-4">
-            <!-- Plats les moins vendus -->
-            <div class="col-md-6 mb-3">
-                <div class="card shadow-sm border-danger h-100">
-                    <div class="card-header bg-danger text-white">Plats les moins vendus</div>
-                    <div class="card-body p-0">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                            <tr>
-                                <th>Plat</th>
-                                <th>Quantité</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="stat, iter : ${bottomSellingPlats}" th:if="${iter.index < 5}">                                <td th:text="${stat.nom}"></td>
-                                <td th:text="${stat.valeur}"></td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(bottomSellingPlats)}">
-                                <td colspan="2" class="text-center">Aucune donnée</td>
-                            </tr>
-                            </tbody>
-                        </table>
+
+        <ul class="nav nav-tabs mb-4" id="flopsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active text-danger" id="plats-flop-tab" data-bs-toggle="tab" data-bs-target="#plats-flop" type="button" role="tab"><i class="bi bi-egg-fried"></i> Plats</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link text-danger" id="boissons-flop-tab" data-bs-toggle="tab" data-bs-target="#boissons-flop" type="button" role="tab"><i class="bi bi-cup-straw"></i> Boissons</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link text-danger" id="desserts-flop-tab" data-bs-toggle="tab" data-bs-target="#desserts-flop" type="button" role="tab"><i class="bi bi-cake2"></i> Desserts</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link text-danger" id="menus-flop-tab" data-bs-toggle="tab" data-bs-target="#menus-flop" type="button" role="tab"><i class="bi bi-journal-x"></i> Menus</button>
+            </li>
+        </ul>
+
+        <div class="tab-content mb-5" id="flopsTabsContent">
+            <!-- Plats Flops -->
+            <div class="tab-pane fade show active" id="plats-flop" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-danger h-100">
+                            <div class="card-header bg-danger text-white"><i class="bi bi-egg-fried"></i> Plats Principaux les moins commandés</div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th>Plat</th><th>Quantité</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="stat, iter : ${bottomSellingPlats}" th:if="${iter.index < 5}">
+                                        <td th:text="${stat.nom}"></td><td th:text="${stat.valeur}"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(bottomSellingPlats)}"><td colspan="2" class="text-center">Aucune donnée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-danger h-100">
+                            <div class="card-header bg-danger text-white"><i class="bi bi-egg-fried"></i> Plats Principaux les moins bien notés</div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th>Plat</th><th>Note Moyenne</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="stat, iter : ${bottomRatedPlats}" th:if="${iter.index < 5}">
+                                        <td th:text="${stat.nom}"></td><td th:text="${#numbers.formatDecimal(stat.valeur, 1, 2)} + ' / 5'"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(bottomRatedPlats)}"><td colspan="2" class="text-center">Aucune donnée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Menus les moins vendus -->
-            <div class="col-md-6 mb-3">
-                <div class="card shadow-sm border-danger h-100">
-                    <div class="card-header bg-danger text-white">Menus les moins vendus</div>
-                    <div class="card-body p-0">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                            <tr>
-                                <th>Menu</th>
-                                <th>Quantité</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="stat, iter : ${bottomSellingMenus}" th:if="${iter.index < 5}">
-                                <td th:text="${stat.nom}"></td>
-                                <td th:text="${stat.valeur}"></td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(bottomSellingMenus)}">
-                                <td colspan="2" class="text-center">Aucune donnée</td>
-                            </tr>
-                            </tbody>
-                        </table>
+            <!-- Boissons Flops -->
+            <div class="tab-pane fade" id="boissons-flop" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-danger h-100">
+                            <div class="card-header bg-danger text-white"><i class="bi bi-cup-straw"></i> Boissons les moins commandées</div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th>Boisson</th><th>Quantité</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="stat, iter : ${bottomSellingBoissons}" th:if="${iter.index < 5}">
+                                        <td th:text="${stat.nom}"></td><td th:text="${stat.valeur}"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(bottomSellingBoissons)}"><td colspan="2" class="text-center">Aucune donnée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mb-5">
-            <!-- Plats les moins bien notés -->
-            <div class="col-md-6 mb-3">
-                <div class="card shadow-sm border-danger h-100">
-                    <div class="card-header bg-danger text-white">Plats les moins bien notés</div>
-                    <div class="card-body p-0">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                            <tr>
-                                <th>Plat</th>
-                                <th>Note Moyenne</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="stat, iter : ${bottomRatedPlats}" th:if="${iter.index < 5}">                                <td th:text="${stat.nom}"></td>
-                                <td th:text="${#numbers.formatDecimal(stat.valeur, 1, 2)} + ' / 5'"></td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(bottomRatedPlats)}">
-                                <td colspan="2" class="text-center">Aucune donnée</td>
-                            </tr>
-                            </tbody>
-                        </table>
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-danger h-100">
+                            <div class="card-header bg-danger text-white"><i class="bi bi-cup-straw"></i> Boissons les moins bien notées</div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th>Boisson</th><th>Note Moyenne</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="stat, iter : ${bottomRatedBoissons}" th:if="${iter.index < 5}">
+                                        <td th:text="${stat.nom}"></td><td th:text="${#numbers.formatDecimal(stat.valeur, 1, 2)} + ' / 5'"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(bottomRatedBoissons)}"><td colspan="2" class="text-center">Aucune donnée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Menus les moins bien notés -->
-            <div class="col-md-6 mb-3">
-                <div class="card shadow-sm border-danger h-100">
-                    <div class="card-header bg-danger text-white">Menus les moins bien notés</div>
-                    <div class="card-body p-0">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                            <tr>
-                                <th>Menu</th>
-                                <th>Note Moyenne</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="stat, iter : ${bottomRatedMenus}" th:if="${iter.index < 5}">                                <td th:text="${stat.nom}"></td>
-                                <td th:text="${#numbers.formatDecimal(stat.valeur, 1, 2)} + ' / 5'"></td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(bottomRatedMenus)}">
-                                <td colspan="2" class="text-center">Aucune donnée</td>
-                            </tr>
-                            </tbody>
-                        </table>
+            <!-- Desserts Flops -->
+            <div class="tab-pane fade" id="desserts-flop" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-danger h-100">
+                            <div class="card-header bg-danger text-white"><i class="bi bi-cake2"></i> Desserts les moins commandés</div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th>Dessert</th><th>Quantité</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="stat, iter : ${bottomSellingDesserts}" th:if="${iter.index < 5}">
+                                        <td th:text="${stat.nom}"></td><td th:text="${stat.valeur}"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(bottomSellingDesserts)}"><td colspan="2" class="text-center">Aucune donnée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-danger h-100">
+                            <div class="card-header bg-danger text-white"><i class="bi bi-cake2"></i> Desserts les moins bien notés</div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th>Dessert</th><th>Note Moyenne</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="stat, iter : ${bottomRatedDesserts}" th:if="${iter.index < 5}">
+                                        <td th:text="${stat.nom}"></td><td th:text="${#numbers.formatDecimal(stat.valeur, 1, 2)} + ' / 5'"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(bottomRatedDesserts)}"><td colspan="2" class="text-center">Aucune donnée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menus Flops -->
+            <div class="tab-pane fade" id="menus-flop" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-danger h-100">
+                            <div class="card-header bg-danger text-white"><i class="bi bi-journal-x"></i> Menus les moins commandés</div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th>Menu</th><th>Quantité</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="stat, iter : ${bottomSellingMenus}" th:if="${iter.index < 5}">
+                                        <td th:text="${stat.nom}"></td><td th:text="${stat.valeur}"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(bottomSellingMenus)}"><td colspan="2" class="text-center">Aucune donnée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm border-danger h-100">
+                            <div class="card-header bg-danger text-white"><i class="bi bi-journal-x"></i> Menus les moins bien notés</div>
+                            <div class="card-body p-0">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th>Menu</th><th>Note Moyenne</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="stat, iter : ${bottomRatedMenus}" th:if="${iter.index < 5}">
+                                        <td th:text="${stat.nom}"></td><td th:text="${#numbers.formatDecimal(stat.valeur, 1, 2)} + ' / 5'"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(bottomRatedMenus)}"><td colspan="2" class="text-center">Aucune donnée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
