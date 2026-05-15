@@ -47,4 +47,16 @@ public class StockProduit {
     public void setProduit(Produit produit) {
         this.produit = produit;
     }
+
+    public Integer getUnitesPleines() {
+        if (this.produit == null || this.produit.getQuantite() == null || this.produit.getQuantite() == 0) return this.stockActuel != null ? this.stockActuel.intValue() : 0;
+        Double quantiteTotale = this.stockActuel * this.produit.getQuantite();
+        return (int) (quantiteTotale / this.produit.getQuantite());
+    }
+
+    public Double getResteEntame() {
+        if (this.produit == null || this.produit.getQuantite() == null || this.produit.getQuantite() == 0) return 0.0;
+        Double quantiteTotale = this.stockActuel * this.produit.getQuantite();
+        return quantiteTotale % this.produit.getQuantite();
+    }
 }

@@ -76,6 +76,12 @@
                                     <span class="fw-bold fs-5" th:text="${#numbers.formatDecimal(stock.stockActuel, 0, 0)}"></span>
                                     <span class="text-secondary"> unité(s)</span>
                                     <br>
+                                    <div class="text-muted small">
+                                        <span th:text="${stock.unitesPleines}"></span> unité(s) pleine(s)
+                                        <span th:if="${stock.resteEntame > 0}" class="text-warning fw-bold">
+                                            + <span th:text="${#numbers.formatDecimal(stock.resteEntame, 1, 2)}"></span> entamé(s)
+                                        </span>
+                                    </div>
                                     <small class="text-info" th:if="${stock.produit.quantite != null}" th:text="'(Total : ' + ${#numbers.formatDecimal(stock.stockActuel * stock.produit.quantite, 1, 2)} + ' ' + ${stock.produit.unite} + ')'"></small>
                                 </td>
 
