@@ -32,11 +32,27 @@ public class StatistiqueService {
     private CommandeRepository commandeRepository;
 
     public List<ItemStatDTO> getTopSellingPlats() {
-        return ligneCommandeRepository.findTopSellingPlats();
+        return ligneCommandeRepository.findTopSellingPlatsByCategory(com.example.demo.model.CategoriePlat.PLAT_PRINCIPAL);
+    }
+
+    public List<ItemStatDTO> getTopSellingBoissons() {
+        return ligneCommandeRepository.findTopSellingPlatsByCategory(com.example.demo.model.CategoriePlat.BOISSON);
+    }
+
+    public List<ItemStatDTO> getTopSellingDesserts() {
+        return ligneCommandeRepository.findTopSellingPlatsByCategory(com.example.demo.model.CategoriePlat.DESSERT);
     }
 
     public List<ItemStatDTO> getBottomSellingPlats() {
-        return ligneCommandeRepository.findBottomSellingPlats();
+        return ligneCommandeRepository.findBottomSellingPlatsByCategory(com.example.demo.model.CategoriePlat.PLAT_PRINCIPAL);
+    }
+
+    public List<ItemStatDTO> getBottomSellingBoissons() {
+        return ligneCommandeRepository.findBottomSellingPlatsByCategory(com.example.demo.model.CategoriePlat.BOISSON);
+    }
+
+    public List<ItemStatDTO> getBottomSellingDesserts() {
+        return ligneCommandeRepository.findBottomSellingPlatsByCategory(com.example.demo.model.CategoriePlat.DESSERT);
     }
 
     public List<ItemStatDTO> getTopSellingMenus() {
@@ -48,11 +64,27 @@ public class StatistiqueService {
     }
 
     public List<ItemStatDTO> getTopRatedPlats() {
-        return feedbackRepository.findTopRatedPlats();
+        return feedbackRepository.findTopRatedPlatsByCategory(com.example.demo.model.CategoriePlat.PLAT_PRINCIPAL);
+    }
+
+    public List<ItemStatDTO> getTopRatedBoissons() {
+        return feedbackRepository.findTopRatedPlatsByCategory(com.example.demo.model.CategoriePlat.BOISSON);
+    }
+
+    public List<ItemStatDTO> getTopRatedDesserts() {
+        return feedbackRepository.findTopRatedPlatsByCategory(com.example.demo.model.CategoriePlat.DESSERT);
     }
 
     public List<ItemStatDTO> getBottomRatedPlats() {
-        return feedbackRepository.findBottomRatedPlats();
+        return feedbackRepository.findBottomRatedPlatsByCategory(com.example.demo.model.CategoriePlat.PLAT_PRINCIPAL);
+    }
+
+    public List<ItemStatDTO> getBottomRatedBoissons() {
+        return feedbackRepository.findBottomRatedPlatsByCategory(com.example.demo.model.CategoriePlat.BOISSON);
+    }
+
+    public List<ItemStatDTO> getBottomRatedDesserts() {
+        return feedbackRepository.findBottomRatedPlatsByCategory(com.example.demo.model.CategoriePlat.DESSERT);
     }
 
     public List<ItemStatDTO> getTopRatedMenus() {
@@ -72,6 +104,8 @@ public class StatistiqueService {
 
     public String analyseStatistiques() {
         List<ItemStatDTO> topSellingPlats = getTopSellingPlats();
+        List<ItemStatDTO> topSellingBoissons = getTopSellingBoissons();
+        List<ItemStatDTO> topSellingDesserts = getTopSellingDesserts();
         List<ItemStatDTO> bottomSellingPlats = getBottomSellingPlats();
         List<ItemStatDTO> topSellingMenus = getTopSellingMenus();
         List<ItemStatDTO> bottomSellingMenus = getBottomSellingMenus();
@@ -80,7 +114,9 @@ public class StatistiqueService {
         List<ItemStatDTO> topRatedMenus = getTopRatedMenus();
         List<ItemStatDTO> bottomRatedMenus = getBottomRatedMenus();
 
-        String data = "Plats top ventes : " + formatList(topSellingPlats) + " | " +
+        String data = "Plats (principaux) top ventes : " + formatList(topSellingPlats) + " | " +
+                "Boissons top ventes : " + formatList(topSellingBoissons) + " | " +
+                "Desserts top ventes : " + formatList(topSellingDesserts) + " | " +
                 "Plats flops ventes : " + formatList(bottomSellingPlats) + " | " +
                 "Menus top ventes : " + formatList(topSellingMenus) + " | " +
                 "Menus flops ventes : " + formatList(bottomSellingMenus) + " | " +

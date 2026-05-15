@@ -12,14 +12,14 @@ import java.util.List;
 public interface LigneCommandeRepository extends JpaRepository<LigneCommande, Long> {
 
     @Query("SELECT new com.example.demo.dto.ItemStatDTO(lc.plat.identifiant, lc.plat.nom, SUM(lc.quantite)) " +
-           "FROM LigneCommande lc WHERE lc.typeLigne = com.example.demo.model.TypeLigneCommande.PLAT " +
+           "FROM LigneCommande lc WHERE lc.typeLigne = com.example.demo.model.TypeLigneCommande.PLAT AND lc.plat.categorie = :categorie " +
            "GROUP BY lc.plat.identifiant, lc.plat.nom ORDER BY SUM(lc.quantite) DESC")
-    List<ItemStatDTO> findTopSellingPlats();
+    List<ItemStatDTO> findTopSellingPlatsByCategory(@org.springframework.data.repository.query.Param("categorie") com.example.demo.model.CategoriePlat categorie);
 
     @Query("SELECT new com.example.demo.dto.ItemStatDTO(lc.plat.identifiant, lc.plat.nom, SUM(lc.quantite)) " +
-           "FROM LigneCommande lc WHERE lc.typeLigne = com.example.demo.model.TypeLigneCommande.PLAT " +
+           "FROM LigneCommande lc WHERE lc.typeLigne = com.example.demo.model.TypeLigneCommande.PLAT AND lc.plat.categorie = :categorie " +
            "GROUP BY lc.plat.identifiant, lc.plat.nom ORDER BY SUM(lc.quantite) ASC")
-    List<ItemStatDTO> findBottomSellingPlats();
+    List<ItemStatDTO> findBottomSellingPlatsByCategory(@org.springframework.data.repository.query.Param("categorie") com.example.demo.model.CategoriePlat categorie);
 
     @Query("SELECT new com.example.demo.dto.ItemStatDTO(lc.menu.id, lc.menu.nom, SUM(lc.quantite)) " +
            "FROM LigneCommande lc WHERE lc.typeLigne = com.example.demo.model.TypeLigneCommande.MENU " +
