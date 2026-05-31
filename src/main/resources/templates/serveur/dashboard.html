@@ -206,7 +206,7 @@
 
     <div th:if="${!commandesAValider.isEmpty()}" class="alert-section bg-warning bg-opacity-10 border border-warning border-opacity-25">
         <h4 class="text-warning-emphasis fw-bold mb-3 d-flex align-items-center gap-2">
-            <i class="bi bi-hourglass-split fs-3"></i> EN ATTENTE DE VALIDATION (Table)
+            <i class="bi bi-hourglass-split fs-3"></i> EN ATTENTE DE VALIDATION (Demande Client)
         </h4>
         <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3">
             <div th:each="cmd : ${commandesAValider}" class="col">
@@ -217,6 +217,13 @@
                     </div>
                     <div class="card-body p-3">
                         <p class="text-muted small mb-2"><i class="bi bi-person-fill"></i> <span th:text="${cmd.client.fullName}">Client</span></p>
+
+                        <div class="item-list mb-3 border-start border-warning border-3 px-2" style="max-height: 100px;">
+                            <div th:each="ligne : ${cmd.lignesCommande}" class="d-flex justify-content-between small text-secondary">
+                                <span><span class="fw-bold text-dark" th:text="${ligne.quantite} + 'x'"></span> <span th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}"></span></span>
+                            </div>
+                        </div>
+
                         <div class="d-flex justify-content-between fw-bold fs-5 mb-3 text-primary">
                             <span>Total:</span>
                             <span th:text="${#numbers.formatDecimal(cmd.montantTotal, 1, 2)} + ' €'"></span>
@@ -225,7 +232,7 @@
                             <button type="button" class="btn btn-warning flex-grow-1 btn-touch" data-bs-toggle="modal" th:data-bs-target="'#validateModal' + ${cmd.id}">
                                 <i class="bi bi-table"></i> Assigner
                             </button>
-                            <a th:href="@{/orders/delete/{id}(id=${cmd.id})}" class="btn btn-outline-danger btn-touch" onclick="return confirm('Refuser ?');">
+                            <a th:href="@{/orders/delete/{id}(id=${cmd.id})}" class="btn btn-outline-danger btn-touch" onclick="return confirm('Refuser cette commande client ?');">
                                 <i class="bi bi-x-lg"></i>
                             </a>
                         </div>
@@ -249,7 +256,7 @@
                             </select>
                         </div>
                         <div class="modal-footer border-0">
-                            <button type="submit" class="btn btn-warning btn-massive w-100">Confirmer</button>
+                            <button type="submit" class="btn btn-warning btn-massive w-100">Confirmer l'assignation</button>
                         </div>
                     </form>
                 </div>
@@ -261,23 +268,37 @@
         <h4 class="fw-bold mb-3 d-flex align-items-center gap-2"><i class="bi bi-bag-fill text-info"></i> Espace "À Emporter"</h4>
         <div class="table-grid">
             <div th:each="commande : ${commandesAEmporter}" class="pos-table-card occupied pt-3">
-                <div class="card-body p-3 text-center">
+                <div class="card-body p-3 text-center d-flex flex-column h-100">
                     <div class="text-info mb-1"><i class="bi bi-bag-check-fill fs-1"></i></div>
                     <h4 class="fw-bold text-dark mb-0">EMPORTER</h4>
                     <span class="text-muted small fw-bold">#<span th:text="${commande.id}"></span></span>
 
-                    <div class="order-ticket text-start">
+                    <div class="order-ticket text-start mt-auto">
                         <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                            <span class="text-muted small"><i class="bi bi-person"></i> <span th:text="${commande.client.fullName}"></span></span>
+                            <span class="text-muted small"><i class="bi bi-person"></i> <span th:text="${commande.client?.fullName ?: 'Client'}"></span></span>
                             <span class="badge rounded-pill" th:classappend="${commande.isPreteAServir() ? 'bg-success' : (commande.isToutesLignesServies() ? 'bg-primary' : 'bg-warning text-dark')}" th:text="${commande.isPreteAServir() ? 'PRÊT' : (commande.isToutesLignesServies() ? 'SERVIE' : 'CUISINE')}"></span>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                        <div class="item-list mb-2">
+                            <div th:each="ligne : ${commande.lignesCommande}" class="d-flex justify-content-between small text-secondary">
+                                <span><span class="fw-bold text-dark" th:text="${ligne.quantite} + 'x'"></span> <span th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}"></span></span>
+                            </div>
+                        </div>
+
+                        <div th:if="${commande.lignesCommande.![etat.toString()].contains('EN_VALIDATION')}" class="mt-2 mb-2">
+                            <a th:href="@{/orders/validate-lines/{id}(id=${commande.id})}" class="btn btn-warning btn-sm btn-touch w-100">
+                                <i class="bi bi-check-circle"></i> Valider ajouts
+                            </a>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
                             <span class="fs-5 fw-bold text-primary" th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + '€'"></span>
 
                             <div class="d-flex gap-1">
-                                <a th:if="${commande.etat.toString() == 'EN_COURS'}" th:href="@{/orders/edit/{id}(id=${commande.id})}" class="btn btn-light btn-sm btn-touch border"><i class="bi bi-pencil"></i></a>
-                                <a th:if="${commande.isToutesLignesServies() and commande.etat.toString() == 'EN_COURS'}" th:href="@{/orders/pay/{id}(id=${commande.id})}" class="btn btn-primary btn-sm btn-touch">Payer</a>
+                                <a th:if="${commande.etat.toString() == 'EN_COURS'}" th:href="@{/orders/edit/{id}(id=${commande.id})}" class="btn btn-light btn-sm btn-touch border"><i class="bi bi-plus-lg text-dark"></i></a>
+                                <a th:if="${commande.isToutesLignesServies() and commande.etat.toString() == 'EN_COURS'}" th:href="@{/paiement/form/{id}(id=${commande.id})}" class="btn btn-primary btn-sm btn-touch">
+                                    <i class="bi bi-credit-card-fill"></i> Payer
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -328,8 +349,7 @@
 
                             <div class="d-flex gap-1">
                                 <a th:if="${commande.etat.toString() == 'EN_COURS'}" th:href="@{/orders/edit/{id}(id=${commande.id})}" class="btn btn-light btn-sm btn-touch border"><i class="bi bi-plus-lg text-dark"></i></a>
-
-                                <a th:if="${commande.isToutesLignesServies() and commande.etat.toString() == 'EN_COURS'}" th:href="@{/orders/pay/{id}(id=${commande.id})}" class="btn btn-primary btn-sm btn-touch">
+                                <a th:if="${commande.isToutesLignesServies() and commande.etat.toString() == 'EN_COURS'}" th:href="@{/paiement/form/{id}(id=${commande.id})}" class="btn btn-primary btn-sm btn-touch">
                                     <i class="bi bi-credit-card-fill"></i> Payer
                                 </a>
                             </div>
