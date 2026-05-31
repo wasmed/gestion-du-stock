@@ -271,6 +271,87 @@ erDiagram
 
 ---
 
+## 🎯 Diagramme de Cas d'Utilisation (Use Case)
+
+```plantuml
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Client" as Client
+actor "Serveur" as Serveur
+actor "Chef Cuisinier" as Chef
+actor "Administrateur" as Admin
+
+actor "API Mollie" as Mollie <<Système Externe>>
+actor "API Gemini (IA)" as IA <<Système Externe>>
+
+package "Application POS Restaurant" {
+  usecase "Consulter la carte digitale" as UC1
+  usecase "S'authentifier (Connexion)" as UC_Auth
+
+  usecase "Passer une commande" as UC2
+  usecase "Ajouter une remarque au plat" as UC_Remarque
+
+  usecase "Payer la commande" as UC3
+  usecase "Ajouter un pourboire" as UC_Pourboire
+  usecase "Laisser un avis (Feedback)" as UC_Feedback
+
+  usecase "Valider une commande client" as UC4
+  usecase "Assigner une table" as UC5
+  usecase "Gérer la marche en avant (Statuts)" as UC6
+
+  usecase "Gérer la préparation des plats" as UC7
+  usecase "Déduire les stocks calculés" as UC8
+
+  usecase "Gérer le personnel et les rôles" as UC9
+  usecase "Consulter les statistiques de vente" as UC10
+  usecase "Générer les recommandations stratégiques" as UC11
+
+  usecase "Gérer l'inventaire et les stocks" as UC12
+  usecase "Générer la liste de courses (IA)" as UC13
+}
+
+Client --> UC1
+Client --> UC_Auth
+Client --> UC2
+Client --> UC3
+
+Serveur --> UC2
+Serveur --> UC4
+Serveur --> UC6
+Serveur --> UC3
+
+' --- RELATIONS D'INCLUSION (Obligatoires) ---
+UC4 .> UC5 : <<include>>
+UC2 .> UC_Auth : <<include>>
+UC6 .> UC8 : <<include>>
+
+' --- RELATIONS D'EXTENSION (Optionnelles) ---
+' Note : La flèche d'extension pointe vers le cas d'utilisation de base
+UC_Remarque .> UC2 : <<extend>>
+UC_Pourboire .> UC3 : <<extend>>
+UC_Feedback .> UC3 : <<extend>>
+UC13 .> UC12 : <<extend>>
+
+Chef --> UC7
+Chef --> UC6
+Chef --> UC12
+
+Admin --> UC9
+Admin --> UC10
+Admin --> UC11
+Admin --> UC12
+
+' --- INTERVENTIONS DES SYSTEMES EXTERNES ---
+UC3 <-- Mollie : Validation Webhook asynchrone
+UC11 <-- IA : Analyse des ventes
+UC13 <-- IA : Analyse des produits en alerte
+@enduml
+```
+
+---
+
 ## 🛠️ Règles Métier (Business Rules)
 
 Le système implémente une série de règles métier strictes pour assurer un fonctionnement optimal du restaurant.
