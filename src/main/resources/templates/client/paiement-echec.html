@@ -44,8 +44,11 @@
     </div>
 
     <div class="d-grid gap-3">
-        <a th:href="@{/client/paiement/simulation/{id}(id=${commandeId})}" class="btn btn-warning btn-lg text-dark">
-            <i class="bi bi-arrow-repeat"></i> Réessayer le paiement
+        <a th:href="@{/client/paiement/init/{id}(id=${commandeId})}" class="btn btn-warning btn-lg text-dark">
+            <i class="bi bi-arrow-repeat"></i> Réessayer le paiement Bancontact
+        </a>
+        <a th:href="@{/client/commande/{id}(id=${commandeId})}" class="btn btn-primary btn-lg">
+            <i class="bi bi-eye"></i> Voir ma commande
         </a>
         <a href="/client/menu" class="btn btn-outline-secondary">
             <i class="bi bi-house"></i> Retour à l'accueil

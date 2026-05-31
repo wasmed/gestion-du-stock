@@ -45,19 +45,38 @@ public class PaiementClientController {
         }
     }
 
+    @Autowired
+    private com.example.demo.service.MollieService mollieService;
+
+    @GetMapping("/init/{commandeId}")
+    public String initPayment(@PathVariable Long commandeId,
+                              @RequestParam(required = false, defaultValue = "0.0") Double pourboire) {
+        Commande commande = commandeService.findCommandeById(commandeId);
+        double totalAmount = commande.getMontantTotal() + pourboire;
+
+        String baseUrl = org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+        String redirectUrl = baseUrl + "/client/paiement/mollie-return/" + commandeId + "?pourboire=" + pourboire;
+        String webhookUrl = baseUrl + "/api/payments/webhook";
+
+        String checkoutUrl = mollieService.createPaymentAndGetCheckoutUrl(commandeId, totalAmount, redirectUrl, webhookUrl, pourboire);
+
+        return "redirect:" + checkoutUrl;
+    }
+
     @GetMapping("/mollie-return/{commandeId}")
     public String mollieReturn(@PathVariable Long commandeId,
                                @RequestParam(required = false, defaultValue = "0.0") Double pourboire,
                                RedirectAttributes redirectAttributes) {
-        boolean isPaid = true; // In a real scenario, verify via Mollie API
+        // Wait a short moment to give the webhook time to process
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
-        if (isPaid) {
-             try {
-                 paiementService.processPayment(commandeId, pourboire, ModePaiement.QR_CODE);
-                 return "redirect:/client/paiement/succes/" + commandeId;
-             } catch (Exception e) {
-                 return "redirect:/client/paiement/echec/" + commandeId;
-             }
+        Commande commande = commandeService.findCommandeById(commandeId);
+        if (com.example.demo.model.EtatCommande.PAYEE.equals(commande.getEtat())) {
+             return "redirect:/client/paiement/succes/" + commandeId;
         } else {
              return "redirect:/client/paiement/echec/" + commandeId;
         }

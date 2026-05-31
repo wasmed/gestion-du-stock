@@ -155,7 +155,7 @@ public class ClientController {
         total += groupedMenus.entrySet().stream().mapToDouble(entry -> entry.getKey().getPrix() * entry.getValue()).sum();
 
         // Fetch available tables
-        List<TableRestaurant> tables = tableRepository.findByStatut(StatutTable.LIBRE);
+        List<TableRestaurant> tables = tableRepository.findAvailableTablesNotInActiveOrders();
 
         model.addAttribute("groupedPlats", groupedPlats);
         model.addAttribute("groupedMenus", groupedMenus);

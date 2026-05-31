@@ -1,7 +1,7 @@
 package com.example.demo.model;
 
 public enum ModePaiement {
-    CAISSE,
+    ESPECES,
     QR_CODE,
-            CARTE_BANCAIRE
+    CARTE_BANCAIRE
 }

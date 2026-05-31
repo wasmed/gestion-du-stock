@@ -36,7 +36,7 @@
 
                         <!-- Display total including pourboire if passed in params, else just montantTotal -->
                         <div class="display-4 fw-bold text-primary mb-4" id="simTotalDisplay"
-                             th:text="${#numbers.formatDecimal(commande.montantTotal + (param.pourboire != null ? T(java.lang.Double).parseDouble(param.pourboire[0]) : 0.0), 1, 2)} + ' €'">
+                             th:text="${#numbers.formatDecimal(commande.montantTotal + (param.pourboire != null and !param.pourboire[0].isEmpty() and !param.pourboire[0].contains('?') ? T(java.lang.Double).parseDouble(param.pourboire[0].split('\\?')[0]) : 0.0), 1, 2)} + ' €'">
                         </div>
 
                         <p class="text-muted mb-4">

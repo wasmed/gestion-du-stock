@@ -4,8 +4,8 @@
 <div>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Gestion des Stocks</h2>
-        <a th:href="@{/stock/new}" class="btn btn-primary">
-            <i class="bi bi-plus-lg"></i> Ajouter un Produit
+        <a th:href="@{/stock/new}" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-lg me-1"></i> Ajouter un Produit
         </a>
     </div>
 
@@ -15,100 +15,115 @@
                 <i class="bi bi-robot me-2"></i> Analyse de l'Assistant Jules
             </h4>
             <div class="mb-3">
-                <button id="btnAnalyseIa" class="btn btn-outline-primary">
-                    <i class="bi bi-magic me-1"></i> Lancer l'analyse
+                <button id="btnAnalyseIa" class="btn btn-outline-primary fw-bold">
+                    <i class="bi bi-magic me-1"></i> Lancer l'analyse du stock
                 </button>
             </div>
 
             <div id="iaLoadingSpinner" class="d-none mb-3">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Chargement...</span>
-                </div>
-                <span class="ms-2">L'IA réfléchit...</span>
+                <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
+                <span class="ms-2 text-primary fw-bold">L'IA réfléchit aux recommandations...</span>
             </div>
 
-            <div id="iaResultBox" class="d-none alert alert-info shadow-sm">
+            <div id="iaResultBox" class="d-none alert alert-info shadow-sm border-0 border-start border-4 border-info">
             </div>
         </div>
     </div>
 
     <div class="table-container">
 
-        <div th:if="${#maps.isEmpty(stocksParCategorie)}" class="alert alert-warning text-center">
-            Aucun stock trouvé.
+        <div th:if="${#maps.isEmpty(stocksParCategorie)}" class="alert alert-warning text-center shadow-sm border-0">
+            <i class="bi bi-inbox fs-4 d-block mb-2"></i>
+            Aucun stock trouvé dans la base de données.
         </div>
 
         <div th:each="entry : ${stocksParCategorie}">
-            <div class="card mb-4 shadow-sm border-0">
-                <div class="card-header bg-white border-bottom-0 pt-3 px-4">
-                    <h4 class="text-primary fw-bold mb-0">
-                        <i class="bi bi-box-seam me-2"></i>
+            <div class="card mb-4 shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                    <h4 class="text-dark fw-bold mb-0">
+                        <i class="bi bi-tags-fill text-primary me-2"></i>
                         <span th:text="${entry.key}">Catégorie</span>
                     </h4>
                 </div>
-                <div class="card-body px-0 pt-0">
+                <div class="card-body px-0 pt-3 pb-0">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
-                            <thead class="bg-light">
+                            <thead class="table-light text-secondary small text-uppercase">
                             <tr>
-                                <th class="ps-4">Nom du produit</th>
-                                <th class="text-center">Conditionnement</th>
-                                <th class="text-center">Stock Actuel</th>
-                                <th class="text-center">Statut</th>
-                                <th style="width: 35%;" class="text-center">Mouvement de Stock (Unité)</th>
-                                <th class="text-end pe-4">Actions</th>
+                                <th class="ps-4 py-3">Nom du produit</th>
+                                <th class="text-center py-3">Conditionnement</th>
+                                <th class="text-center py-3" style="width: 20%;">Stock Actuel (Réel)</th>
+                                <th class="text-center py-3">Statut</th>
+                                <th style="width: 25%;" class="text-center py-3">Mouvement Rapide</th>
+                                <th class="text-end pe-4 py-3">Actions</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr th:each="stock : ${entry.value}" th:classappend="${stock.stockActuel <= stock.stockMinimum ? 'table-danger' : ''}">
                                 <td class="ps-4">
-                                    <strong th:text="${stock.produit.nom}"></strong>
+                                    <strong class="text-dark fs-6" th:text="${stock.produit.nom}"></strong>
                                 </td>
 
                                 <td class="text-center">
-                                    <span th:if="${stock.produit.quantite != null}" th:text="${#numbers.formatDecimal(stock.produit.quantite, 1, 2)} + ' ' + ${stock.produit.unite}"></span>
-                                    <span th:if="${stock.produit.quantite == null}">-</span>
-                                    <br>
-                                    <small class="text-muted">/ unité</small>
+                                    <span class="badge bg-light text-dark border border-secondary-subtle px-3 py-2">
+                                        <i class="bi bi-box-seam text-secondary me-1"></i>
+                                        <span th:if="${stock.produit.quantite != null}" th:text="${#numbers.formatDecimal(stock.produit.quantite, 1, 2)} + ' ' + ${stock.produit.unite}"></span>
+                                        <span th:if="${stock.produit.quantite == null}">-</span>
+                                    </span>
                                 </td>
 
                                 <td class="text-center">
-                                    <span class="fw-bold fs-5" th:text="${#numbers.formatDecimal(stock.stockActuel, 0, 0)}"></span>
-                                    <span class="text-secondary"> unité(s)</span>
-                                    <br>
-                                    <small class="text-info" th:if="${stock.produit.quantite != null}" th:text="'(Total : ' + ${#numbers.formatDecimal(stock.stockActuel * stock.produit.quantite, 1, 2)} + ' ' + ${stock.produit.unite} + ')'"></small>
+                                    <div th:if="${stock.produit.quantite != null}" class="mb-2">
+                                        <span class="fs-5 fw-bold text-primary" th:text="${#numbers.formatDecimal(stock.stockActuel * stock.produit.quantite, 1, 2)}"></span>
+                                        <span class="fs-6 fw-bold text-primary" th:text="${stock.produit.unite}"></span>
+                                        <div class="text-muted text-uppercase" style="font-size: 0.65rem; letter-spacing: 1px;">Au Total</div>
+                                    </div>
+
+                                    <div class="d-flex flex-column align-items-center gap-1">
+                                        <span class="badge bg-secondary rounded-pill fw-normal w-100 py-1" style="max-width: 140px;" title="Boîtes complètes fermées">
+                                            <i class="bi bi-box-fill me-1"></i>
+                                            <span th:text="${stock.unitesPleines}"></span> pleine(s)
+                                        </span>
+
+                                        <span th:if="${stock.resteEntame > 0}" class="badge bg-warning text-dark rounded-pill fw-normal w-100 py-1 shadow-sm" style="max-width: 140px;" title="Reste dans la boîte ouverte">
+                                            <i class="bi bi-box-arrow-down-right me-1"></i>
+                                            + <span th:text="${#numbers.formatDecimal(stock.resteEntame, 1, 2)}"></span> <span th:text="${stock.produit.unite}"></span>
+                                        </span>
+                                    </div>
                                 </td>
 
                                 <td class="text-center">
-                                    <span th:if="${stock.stockActuel <= stock.stockMinimum}" class="badge bg-danger">Alerte</span>
-                                    <span th:if="${stock.stockActuel > stock.stockMinimum}" class="badge bg-success">OK</span>
+                                    <span th:if="${stock.stockActuel <= stock.stockMinimum}" class="badge bg-danger px-3 py-2 rounded-pill"><i class="bi bi-exclamation-triangle-fill me-1"></i> Alerte</span>
+                                    <span th:if="${stock.stockActuel > stock.stockMinimum}" class="badge bg-success px-3 py-2 rounded-pill"><i class="bi bi-check-circle-fill me-1"></i> OK</span>
                                 </td>
 
                                 <td class="text-center">
-                                    <form th:action="@{/stock/update}" method="post" class="d-flex flex-column align-items-center justify-content-center">
+                                    <form th:action="@{/stock/update}" method="post" class="d-flex flex-column align-items-center m-0">
                                         <input type="hidden" name="stockId" th:value="${stock.id}" />
-                                        <div class="input-group input-group-sm mb-2 w-75">
-                                            <input type="number" name="quantiteSaisie" class="form-control text-center" placeholder="Quantité" required step="1" min="1" />
-                                            <span class="input-group-text bg-light text-secondary">unité(s)</span>
+
+                                        <div class="input-group input-group-sm mb-1" style="max-width: 200px;">
+                                            <input type="number" name="quantiteSaisie" class="form-control text-center fw-bold" placeholder="Qté" required step="1" min="1" />
+                                            <span class="input-group-text bg-light text-secondary" style="font-size: 0.8rem;">unité(s)</span>
                                         </div>
-                                        <div class="d-flex gap-2 w-75">
-                                            <button type="submit" name="typeOperation" value="AJOUT" class="btn btn-success btn-sm flex-fill">
-                                                <i class="bi bi-plus-lg"></i> Ajouter (Entrée)
+
+                                        <div class="d-flex gap-1" style="max-width: 200px; width: 100%;">
+                                            <button type="submit" name="typeOperation" value="AJOUT" class="btn btn-outline-success btn-sm flex-fill" title="Ajouter au stock">
+                                                <i class="bi bi-plus-lg"></i>
                                             </button>
-                                            <button type="submit" name="typeOperation" value="RETRAIT" class="btn btn-danger btn-sm flex-fill">
-                                                <i class="bi bi-dash-lg"></i> Retirer (Sortie)
+                                            <button type="submit" name="typeOperation" value="RETRAIT" class="btn btn-outline-danger btn-sm flex-fill" title="Retirer du stock">
+                                                <i class="bi bi-dash-lg"></i>
                                             </button>
                                         </div>
                                     </form>
                                 </td>
 
                                 <td class="text-end pe-4">
-                                    <a th:href="@{/stock/edit/{id}(id=${stock.id})}" class="btn btn-sm btn-outline-primary me-2">
-                                        <i class="bi bi-pencil"></i>
+                                    <a th:href="@{/stock/edit/{id}(id=${stock.id})}" class="btn btn-sm btn-light border text-primary me-1" title="Modifier">
+                                        <i class="bi bi-pencil-fill"></i>
                                     </a>
-                                    <a th:href="@{/stock/delete/{id}(id=${stock.id})}" class="btn btn-sm btn-outline-danger"
+                                    <a th:href="@{/stock/delete/{id}(id=${stock.id})}" class="btn btn-sm btn-light border text-danger" title="Supprimer"
                                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit du stock ?');">
-                                        <i class="bi bi-trash"></i>
+                                        <i class="bi bi-trash-fill"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -135,9 +150,7 @@
 
                     fetch("/api/stock/alerte-ia")
                         .then(response => {
-                            if (!response.ok) {
-                                throw new Error("Erreur réseau");
-                            }
+                            if (!response.ok) throw new Error("Erreur réseau");
                             return response.text();
                         })
                         .then(text => {
@@ -148,7 +161,7 @@
                         })
                         .catch(error => {
                             iaLoadingSpinner.classList.add("d-none");
-                            iaResultBox.innerHTML = "<span class='text-danger'>Erreur lors de l'analyse IA : " + error.message + "</span>";
+                            iaResultBox.innerHTML = "<span class='text-danger fw-bold'><i class='bi bi-x-circle me-1'></i> Erreur lors de l'analyse IA : " + error.message + "</span>";
                             iaResultBox.classList.remove("d-none");
                             btnAnalyseIa.disabled = false;
                         });

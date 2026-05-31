@@ -122,12 +122,20 @@ public class AdminController {
     @GetMapping("/statistiques")
     public String showStatistiques(Model model) {
         model.addAttribute("topSellingPlats", statistiqueService.getTopSellingPlats());
+        model.addAttribute("topSellingBoissons", statistiqueService.getTopSellingBoissons());
+        model.addAttribute("topSellingDesserts", statistiqueService.getTopSellingDesserts());
         model.addAttribute("bottomSellingPlats", statistiqueService.getBottomSellingPlats());
+        model.addAttribute("bottomSellingBoissons", statistiqueService.getBottomSellingBoissons());
+        model.addAttribute("bottomSellingDesserts", statistiqueService.getBottomSellingDesserts());
         model.addAttribute("topSellingMenus", statistiqueService.getTopSellingMenus());
         model.addAttribute("bottomSellingMenus", statistiqueService.getBottomSellingMenus());
 
         model.addAttribute("topRatedPlats", statistiqueService.getTopRatedPlats());
+        model.addAttribute("topRatedBoissons", statistiqueService.getTopRatedBoissons());
+        model.addAttribute("topRatedDesserts", statistiqueService.getTopRatedDesserts());
         model.addAttribute("bottomRatedPlats", statistiqueService.getBottomRatedPlats());
+        model.addAttribute("bottomRatedBoissons", statistiqueService.getBottomRatedBoissons());
+        model.addAttribute("bottomRatedDesserts", statistiqueService.getBottomRatedDesserts());
         model.addAttribute("topRatedMenus", statistiqueService.getTopRatedMenus());
         model.addAttribute("bottomRatedMenus", statistiqueService.getBottomRatedMenus());
 

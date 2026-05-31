@@ -18,13 +18,15 @@ public class MollieService {
     @Value("${mollie.api.key:test_dummy}")
     private String mollieApiKey;
 
+    @Value("${app.base-url:}")
+    private String appBaseUrl;
+
     private final RestTemplate restTemplate = new RestTemplate();
     private static final String MOLLIE_API_URL = "https://api.mollie.com/v2/payments";
 
-    public String createPaymentAndGetCheckoutUrl(Long commandeId, Double amount, String redirectUrl, Double pourboire) {
-        if ("test_dummy".equals(mollieApiKey) || mollieApiKey.isEmpty()) {
-            return redirectUrl.replace("/mollie-return/", "/simulation/") + "?pourboire=" + pourboire;
-        }
+    public String createPaymentAndGetCheckoutUrl(Long commandeId, Double amount, String redirectUrl, String ignoredWebhookUrl, Double pourboire) {
+
+        String actualWebhookUrl = appBaseUrl + "/api/payments/webhook";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -38,6 +40,7 @@ public class MollieService {
         body.put("amount", amountMap);
         body.put("description", "Commande #" + commandeId + (pourboire > 0 ? " (incl. pourboire)" : ""));
         body.put("redirectUrl", redirectUrl);
+        body.put("webhookUrl", actualWebhookUrl);
         body.put("method", "bancontact");
 
         Map<String, Object> metadata = new HashMap<>();
@@ -54,7 +57,7 @@ public class MollieService {
                 if (links != null) {
                     Map<String, String> checkout = (Map<String, String>) links.get("checkout");
                     if (checkout != null) {
-                        return checkout.get("href");
+                        return checkout.get("href"); // SUCCÈS : On retourne la vraie page Mollie
                     }
                 }
             }
@@ -63,8 +66,7 @@ public class MollieService {
             System.err.println("Erreur Mollie API: " + e.getMessage());
         }
 
-        // Fallback
-        return redirectUrl.replace("/mollie-return/", "/simulation/") + "?pourboire=" + pourboire;
+        return redirectUrl.replace("/mollie-return/", "/echec/");
     }
 
     public boolean isPaymentPaid(String paymentId) {
@@ -87,5 +89,26 @@ public class MollieService {
             System.err.println("Erreur Mollie API check: " + e.getMessage());
         }
         return false;
+    }
+
+    public Map<String, Object> getPayment(String paymentId) {
+        if ("test_dummy".equals(mollieApiKey) || mollieApiKey.isEmpty()) {
+            return null;
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(mollieApiKey);
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(MOLLIE_API_URL + "/" + paymentId, HttpMethod.GET, request, Map.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                return response.getBody();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Erreur Mollie API check: " + e.getMessage());
+        }
+        return null;
     }
 }

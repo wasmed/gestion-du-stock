@@ -61,8 +61,9 @@ public class PaiementController {
 
             String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
             String redirectUrl = baseUrl + "/client/paiement/mollie-return/" + id + "?pourboire=" + pourboire;
+            String webhookUrl = baseUrl + "/api/payments/webhook";
 
-            String checkoutUrl = mollieService.createPaymentAndGetCheckoutUrl(id, totalAmount, redirectUrl, pourboire);
+            String checkoutUrl = mollieService.createPaymentAndGetCheckoutUrl(id, totalAmount, redirectUrl, webhookUrl, pourboire);
 
             String base64Image = qrCodeService.generateQrCodeImage(checkoutUrl, 250, 250);
 
