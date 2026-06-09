@@ -38,7 +38,7 @@
                     <p class="mb-0 mt-2 opacity-75">Commande #<span th:text="${commande.id}"></span></p>
                 </div>
                 <div class="card-body p-5">
-                    <form th:action="@{/feedback/sauvegarder}" method="post">
+                    <form id="feedbackForm" th:action="@{/feedback/sauvegarder}" method="post">
                         <input type="hidden" name="commandeId" th:value="${commande.id}" />
 
                         <div class="text-center mb-4">
@@ -67,6 +67,38 @@
         </div>
     </div>
 </div>
+
+<script>
+
+    document.getElementById("feedbackForm").addEventListener("submit", function(event) {
+
+        const noteRadios = document.querySelectorAll("input[name=\x27note\x27]");
+
+        let noteSelected = false;
+
+        for(let i=0; i<noteRadios.length; i++) {
+
+            if (noteRadios[i].checked) {
+
+                noteSelected = true;
+
+                break;
+
+            }
+
+        }
+
+        if (!noteSelected) {
+
+            event.preventDefault();
+
+            alert("Veuillez sélectionner une note (étoiles) avant d\x27envoyer votre avis.");
+
+        }
+
+    });
+
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -408,6 +408,50 @@
     }
 
     // Initialisation au chargement
+    // Validation pour la table
+
+    document.getElementById("orderForm").addEventListener("submit", function(event) {
+
+        const isEmporterRadio = document.getElementById("aEmporter");
+
+        const isEmporter = isEmporterRadio ? isEmporterRadio.checked : document.querySelector("input[name=\x27isEmporter\x27][value=\x27true\x27]");
+
+
+
+        // Si on est "sur place" et que les tables sont affichées
+
+        if (!isEmporter && !document.querySelector("input[name=\x27tableId\x27][type=\x27hidden\x27]")) {
+
+            const tableRadios = document.querySelectorAll(".btn-check-table");
+
+            let tableSelected = false;
+
+            for(let i=0; i<tableRadios.length; i++) {
+
+                if (tableRadios[i].checked) {
+
+                    tableSelected = true;
+
+                    break;
+
+                }
+
+            }
+
+
+
+            if (!tableSelected) {
+
+                event.preventDefault();
+
+                alert("Veuillez sélectionner une table avant de valider la commande.");
+
+            }
+
+        }
+
+    });
+
     document.addEventListener("DOMContentLoaded", toggleTableSelection);
 </script>
 </body>
