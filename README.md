@@ -12,124 +12,8 @@
 
 ## 📊 Diagramme de Classes (UML)
 
-```mermaid
-classDiagram
-    class User {
-        Long id
-        String fullName
-        String email
-        String password
-        Role role
-    }
+<img width="1107" height="779" alt="diagramme du class final2026" src="https://github.com/user-attachments/assets/446c28d6-1066-4317-bdca-634de94f9ece" />
 
-    class TableRestaurant {
-        Long identifiant
-        Integer numeroTable
-        Integer nombrePersonne
-        StatutTable statut
-    }
-
-    class Commande {
-        Long id
-        LocalDateTime dateHeure
-        EtatCommande etat
-        Double montantTotal
-        String commentaire
-        Boolean isEmporter
-    }
-
-    class LigneCommande {
-        Long identifiant
-        Integer quantite
-        TypeLigneCommande typeLigne
-    }
-
-    class Plat {
-        Long identifiant
-        String nom
-        String description
-        Double prix
-        String image
-        CategoriePlat categorie
-        Boolean actif
-    }
-
-    class Menu {
-        Long id
-        String nom
-        String description
-        Double prix
-        String image
-        Boolean actif
-        LocalDate dateDebut
-        LocalDate dateFin
-    }
-
-    class Produit {
-        Long id
-        String nom
-        TypeProduit type
-        String image
-    }
-
-    class StockProduit {
-        Long id
-        Double stockActuel
-        Double stockMinimum
-    }
-
-    class FormatProduit {
-        Long identifiant
-        String nom
-        Double quantite
-    }
-
-    class Ingredient {
-        Long identifiant
-        Double quantite
-    }
-
-    class Paiement {
-        Long id
-        Double montant
-        LocalDateTime datePaiement
-        StatutPaiement statut
-        ModePaiement modePaiement
-    }
-
-    class Pourboire {
-        Long id
-        Double montant
-    }
-
-    User "1" -- "*" Commande : commandesServeur (serveur)
-    User "1" -- "*" Commande : commandesClient (client)
-    User "1" -- "*" TableRestaurant : tables (serveur)
-
-    TableRestaurant "1" -- "*" Commande : table
-
-    Commande "1" -- "*" LigneCommande : lignesCommande
-    Commande "1" -- "0..1" Paiement : paiement
-
-    Paiement "1" -- "0..1" Pourboire : pourboire
-    Paiement "*" -- "1" User : serveur
-
-    LigneCommande "*" -- "1" Plat : plat
-    LigneCommande "*" -- "1" Menu : menu
-
-    Menu "*" -- "*" Plat : plats (menu_plat)
-
-    Plat "1" -- "*" Ingredient : ingredients
-
-    Ingredient "*" -- "1" Produit : produit
-    Ingredient "*" -- "1" FormatProduit : formatProduit
-
-    Produit "1" -- "0..1" StockProduit : stockProduit
-
-    StockProduit "*" -- "1" FormatProduit : formatProduit
-```
-
----
 
 ## 🗄️ Schéma de la Base de Données (ERD)
 
@@ -209,20 +93,12 @@ erDiagram
         BIGINT id PK
         DOUBLE stockActuel
         DOUBLE stockMinimum
-        BIGINT format_produit_id FK
         BIGINT produit_id FK
-    }
-
-    format_produit {
-        BIGINT identifiant PK
-        VARCHAR nom
-        DOUBLE quantite
     }
 
     ingredient {
         BIGINT identifiant PK
         DOUBLE quantite
-        BIGINT format_produit_id FK
         BIGINT plat_id FK
         BIGINT produit_id FK
     }
@@ -263,94 +139,15 @@ erDiagram
 
     plat ||--o{ ingredient : "plat_id"
     produit ||--o{ ingredient : "produit_id"
-    format_produit ||--o{ ingredient : "format_produit_id"
 
     produit ||--o| stock_produit : "produit_id"
-    format_produit ||--o{ stock_produit : "format_produit_id"
 ```
 
 ---
 
 ## 🎯 Diagramme de Cas d'Utilisation (Use Case)
 
-```plantuml
-@startuml
-left to right direction
-skinparam packageStyle rectangle
 
-actor "Client" as Client
-actor "Serveur" as Serveur
-actor "Chef Cuisinier" as Chef
-actor "Administrateur" as Admin
-
-actor "API Mollie" as Mollie <<Système Externe>>
-actor "API Gemini (IA)" as IA <<Système Externe>>
-
-package "Application POS Restaurant" {
-  usecase "Consulter la carte digitale" as UC1
-  usecase "S'authentifier (Connexion)" as UC_Auth
-
-  usecase "Passer une commande" as UC2
-  usecase "Ajouter une remarque au plat" as UC_Remarque
-
-  usecase "Payer la commande" as UC3
-  usecase "Ajouter un pourboire" as UC_Pourboire
-  usecase "Laisser un avis (Feedback)" as UC_Feedback
-
-  usecase "Valider une commande client" as UC4
-  usecase "Assigner une table" as UC5
-  usecase "Gérer la marche en avant (Statuts)" as UC6
-
-  usecase "Gérer la préparation des plats" as UC7
-  usecase "Déduire les stocks calculés" as UC8
-
-  usecase "Gérer le personnel et les rôles" as UC9
-  usecase "Consulter les statistiques de vente" as UC10
-  usecase "Générer les recommandations stratégiques" as UC11
-
-  usecase "Gérer l'inventaire et les stocks" as UC12
-  usecase "Générer la liste de courses (IA)" as UC13
-}
-
-Client --> UC1
-Client --> UC_Auth
-Client --> UC2
-Client --> UC3
-
-Serveur --> UC2
-Serveur --> UC4
-Serveur --> UC6
-Serveur --> UC3
-
-' --- RELATIONS D'INCLUSION (Obligatoires) ---
-UC4 .> UC5 : <<include>>
-UC2 .> UC_Auth : <<include>>
-UC6 .> UC8 : <<include>>
-
-' --- RELATIONS D'EXTENSION (Optionnelles) ---
-' Note : La flèche d'extension pointe vers le cas d'utilisation de base
-UC_Remarque .> UC2 : <<extend>>
-UC_Pourboire .> UC3 : <<extend>>
-UC_Feedback .> UC3 : <<extend>>
-UC13 .> UC12 : <<extend>>
-
-Chef --> UC7
-Chef --> UC6
-Chef --> UC12
-
-Admin --> UC9
-Admin --> UC10
-Admin --> UC11
-Admin --> UC12
-
-' --- INTERVENTIONS DES SYSTEMES EXTERNES ---
-UC3 <-- Mollie : Validation Webhook asynchrone
-UC11 <-- IA : Analyse des ventes
-UC13 <-- IA : Analyse des produits en alerte
-@enduml
-```
-
----
 
 ## 🛠️ Règles Métier (Business Rules)
 
