@@ -139,6 +139,54 @@ public class CommandeService {
         }
     }
 
+    @Transactional
+    public Commande modifierLigneCommande(Long ligneId, int nouvelleQuantite) {
+        LigneCommande ligne = ligneCommandeRepository.findById(ligneId)
+                .orElseThrow(() -> new IllegalArgumentException("Ligne non trouvée"));
+
+        if (ligne.getEtat() != EtatLigneCommande.EN_ATTENTE && ligne.getEtat() != EtatLigneCommande.EN_VALIDATION) {
+            throw new IllegalStateException("La ligne de commande ne peut plus être modifiée.");
+        }
+
+        int ancienneQuantite = ligne.getQuantite();
+        if (nouvelleQuantite < ancienneQuantite) {
+            stockService.processStockIncrementForLigne(ligne, ancienneQuantite - nouvelleQuantite);
+        } else if (nouvelleQuantite > ancienneQuantite) {
+            LigneCommande deltaLigne = new LigneCommande();
+            deltaLigne.setPlat(ligne.getPlat());
+            deltaLigne.setMenu(ligne.getMenu());
+            deltaLigne.setQuantite(nouvelleQuantite - ancienneQuantite);
+            deltaLigne.setTypeLigne(ligne.getTypeLigne());
+            stockService.processStockDecrementForLigne(deltaLigne);
+        }
+
+        ligne.setQuantite(nouvelleQuantite);
+        ligneCommandeRepository.save(ligne);
+
+        Commande commande = ligne.getCommande();
+        commande.calculerMontantTotal();
+        return commandeRepository.save(commande);
+    }
+
+    @Transactional
+    public Commande supprimerLigneCommande(Long ligneId) {
+        LigneCommande ligne = ligneCommandeRepository.findById(ligneId)
+                .orElseThrow(() -> new IllegalArgumentException("Ligne non trouvée"));
+
+        if (ligne.getEtat() != EtatLigneCommande.EN_ATTENTE && ligne.getEtat() != EtatLigneCommande.EN_VALIDATION) {
+            throw new IllegalStateException("La ligne de commande ne peut plus être modifiée.");
+        }
+
+        stockService.processStockIncrementForLigne(ligne, ligne.getQuantite());
+
+        Commande commande = ligne.getCommande();
+        commande.getLignesCommande().remove(ligne);
+        ligneCommandeRepository.delete(ligne);
+
+        commande.calculerMontantTotal();
+        return commandeRepository.save(commande);
+    }
+
     public List<Commande> findCommandesByClientWithDetails(User client) {
         return commandeRepository.findByClientWithLignesCommande(client);
     }

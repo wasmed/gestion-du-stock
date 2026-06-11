@@ -97,6 +97,20 @@ public class Commande {
         this.montantTotal = montantTotal;
     }
 
+    public void calculerMontantTotal() {
+        double total = 0.0;
+        if (this.lignesCommande != null) {
+            for (LigneCommande ligne : this.lignesCommande) {
+                if (ligne.getTypeLigne() == TypeLigneCommande.PLAT && ligne.getPlat() != null) {
+                    total += ligne.getPlat().getPrix() * ligne.getQuantite();
+                } else if (ligne.getTypeLigne() == TypeLigneCommande.MENU && ligne.getMenu() != null) {
+                    total += ligne.getMenu().getPrix() * ligne.getQuantite();
+                }
+            }
+        }
+        this.montantTotal = total;
+    }
+
     public User getServeur() {
         return serveur;
     }

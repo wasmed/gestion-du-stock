@@ -69,6 +69,44 @@ public class StockService {
         }
     }
 
+    @Transactional
+    public void processStockIncrementForLigne(LigneCommande ligne, Integer quantiteToRestore) {
+        if (ligne != null) {
+            if (ligne.getTypeLigne() == TypeLigneCommande.PLAT) {
+                processStockIncrementForPlat(ligne.getPlat(), ligne, quantiteToRestore);
+            } else if (ligne.getTypeLigne() == TypeLigneCommande.MENU) {
+                for (Plat plat : ligne.getMenu().getPlats()) {
+                    processStockIncrementForPlat(plat, ligne, quantiteToRestore);
+                }
+            }
+        }
+    }
+
+    private void processStockIncrementForPlat(Plat plat, LigneCommande ligneCommande, Integer quantiteToRestore) {
+        List<Ingredient> ingredients = ingredientRepository.findByPlat(plat);
+        for (Ingredient ingredient : ingredients) {
+            StockProduit stock = stockProduitRepository.findByProduit(ingredient.getProduit());
+            if (stock != null) {
+                double produitQuantite = 1.0;
+                if (ingredient.getProduit() != null && ingredient.getProduit().getQuantite() != null && ingredient.getProduit().getQuantite() > 0) {
+                    produitQuantite = ingredient.getProduit().getQuantite();
+                }
+                double fractionToRestore = (ingredient.getQuantite() / produitQuantite) * quantiteToRestore;
+
+                // Création d'un enregistrement ConsommationStock négatif pour l'historique
+                ConsommationStock consommation = new ConsommationStock();
+                consommation.setLigneCommande(ligneCommande);
+                consommation.setProduit(ingredient.getProduit());
+                consommation.setQuantiteUtilisee(-fractionToRestore);
+                consommationStockRepository.save(consommation);
+
+                // Incrémentation effective du stock
+                stock.setStockActuel(stock.getStockActuel() + fractionToRestore);
+                stockProduitRepository.save(stock);
+            }
+        }
+    }
+
     public List<StockProduit> findAllStocks() {
         return stockProduitRepository.findAll();
     }
