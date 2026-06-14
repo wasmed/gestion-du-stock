@@ -522,4 +522,40 @@ public class OrderManagementController {
         commandeService.deleteOrder(id);
         return "redirect:/orders";
     }
+
+    @PostMapping("/ligne/modifier/{id}")
+    @PreAuthorize("hasRole('SERVEUR')")
+    public String modifierLigne(@PathVariable Long id, @RequestParam int quantite, RedirectAttributes redirectAttributes) {
+        LigneCommande ligne = ligneCommandeRepository.findById(id).orElse(null);
+        if (ligne == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Ligne non trouvée.");
+            return "redirect:/orders";
+        }
+        Long commandeId = ligne.getCommande().getId();
+        try {
+            commandeService.modifierLigneCommande(id, quantite);
+            redirectAttributes.addFlashAttribute("successMessage", "Quantité modifiée avec succès.");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/orders/details/" + commandeId;
+    }
+
+    @PostMapping("/ligne/supprimer/{id}")
+    @PreAuthorize("hasRole('SERVEUR')")
+    public String supprimerLigne(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        LigneCommande ligne = ligneCommandeRepository.findById(id).orElse(null);
+        if (ligne == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Ligne non trouvée.");
+            return "redirect:/orders";
+        }
+        Long commandeId = ligne.getCommande().getId();
+        try {
+            commandeService.supprimerLigneCommande(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Ligne supprimée avec succès.");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/orders/details/" + commandeId;
+    }
 }
