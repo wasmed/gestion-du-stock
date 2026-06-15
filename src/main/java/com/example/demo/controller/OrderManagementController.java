@@ -538,7 +538,7 @@ public class OrderManagementController {
         } catch (IllegalStateException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-        return "redirect:/orders/details/" + commandeId;
+        return "redirect:/orders/edit/" + commandeId;
     }
 
     @PostMapping("/ligne/supprimer/{id}")
@@ -556,6 +556,6 @@ public class OrderManagementController {
         } catch (IllegalStateException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-        return "redirect:/orders/details/" + commandeId;
+        return "redirect:/orders/edit/" + commandeId;
     }
 }
