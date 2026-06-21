@@ -152,12 +152,10 @@ public class CommandeService {
         if (nouvelleQuantite < ancienneQuantite) {
             stockService.processStockIncrementForLigne(ligne, ancienneQuantite - nouvelleQuantite);
         } else if (nouvelleQuantite > ancienneQuantite) {
-            LigneCommande deltaLigne = new LigneCommande();
-            deltaLigne.setPlat(ligne.getPlat());
-            deltaLigne.setMenu(ligne.getMenu());
-            deltaLigne.setQuantite(nouvelleQuantite - ancienneQuantite);
-            deltaLigne.setTypeLigne(ligne.getTypeLigne());
-            stockService.processStockDecrementForLigne(deltaLigne);
+
+            int difference = nouvelleQuantite - ancienneQuantite;
+            ligne.setQuantite(difference); // Quantité temporaire pour le calcul
+            stockService.processStockDecrementForLigne(ligne);
         }
 
         ligne.setQuantite(nouvelleQuantite);

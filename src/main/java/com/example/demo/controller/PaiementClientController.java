@@ -5,10 +5,12 @@ import com.example.demo.model.ModePaiement;
 import com.example.demo.service.CommandeService;
 import com.example.demo.service.PaiementService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Controller
 @RequestMapping("/client/paiement")
@@ -19,6 +21,9 @@ public class PaiementClientController {
 
     @Autowired
     private PaiementService paiementService;
+
+    @Value("${app.base-url}")
+    private String appBaseUrl;
 
     @GetMapping("/simulation/{commandeId}")
     public String showSimulationPage(@PathVariable Long commandeId, Model model) {
@@ -53,10 +58,9 @@ public class PaiementClientController {
                               @RequestParam(required = false, defaultValue = "0.0") Double pourboire) {
         Commande commande = commandeService.findCommandeById(commandeId);
         double totalAmount = commande.getMontantTotal() + pourboire;
-
-        String baseUrl = org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-        String redirectUrl = baseUrl + "/client/paiement/mollie-return/" + commandeId + "?pourboire=" + pourboire;
-        String webhookUrl = baseUrl + "/api/payments/webhook";
+        String currentUrl = ServletUriComponentsBuilder.fromCurrentRequest().replacePath("").build().toUriString();
+        String redirectUrl = currentUrl + "/client/paiement/mollie-return/" + commandeId + "?pourboire=" + pourboire;
+        String webhookUrl = currentUrl + "/api/payments/webhook";
 
         String checkoutUrl = mollieService.createPaymentAndGetCheckoutUrl(commandeId, totalAmount, redirectUrl, webhookUrl, pourboire);
 

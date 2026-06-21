@@ -7,7 +7,11 @@
 <h1>Gestion des Commandes</h1>
 <a sec:authorize="hasRole('SERVEUR')" th:href="@{/orders/create}">Créer une nouvelle commande</a>
 <br/><br/>
-<table>
+
+<div th:if="${errorMessage}" style="color: red;" th:text="${errorMessage}"></div>
+<div th:if="${successMessage}" style="color: green;" th:text="${successMessage}"></div>
+
+<table border="1" cellpadding="5" cellspacing="0">
     <thead>
     <tr>
         <th>ID</th>
@@ -29,22 +33,31 @@
             <a th:href="@{/orders/details/{id}(id=${commande.id})}">Détails</a>
 
             <span sec:authorize="hasRole('SERVEUR')">
-                        <a th:href="@{/paiement/form/{id}(id=${commande.id})}"
-                           th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_COURS and commande.isToutesLignesServies()}">
-                            | Paiement
-                        </a>
-                    </span>
+                    <a th:href="@{/orders/validate/{id}(id=${commande.id})}"
+                       th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_VALIDATION}"
+                       style="color: green; font-weight: bold;">
+                        | Envoyer en cuisine
+                    </a>
+                </span>
 
             <span sec:authorize="hasRole('SERVEUR')">
-                        <a th:href="@{/orders/edit/{id}(id=${commande.id})}"
-                           th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_COURS}">
-                            | Modifier
-                        </a>
-                        <a th:href="@{/orders/delete/{id}(id=${commande.id})}"
-                           th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_COURS}">
-                            | Supprimer
-                        </a>
-                    </span>
+                    <a th:href="@{/paiement/form/{id}(id=${commande.id})}"
+                       th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_COURS and commande.isToutesLignesServies()}">
+                        | Paiement
+                    </a>
+                </span>
+
+            <span sec:authorize="hasRole('SERVEUR')">
+                    <a th:href="@{/orders/edit/{id}(id=${commande.id})}"
+                       th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_COURS or commande.etat == T(com.example.demo.model.EtatCommande).EN_VALIDATION}">
+                        | Modifier
+                    </a>
+                    <a th:href="@{/orders/delete/{id}(id=${commande.id})}"
+                       th:if="${commande.etat == T(com.example.demo.model.EtatCommande).EN_COURS or commande.etat == T(com.example.demo.model.EtatCommande).EN_VALIDATION}"
+                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette commande ?');">
+                        | Supprimer
+                    </a>
+                </span>
         </td>
     </tr>
     </tbody>

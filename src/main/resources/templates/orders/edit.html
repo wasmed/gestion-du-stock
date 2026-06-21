@@ -5,38 +5,99 @@
 </head>
 <body>
 <h1>Modifier la Commande n°<span th:text="${commande.id}"></span></h1>
-<p><strong>État actuel:</strong> <span th:text="${commande.etat}"></span></p>
+<p><strong>État actuel de la commande:</strong> <span th:text="${commande.etat}"></span></p>
+
+<div th:if="${errorMessage}" style="color: red; padding: 10px; border: 1px solid red; margin-bottom: 10px;" th:text="${errorMessage}"></div>
+<div th:if="${successMessage}" style="color: green; padding: 10px; border: 1px solid green; margin-bottom: 10px;" th:text="${successMessage}"></div>
+
+<hr/>
+
+<h3>Contenu actuel de la commande (Déjà en cours)</h3>
+<div th:each="ligne : ${commande.lignesCommande}" style="background: white; border: 1px solid #eee; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <strong>
+            <span th:if="${ligne.typeLigne == T(com.example.demo.model.TypeLigneCommande).PLAT}" th:text="${ligne.quantite} + 'x ' + ${ligne.plat.nom}"></span>
+            <span th:if="${ligne.typeLigne == T(com.example.demo.model.TypeLigneCommande).MENU}" th:text="${ligne.quantite} + 'x ' + ${ligne.menu.nom}"></span>
+        </strong>
+        <span style="background-color: #6c757d; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.8em;" th:text="${ligne.etat}"></span>
+    </div>
+
+    <div th:if="${ligne.etat == T(com.example.demo.model.EtatLigneCommande).EN_ATTENTE or ligne.etat == T(com.example.demo.model.EtatLigneCommande).EN_VALIDATION}" style="margin-top: 10px;">
+
+        <form th:action="@{/orders/ligne/modifier/{id}(id=${ligne.id})}" method="post" style="display:inline-block;">
+            <input type="number" name="quantite" th:value="${ligne.quantite}" min="1" required style="width: 50px; border-radius: 4px; border: 1px solid #ccc;"/>
+            <button type="submit" style="background: none; border: none; color: #0d6efd; text-decoration: underline; cursor: pointer;">Modifier</button>
+        </form>
+
+        <form th:action="@{/orders/ligne/supprimer/{id}(id=${ligne.id})}" method="post" style="display:inline-block; margin-left: 10px;">
+            <button type="submit" style="background: none; border: none; color: red; text-decoration: underline; cursor: pointer;" onclick="return confirm('Retirer ce plat ?');">
+                Supprimer
+            </button>
+        </form>
+
+    </div>
+    <div th:unless="${ligne.etat == T(com.example.demo.model.EtatLigneCommande).EN_ATTENTE or ligne.etat == T(com.example.demo.model.EtatLigneCommande).EN_VALIDATION}"
+         style="color: gray; font-style: italic; font-size: 0.9em; border-top: 1px dashed #ddd; padding-top: 10px; margin-top: 10px;">
+        (En cuisine ou servi - modification impossible)
+    </div>
+
+</div>
+
+    <p th:if="${#lists.isEmpty(commande.lignesCommande)}" style="color: gray; font-style: italic;">Aucun article dans cette commande.</p>
+
+<hr/>
 
 <form th:action="@{/orders/edit/{id}(id=${commande.id})}" method="post">
-    <div>
-        <label for="tableId">Modifier la table:</label>
-        <select id="tableId" name="tableId" required>
+
+    <div th:if="${commande.isEmporter == null or !commande.isEmporter}">
+        <label for="tableId" style="font-weight: bold;">Modifier la table:</label>
+        <select id="tableId" name="tableId" required style="padding: 5px; margin-left: 10px; border-radius: 4px;">
+            <option th:if="${commande.table != null}"
+                    th:value="${commande.table.identifiant}"
+                    th:text="${'Table ' + commande.table.numeroTable + ' (Actuelle)'}" selected>
+            </option>
             <option th:each="table : ${tables}"
+                    th:if="${commande.table == null or table.identifiant != commande.table.identifiant}"
                     th:value="${table.identifiant}"
-                    th:text="${'Table ' + table.numeroTable}"
-                    th:selected="${table.identifiant == commande.table.identifiant}">
+                    th:text="${'Table ' + table.numeroTable}">
             </option>
         </select>
     </div>
 
-    <br/>
-    <h3>Modifier le contenu de la commande:</h3>
-
-    <div th:each="plat : ${plats}">
-        <input type="checkbox" th:id="${'plat-' + plat.identifiant}" name="platIds" th:value="${plat.identifiant}"
-               th:checked="${commande.lignesCommande.?[typeLigne == T(com.example.demo.model.TypeLigneCommande).PLAT && plat.identifiant == #this.plat.identifiant].size() > 0}"/>
-        <label th:for="${'plat-' + plat.identifiant}" th:text="${plat.nom}"></label>
-    </div>
-
-    <div th:each="menu : ${menus}">
-        <input type="checkbox" th:id="${'menu-' + menu.id}" name="menuIds" th:value="${menu.id}"
-               th:checked="${commande.lignesCommande.?[typeLigne == T(com.example.demo.model.TypeLigneCommande).MENU && menu.id == #this.menu.id].size() > 0}"/>
-        <label th:for="${'menu-' + menu.id}" th:text="${menu.nom}"></label>
+    <div th:if="${commande.isEmporter}" style="background-color: #fff3cd; padding: 10px; border-radius: 5px; border: 1px solid #ffe69c; max-width: 500px;">
+        <span style="font-weight: bold; color: #856404;">📦 Cette commande est À EMPORTER</span>
+        <p style="margin: 0; font-size: 0.9em; color: #856404;">Aucune table n'est requise.</p>
     </div>
 
     <br/>
-    <button type="submit">Sauvegarder les modifications</button>
+    <h3>Ajouter des articles supplémentaires :</h3>
+
+    <h4>Plats Cuisinés</h4>
+    <div th:each="plat : ${platsCuisines}" style="margin-bottom: 5px;">
+        <input type="number" th:id="${'platQty_' + plat.identifiant}" th:name="'platQty_' + ${plat.identifiant}" value="0" min="0" style="width: 50px; margin-right: 10px;"/>
+        <label th:for="${'platQty_' + plat.identifiant}" th:text="${plat.nom}"></label>
+    </div>
+
+    <h4>Boissons</h4>
+    <div th:each="boisson : ${boissons}" style="margin-bottom: 5px;">
+        <input type="number" th:id="${'platQty_' + boisson.identifiant}" th:name="'platQty_' + ${boisson.identifiant}" value="0" min="0" style="width: 50px; margin-right: 10px;"/>
+        <label th:for="${'platQty_' + boisson.identifiant}" th:text="${boisson.nom}"></label>
+    </div>
+
+    <h4>Menus</h4>
+    <div th:each="menu : ${menus}" style="margin-bottom: 5px;">
+        <input type="number" th:id="${'menuQty_' + menu.id}" th:name="'menuQty_' + ${menu.id}" value="0" min="0" style="width: 50px; margin-right: 10px;"/>
+        <label th:for="${'menuQty_' + menu.id}" th:text="${menu.nom}"></label>
+    </div>
+
+    <br/>
+    <button type="submit" style="background-color: #ffc107; color: black; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer;">
+        Envoyer les ajouts
+    </button>
 </form>
-<a th:href="@{/orders}">Annuler et retourner</a>
+
+<br/>
+<a th:href="@{/orders}" style="color: #6c757d; text-decoration: none;">&larr; Annuler et retourner au tableau de bord</a>
 </body>
 </html>

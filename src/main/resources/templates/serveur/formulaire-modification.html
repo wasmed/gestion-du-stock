@@ -140,17 +140,25 @@
 </div>
 
 <div class="container-fluid px-4 pb-5">
+
+    <!-- MESSAGES DE SUCCES OU ERREUR -->
     <div class="alert alert-danger fw-bold rounded-4 shadow-sm" th:if="${errorMessage}" role="alert">
         <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+    <div class="alert alert-success fw-bold rounded-4 shadow-sm" th:if="${successMessage}" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 
+    <!-- FORMULAIRE PRINCIPAL D'AJOUT -->
     <form th:action="@{/orders/edit/{id}(id=${commande.id})}" method="post" id="editOrderForm">
         <div class="row g-4">
 
             <div class="col-lg-8">
 
-                <div class="card card-pos mb-4" th:if="${!commande.isEmporter}">
+                <!-- SÉLECTION DE TABLE (Caché si A Emporter) -->
+                <div class="card card-pos mb-4" th:if="${commande.isEmporter == null or !commande.isEmporter}">
                     <div class="card-pos-header">
                         <h4 class="mb-0 fw-bold"><i class="bi bi-arrow-left-right text-primary me-2"></i>Déplacer le client</h4>
                     </div>
@@ -170,9 +178,10 @@
                     </div>
                 </div>
 
+                <!-- MESSAGE A EMPORTER -->
                 <div class="card card-pos mb-4" th:if="${commande.isEmporter}">
                     <div class="card-body p-4 d-flex align-items-center gap-3">
-                        <i class="bi bi-bag-check-fill text-info fs-1"></i>
+                        <i class="bi bi-bag-check-fill text-warning fs-1"></i>
                         <div>
                             <h5 class="fw-bold mb-0">Commande À Emporter</h5>
                             <p class="text-muted mb-0 small">Cette commande n'est pas assignée à une table.</p>
@@ -206,6 +215,7 @@
                         </ul>
 
                         <div class="tab-content" id="pills-tabContent">
+                            <!-- PLATS -->
                             <div class="tab-pane fade show active" id="pills-plats">
                                 <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
                                     <div th:each="plat : ${platsCuisines}" class="col">
@@ -225,6 +235,7 @@
                                 </div>
                             </div>
 
+                            <!-- BOISSONS -->
                             <div class="tab-pane fade" id="pills-boissons">
                                 <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
                                     <div th:each="boisson : ${boissons}" class="col">
@@ -244,6 +255,7 @@
                                 </div>
                             </div>
 
+                            <!-- MENUS -->
                             <div class="tab-pane fade" id="pills-menus">
                                 <div class="row row-cols-1 row-cols-md-2 g-3">
                                     <div th:each="menu : ${menus}" class="col">
@@ -291,24 +303,49 @@
                         <div class="mb-4">
                             <label class="form-label fw-bold text-muted small text-uppercase">Déjà en cours</label>
                             <div class="bg-white rounded-3 shadow-sm border p-3">
+
+                                <!-- LISTE DES PLATS DEJA COMMANDES AVEC BOUTONS -->
                                 <ul class="list-unstyled mb-0 small">
-                                    <li th:each="ligne : ${commande.lignesCommande}" class="d-flex justify-content-between mb-2 pb-2 border-bottom">
-                                        <div class="text-secondary">
-                                            <span class="fw-bold text-dark me-1" th:text="${ligne.quantite} + 'x'"></span>
-                                            <span th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}">Item</span>
+                                    <li th:each="ligne : ${commande.lignesCommande}" class="mb-3 pb-3 border-bottom">
+
+                                        <!-- En-tête : Nom du plat et Statut -->
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <span class="fw-bold text-dark fs-6" th:text="${ligne.plat != null ? ligne.plat.nom : ligne.menu.nom}">Item</span>
+                                            <span class="badge bg-secondary opacity-75 mt-1" th:text="${ligne.etat.toString()}">Statut</span>
                                         </div>
-                                        <span class="badge bg-secondary opacity-75" th:text="${ligne.etat.toString()}">Statut</span>
+
+                                        <!-- Actions si modifiable -->
+                                        <div th:if="${ligne.etat == T(com.example.demo.model.EtatLigneCommande).EN_ATTENTE or ligne.etat == T(com.example.demo.model.EtatLigneCommande).EN_VALIDATION}">
+                                            <div class="d-flex gap-2 align-items-center mt-2">
+                                                <input type="number" th:id="'qty_' + ${ligne.identifiant}" class="form-control form-control-sm text-center fw-bold" th:value="${ligne.quantite}" min="1" style="width: 60px; border-color: #007aff;">
+                                                <!-- Remarque: on utilise type="button" et onclick pour appeler le JS -->
+                                                <button type="button" class="btn btn-sm btn-primary px-3 fw-bold shadow-sm" th:onclick="'submitModify(' + ${ligne.identifiant} + ')'">Modifier</button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger px-2 shadow-sm" th:onclick="'submitDelete(' + ${ligne.identifiant} + ')'"><i class="bi bi-trash"></i></button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Affichage si NON modifiable -->
+                                        <div th:unless="${ligne.etat == T(com.example.demo.model.EtatLigneCommande).EN_ATTENTE or ligne.etat == T(com.example.demo.model.EtatLigneCommande).EN_VALIDATION}">
+                                            <span class="fw-bold text-secondary me-1" th:text="${ligne.quantite} + 'x'"></span>
+                                            <span class="text-muted fst-italic ms-1">Non modifiable</span>
+                                        </div>
                                     </li>
                                 </ul>
-                                <div class="d-flex justify-content-between align-items-center mt-3 pt-1">
+
+                                <div th:if="${#lists.isEmpty(commande.lignesCommande)}" class="text-muted fst-italic text-center my-3">
+                                    Aucun article dans cette commande.
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-2">
                                     <span class="fw-bold text-muted small text-uppercase">Total Actuel</span>
-                                    <span class="fw-bold text-dark fs-5" th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + ' €'"></span>
+                                    <span class="fw-bold text-dark fs-4" th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 2)} + ' €'"></span>
                                 </div>
                             </div>
                         </div>
 
                         <hr class="border-secondary opacity-25 mb-4">
 
+                        <!-- Bouton du grand formulaire global (qui ajoute des plats) -->
                         <div class="d-grid gap-3">
                             <button type="submit" class="btn btn-warning btn-lg fw-bold shadow p-3 rounded-4" style="font-size: 1.1rem; text-transform: uppercase;">
                                 Envoyer les Ajouts <i class="bi bi-send-plus-fill ms-2"></i>
@@ -324,25 +361,62 @@
     </form>
 </div>
 
+<!-- ========================================================================= -->
+<!-- FORMULAIRES CACHÉS POUR LA MODIFICATION/SUPPRESSION (Astuce JS)          -->
+<!-- ========================================================================= -->
+</form> </div> <form id="modifyLineForm" th:action="@{/}" method="post" style="display: none;">
+    <input type="hidden" name="quantite" id="modifyLineQty">
+</form>
+
+<form id="deleteLineForm" th:action="@{/}" method="post" style="display: none;"></form>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    // Logique pour les boutons tactiles + et -
+    // Ajout de plats (boutons + / -)
     function updateQty(inputId, change) {
         const input = document.getElementById(inputId);
+        if(!input) return;
         let currentValue = parseInt(input.value) || 0;
         let newValue = currentValue + change;
-
-        // Empêcher les valeurs négatives
-        if (newValue < 0) {
-            newValue = 0;
-        }
-
+        if (newValue < 0) newValue = 0;
         input.value = newValue;
-
-        // Petit effet visuel
         if(change > 0) {
             input.parentElement.style.transform = "scale(1.05)";
             setTimeout(() => input.parentElement.style.transform = "scale(1)", 150);
+        }
+    }
+
+    // Modification d'une ligne existante
+    function submitModify(ligneId) {
+        const qtyInput = document.getElementById('qty_' + ligneId);
+        const form = document.getElementById('modifyLineForm');
+
+        if (!qtyInput) {
+            alert("Erreur : Le champ de quantité est introuvable.");
+            return;
+        }
+        if (!form) {
+            alert("Erreur : Le formulaire caché est introuvable. Vérifiez qu'il est bien placé après la balise </form> principale.");
+            return;
+        }
+
+        form.action = '/orders/ligne/modifier/' + ligneId;
+        document.getElementById('modifyLineQty').value = qtyInput.value;
+        form.submit(); // Envoi des données au backend !
+    }
+
+    // Suppression d'une ligne existante
+    function submitDelete(ligneId) {
+        const form = document.getElementById('deleteLineForm');
+
+        if (!form) {
+            alert("Erreur : Le formulaire caché de suppression est introuvable.");
+            return;
+        }
+
+        if(confirm('Êtes-vous sûr de vouloir retirer ce plat de la commande ?')) {
+            form.action = '/orders/ligne/supprimer/' + ligneId;
+            form.submit();
         }
     }
 </script>

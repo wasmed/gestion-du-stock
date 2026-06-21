@@ -377,12 +377,12 @@ public class OrderManagementController {
     public String showEditOrderForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         Commande commande = commandeService.findCommandeById(id);
 
-        if (commande.getEtat() != EtatCommande.EN_COURS) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Impossible de modifier cette commande (elle doit être EN_COURS).");
+        // Vérification de l'état global de la commande
+        if (commande.getEtat() != EtatCommande.EN_COURS && commande.getEtat() != EtatCommande.EN_VALIDATION) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Impossible de modifier cette commande. Elle doit être EN_VALIDATION ou EN_COURS.");
             return "redirect:/orders";
         }
 
-        // --- LOGIQUE MISE À JOUR POUR PRÉPARER TOUTES LES LISTES ---
         List<Plat> tousLesPlats = platService.findAllActivePlats();
         Map<Boolean, List<Plat>> platsPartitionnes = tousLesPlats.stream()
                 .collect(Collectors.partitioningBy(plat -> plat.getCategorie() == CategoriePlat.BOISSON));
@@ -392,16 +392,17 @@ public class OrderManagementController {
 
         model.addAttribute("commande", commande);
         model.addAttribute("tables", tableRepository.findAll());
-        model.addAttribute("platsCuisines", platsCuisines); // Envoie la liste de plats cuisinés
-        model.addAttribute("boissons", boissons);           // Envoie la liste de boissons
-        model.addAttribute("menus", menuService.findAllActiveMenus()); // Envoie la liste des menus
+        model.addAttribute("platsCuisines", platsCuisines);
+        model.addAttribute("boissons", boissons);
+        model.addAttribute("menus", menuService.findAllActiveMenus());
 
         return "serveur/formulaire-modification";
     }
+
     @PostMapping("/edit/{id}")
     @PreAuthorize("hasRole('SERVEUR')")
     public String editOrder(@PathVariable Long id,
-                            @RequestParam Long tableId,
+                            @RequestParam(required = false) Long tableId,
                             @RequestParam Map<String, String> allParams,
                             Principal principal) {
 
@@ -446,10 +447,10 @@ public class OrderManagementController {
                             montantTotal += plat.getPrix() * quantite;
                             ligne = ligneCommandeRepository.save(ligne);
 
-                            LigneCommande deltaLigne = new LigneCommande();
-                            deltaLigne.setPlat(plat);
-                            deltaLigne.setQuantite(quantite);
-                            stockService.processStockDecrementForLigne(deltaLigne);
+                            int totalQuantite = ligne.getQuantite();
+                            ligne.setQuantite(quantite);
+                            stockService.processStockDecrementForLigne(ligne);
+                            ligne.setQuantite(totalQuantite);
                         }
                     } else if (key.startsWith("menuQty_")) {
                         Long menuId = Long.parseLong(key.substring(8));
@@ -475,10 +476,10 @@ public class OrderManagementController {
                             montantTotal += menu.getPrix() * quantite;
                             ligne = ligneCommandeRepository.save(ligne);
 
-                            LigneCommande deltaLigne = new LigneCommande();
-                            deltaLigne.setMenu(menu);
-                            deltaLigne.setQuantite(quantite);
-                            stockService.processStockDecrementForLigne(deltaLigne);
+                            int totalQuantite = ligne.getQuantite(); // On mémorise le total
+                            ligne.setQuantite(quantite); // On met juste la quantité ajoutée
+                            stockService.processStockDecrementForLigne(ligne); // Le stock baisse
+                            ligne.setQuantite(totalQuantite);
                         }
                     }
                 }
@@ -488,25 +489,26 @@ public class OrderManagementController {
         }
 
         // 3. Mettre à jour la table
-        // Attention : la méthode est peut-être findById et non findByIdentifiant
-        TableRestaurant table = tableRepository.findById(tableId).orElse(null);
-        if (table != null) {
-            TableRestaurant oldTable = commande.getTable();
-            if (oldTable != null && !oldTable.getIdentifiant().equals(table.getIdentifiant())) {
-                // Libérer l'ancienne table
-                oldTable.setStatut(StatutTable.LIBRE);
-                oldTable.setServeur(null);
-                tableRepository.save(oldTable);
-            }
+        if (tableId != null) {
+            TableRestaurant table = tableRepository.findById(tableId).orElse(null);
+            if (table != null) {
+                TableRestaurant oldTable = commande.getTable();
+                if (oldTable != null && !oldTable.getIdentifiant().equals(table.getIdentifiant())) {
+                    // Libérer l'ancienne table
+                    oldTable.setStatut(StatutTable.LIBRE);
+                    oldTable.setServeur(null);
+                    tableRepository.save(oldTable);
+                }
 
-            if (oldTable == null || !oldTable.getIdentifiant().equals(table.getIdentifiant())) {
-                // Occuper la nouvelle table
-                table.setStatut(StatutTable.OCCUPEE);
-                User serveur = userService.findUserByEmail(principal.getName());
-                table.setServeur(serveur);
-                tableRepository.save(table);
+                if (oldTable == null || !oldTable.getIdentifiant().equals(table.getIdentifiant())) {
+                    // Occuper la nouvelle table
+                    table.setStatut(StatutTable.OCCUPEE);
+                    User serveur = userService.findUserByEmail(principal.getName());
+                    table.setServeur(serveur);
+                    tableRepository.save(table);
+                }
+                commande.setTable(table);
             }
-            commande.setTable(table);
         }
 
         commande.setMontantTotal(montantTotal);
@@ -531,7 +533,15 @@ public class OrderManagementController {
             redirectAttributes.addFlashAttribute("errorMessage", "Ligne non trouvée.");
             return "redirect:/orders";
         }
+
         Long commandeId = ligne.getCommande().getId();
+
+        // VÉRIFICATION DE L'ÉTAT DE LA LIGNE
+        if (ligne.getEtat() != EtatLigneCommande.EN_VALIDATION && ligne.getEtat() != EtatLigneCommande.EN_ATTENTE) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Impossible de modifier cette ligne : la cuisine a déjà commencé la préparation (ou elle est servie).");
+            return "redirect:/orders/edit/" + commandeId;
+        }
+
         try {
             commandeService.modifierLigneCommande(id, quantite);
             redirectAttributes.addFlashAttribute("successMessage", "Quantité modifiée avec succès.");
@@ -549,13 +559,35 @@ public class OrderManagementController {
             redirectAttributes.addFlashAttribute("errorMessage", "Ligne non trouvée.");
             return "redirect:/orders";
         }
+
         Long commandeId = ligne.getCommande().getId();
+
+        // VÉRIFICATION DE L'ÉTAT DE LA LIGNE
+        if (ligne.getEtat() != EtatLigneCommande.EN_VALIDATION && ligne.getEtat() != EtatLigneCommande.EN_ATTENTE) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Impossible de supprimer cette ligne : la cuisine a déjà commencé la préparation (ou elle est servie).");
+            return "redirect:/orders/edit/" + commandeId;
+        }
+
         try {
-            commandeService.supprimerLigneCommande(id);
+            // 1. On supprime la ligne et on récupère la commande mise à jour
+            Commande commandeAJour = commandeService.supprimerLigneCommande(id);
+
+            // 2. VÉRIFICATION : Est-ce que la commande est maintenant vide ?
+            if (commandeAJour.getLignesCommande() == null || commandeAJour.getLignesCommande().isEmpty()) {
+
+                // 3. Si oui, on supprime toute la commande (ce qui libère la table automatiquement grâce à ton service)
+                commandeService.deleteOrder(commandeId);
+
+                redirectAttributes.addFlashAttribute("successMessage", "Dernier article supprimé. La commande a été annulée et la table libérée.");
+                return "redirect:/orders"; // On le renvoie au tableau de bord car la commande n'existe plus !
+            }
+
             redirectAttributes.addFlashAttribute("successMessage", "Ligne supprimée avec succès.");
         } catch (IllegalStateException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
+
+        // Si la commande contient encore des plats, on le laisse sur la page de modification
         return "redirect:/orders/edit/" + commandeId;
     }
 }

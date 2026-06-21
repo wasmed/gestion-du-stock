@@ -19,8 +19,8 @@ public interface CommandeRepository extends JpaRepository<Commande, Long> {
 
     List<Commande> findByEtatIn(List<EtatCommande> etats);
 
-    @Query("SELECT c FROM Commande c JOIN FETCH c.lignesCommande WHERE c.id = :identifiant")
-    Optional<Commande> findByIdentifiantWithLignesCommande(Long identifiant);
+    @Query("SELECT c FROM Commande c LEFT JOIN FETCH c.lignesCommande WHERE c.id = :id")
+    Optional<Commande> findByIdentifiantWithLignesCommande(@Param("id") Long id);
 
     List<Commande> findByClientIdOrderByDateHeureDesc(Long clientId);
 

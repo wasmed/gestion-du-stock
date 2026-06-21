@@ -7,10 +7,11 @@
 <h1>Détails de la Commande n°<span th:text="${commande.id}"></span></h1>
 <hr/>
 <h2>Contenu de la commande:</h2>
+
 <div th:if="${successMessage}" style="color: green;" th:text="${successMessage}"></div>
 <div th:if="${errorMessage}" style="color: red;" th:text="${errorMessage}"></div>
 
-<table>
+<table border="1" cellpadding="5" cellspacing="0">
     <thead>
     <tr>
         <th>Article</th>
@@ -28,23 +29,25 @@
         <td th:text="${ligne.quantite}"></td>
         <td th:text="${ligne.etat}"></td>
         <td>
-            <span th:if="${ligne.etat == T(com.example.demo.model.EtatLigneCommande).EN_ATTENTE or ligne.etat == T(com.example.demo.model.EtatLigneCommande).EN_VALIDATION}">
-                <form th:action="@{/orders/ligne/modifier/{id}(id=${ligne.identifiant})}" method="post" style="display:inline;">
-                    <input type="number" name="quantite" th:value="${ligne.quantite}" min="1" required style="width: 50px;">
-                    <button type="submit">Modifier</button>
-                </form>
-                <form th:action="@{/orders/ligne/supprimer/{id}(id=${ligne.identifiant})}" method="post" style="display:inline;">
-                    <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette ligne ?');">Supprimer</button>
-                </form>
-            </span>
-            <span th:unless="${ligne.etat == T(com.example.demo.model.EtatLigneCommande).EN_ATTENTE or ligne.etat == T(com.example.demo.model.EtatLigneCommande).EN_VALIDATION}">
-                Non modifiable
-            </span>
+                <span th:if="${ligne.etat == T(com.example.demo.model.EtatLigneCommande).EN_ATTENTE or ligne.etat == T(com.example.demo.model.EtatLigneCommande).EN_VALIDATION}">
+                    <form th:action="@{/orders/ligne/modifier/{id}(id=${ligne.id})}" method="post" style="display:inline;">
+                        <input type="number" name="quantite" th:value="${ligne.quantite}" min="1" required style="width: 50px;">
+                        <button type="submit">Modifier</button>
+                    </form>
+
+                    <form th:action="@{/orders/ligne/supprimer/{id}(id=${ligne.id})}" method="post" style="display:inline;">
+                        <button type="submit" style="color: red;" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette ligne ?');">Supprimer</button>
+                    </form>
+                </span>
+            <span th:unless="${ligne.etat == T(com.example.demo.model.EtatLigneCommande).EN_ATTENTE or ligne.etat == T(com.example.demo.model.EtatLigneCommande).EN_VALIDATION}" style="color: gray; font-style: italic;">
+                    Non modifiable
+                </span>
         </td>
     </tr>
     </tbody>
 </table>
-<hr/>
+
+<br/>
 <a th:href="@{/orders}">Retour à la liste des commandes</a>
 </body>
 </html>

@@ -6,6 +6,7 @@ import com.example.demo.service.CommandeService;
 import com.example.demo.service.PaiementService;
 import com.example.demo.service.QrCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -34,6 +35,9 @@ public class PaiementController {
     @Autowired
     private com.example.demo.service.MollieService mollieService;
 
+    @Value("${app.base-url}")
+    private String appBaseUrl;
+
     @GetMapping("/form/{commandeId}")
     public String showPaymentForm(@PathVariable Long commandeId, Model model) {
         Commande commande = commandeService.findCommandeById(commandeId);
@@ -47,7 +51,7 @@ public class PaiementController {
                                  @RequestParam ModePaiement modePaiement,
                                  Principal principal) {
         paiementService.processPayment(commandeId, pourboire, modePaiement);
-        return "redirect:/orders"; // Retourne à la liste des commandes
+        return "redirect:/client/paiement/succes/" + commandeId;
     }
 
     // --- API Endpoints for AJAX ---
@@ -59,9 +63,8 @@ public class PaiementController {
             Commande commande = commandeService.findCommandeById(id);
             double totalAmount = commande.getMontantTotal() + pourboire;
 
-            String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-            String redirectUrl = baseUrl + "/client/paiement/mollie-return/" + id + "?pourboire=" + pourboire;
-            String webhookUrl = baseUrl + "/api/payments/webhook";
+            String redirectUrl = appBaseUrl + "/client/paiement/mollie-return/" + id + "?pourboire=" + pourboire;
+            String webhookUrl = appBaseUrl + "/api/payments/webhook";
 
             String checkoutUrl = mollieService.createPaymentAndGetCheckoutUrl(id, totalAmount, redirectUrl, webhookUrl, pourboire);
 
@@ -69,11 +72,11 @@ public class PaiementController {
 
             Map<String, String> response = new HashMap<>();
             response.put("qrCodeImage", base64Image);
-            response.put("checkoutUrl", checkoutUrl); // Optionnel, pour ouvrir dans un nouvel onglet si besoin
+            response.put("checkoutUrl", checkoutUrl);
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 }

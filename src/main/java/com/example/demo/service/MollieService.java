@@ -15,10 +15,10 @@ import java.util.Map;
 @Service
 public class MollieService {
 
-    @Value("${mollie.api.key:test_dummy}")
+    @Value("${mollie.api.key}")
     private String mollieApiKey;
 
-    @Value("${app.base-url:}")
+    @Value("${app.base-url}")
     private String appBaseUrl;
 
     private final RestTemplate restTemplate = new RestTemplate();
@@ -70,8 +70,8 @@ public class MollieService {
     }
 
     public boolean isPaymentPaid(String paymentId) {
-        if ("test_dummy".equals(mollieApiKey) || mollieApiKey.isEmpty()) {
-            return true;
+        if (mollieApiKey == null || mollieApiKey.isEmpty()) {
+            return false;
         }
 
         HttpHeaders headers = new HttpHeaders();
@@ -85,14 +85,14 @@ public class MollieService {
                 return "paid".equals(status);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             System.err.println("Erreur Mollie API check: " + e.getMessage());
+            e.printStackTrace();
         }
         return false;
     }
 
     public Map<String, Object> getPayment(String paymentId) {
-        if ("test_dummy".equals(mollieApiKey) || mollieApiKey.isEmpty()) {
+        if (mollieApiKey == null || mollieApiKey.isEmpty()) {
             return null;
         }
 
@@ -106,8 +106,8 @@ public class MollieService {
                 return response.getBody();
             }
         } catch (Exception e) {
+            System.err.println("Erreur Mollie API getPayment: " + e.getMessage());
             e.printStackTrace();
-            System.err.println("Erreur Mollie API check: " + e.getMessage());
         }
         return null;
     }

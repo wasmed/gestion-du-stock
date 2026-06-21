@@ -6,6 +6,10 @@
 <body>
 <h1>Créer une nouvelle Commande</h1>
 
+<div th:if="${errorMessage}" style="background-color: #ff4d4d; color: white; font-weight: bold; padding: 15px; margin-bottom: 20px; border-radius: 5px; text-align: center;">
+    <span th:text="${errorMessage}"></span>
+</div>
+
 <form th:action="@{/orders/create}" method="get">
     <div>
         <label for="nombrePersonne">Nombre de personnes:</label>
@@ -17,7 +21,6 @@
 <hr/>
 
 <form th:action="@{/orders/create}" method="post">
-
     <div>
         <label for="clientEmail">Email du Client (laisser vide pour un invité)</label>
         <input type="email" id="clientEmail" name="clientEmail" placeholder="exemple@email.com" />
@@ -26,22 +29,30 @@
     <div>
         <label for="tableId">Sélectionner une table:</label>
         <select id="tableId" name="tableId" required>
+            <option value="" disabled selected>-- Cliquez ici pour choisir une table --</option>
             <option th:each="table : ${tables}" th:value="${table.identifiant}" th:text="${'Table ' + table.numeroTable + ' (' + table.nombrePersonne + ' places)'}"></option>
         </select>
     </div>
 
     <br/>
-    <h3>Sélectionner les plats:</h3>
-    <div th:each="plat : ${plats}">
-        <input type="checkbox" th:id="${'plat-' + plat.identifiant}" name="platIds" th:value="${plat.identifiant}" />
-        <label th:for="${'plat-' + plat.identifiant}" th:text="${plat.nom} + ' - ' + ${plat.prix} + ' €'"></label>
+    <h3>Sélectionner les Plats Cuisinés:</h3>
+    <div th:each="plat : ${platsCuisines}">
+        <label th:for="${'platQty_' + plat.identifiant}" th:text="${plat.nom} + ' - ' + ${plat.prix} + ' €'"></label>
+        <input type="number" th:id="${'platQty_' + plat.identifiant}" th:name="'platQty_' + ${plat.identifiant}" value="0" min="0" style="width: 50px;"/>
     </div>
 
     <br/>
-    <h3>Sélectionner les menus:</h3>
+    <h3>Sélectionner les Boissons:</h3>
+    <div th:each="boisson : ${boissons}">
+        <label th:for="${'platQty_' + boisson.identifiant}" th:text="${boisson.nom} + ' - ' + ${boisson.prix} + ' €'"></label>
+        <input type="number" th:id="${'platQty_' + boisson.identifiant}" th:name="'platQty_' + ${boisson.identifiant}" value="0" min="0" style="width: 50px;"/>
+    </div>
+
+    <br/>
+    <h3>Sélectionner les Menus:</h3>
     <div th:each="menu : ${menus}">
-        <input type="checkbox" th:id="${'menu-' + menu.id}" name="menuIds" th:value="${menu.id}" />
-        <label th:for="${'menu-' + menu.id}" th:text="${menu.nom} + ' - ' + ${menu.prix} + ' €'"></label>
+        <label th:for="${'menuQty_' + menu.id}" th:text="${menu.nom} + ' - ' + ${menu.prix} + ' €'"></label>
+        <input type="number" th:id="${'menuQty_' + menu.id}" th:name="'menuQty_' + ${menu.id}" value="0" min="0" style="width: 50px;"/>
     </div>
 
     <br/>
