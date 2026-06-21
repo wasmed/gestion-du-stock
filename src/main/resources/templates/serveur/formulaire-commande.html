@@ -230,7 +230,7 @@
                                 </div>
                                 <div class="row row-cols-2 row-cols-md-4 row-cols-xl-5 g-3">
                                     <div th:each="table : ${tables}" class="col">
-                                        <input type="radio" name="tableId" th:value="${table.identifiant}" th:id="'table-'+${table.identifiant}" class="d-none btn-check-table" required>
+                                        <input type="radio" name="tableId" th:value="${table.identifiant}" th:id="'table-'+${table.identifiant}" class="d-none btn-check-table">
                                         <label th:for="'table-'+${table.identifiant}" class="table-label w-100 h-100 p-3 text-center d-flex flex-column align-items-center">
                                             <i class="bi bi-geo-alt-fill fs-3 mb-1 text-muted"></i>
                                             <span class="fw-bold fs-5">T<span th:text="${table.numeroTable}"></span></span>
