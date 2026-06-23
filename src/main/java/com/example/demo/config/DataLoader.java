@@ -23,12 +23,13 @@ public class DataLoader implements CommandLineRunner {
     private final UserRepository userRepository;
     private final TableRestaurantRepository tableRepository;
     private final CommandeRepository commandeRepository;
+    private FeedbackRepository feedbackRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DataLoader(PlatRepository platRepository, MenuRepository menuRepository,
                       ProduitRepository produitRepository, IngredientRepository ingredientRepository,
                       StockProduitRepository stockProduitRepository, UserRepository userRepository,
-                      TableRestaurantRepository tableRepository,CommandeRepository commandeRepository, PasswordEncoder passwordEncoder) {
+                      TableRestaurantRepository tableRepository,CommandeRepository commandeRepository,FeedbackRepository feedbackRepository, PasswordEncoder passwordEncoder) {
         this.platRepository = platRepository;
         this.menuRepository = menuRepository;
         this.produitRepository = produitRepository;
@@ -37,6 +38,7 @@ public class DataLoader implements CommandLineRunner {
         this.userRepository = userRepository;
         this.tableRepository = tableRepository;
         this.commandeRepository = commandeRepository;
+        this.feedbackRepository = feedbackRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -51,7 +53,9 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void loadData() {
-        // --- USERS ---
+        // =================================================================
+        // --- USERS (Admin, Chef, 3 Serveurs, 6 Clients)
+        // =================================================================
         User admin = new User();
         admin.setFullName("Admin General");
         admin.setEmail("admin@resto.com");
@@ -64,488 +68,312 @@ public class DataLoader implements CommandLineRunner {
         chef.setPassword(passwordEncoder.encode("chef123"));
         chef.setRole(Role.CHEF_CUISINIER);
 
-        User serveur = new User();
-        serveur.setFullName("Serveur Un");
-        serveur.setEmail("serveur@resto.com");
-        serveur.setPassword(passwordEncoder.encode("serveur123"));
-        serveur.setRole(Role.SERVEUR);
+        User serveur1 = new User();
+        serveur1.setFullName("Thomas Serveur");
+        serveur1.setEmail("serveur1@resto.com");
+        serveur1.setPassword(passwordEncoder.encode("serveur123"));
+        serveur1.setRole(Role.SERVEUR);
 
         User serveur2 = new User();
-        serveur2.setFullName("Serveur Deux");
+        serveur2.setFullName("Marie Serveuse");
         serveur2.setEmail("serveur2@resto.com");
         serveur2.setPassword(passwordEncoder.encode("serveur123"));
         serveur2.setRole(Role.SERVEUR);
 
-        User client = new User();
-        client.setFullName("Jean Dupont");
-        client.setEmail("client@resto.com");
-        client.setPassword(passwordEncoder.encode("client123"));
-        client.setRole(Role.CLIENT);
+        User serveur3 = new User();
+        serveur3.setFullName("Luc Serveur");
+        serveur3.setEmail("serveur3@resto.com");
+        serveur3.setPassword(passwordEncoder.encode("serveur123"));
+        serveur3.setRole(Role.SERVEUR);
 
-        User guest = new User();
-        guest.setFullName("Client Invité");
-        guest.setEmail("guest@resto.com");
-        guest.setPassword(passwordEncoder.encode("guest123"));
-        guest.setRole(Role.CLIENT);
+        // 6 Clients
+        List<User> clients = Arrays.asList(
+                createUser("Jean Dupont", "jean@resto.com", Role.CLIENT),
+                createUser("Alice Martin", "alice@resto.com", Role.CLIENT),
+                createUser("Bob L'éponge", "bob@resto.com", Role.CLIENT),
+                createUser("Charlie Chaplin", "charlie@resto.com", Role.CLIENT),
+                createUser("Samira Hammou", "samira@resto.com", Role.CLIENT),
+                createUser("Client Invité", "guest@resto.com", Role.CLIENT)
+        );
 
-        userRepository.saveAll(Arrays.asList(admin, chef, serveur, serveur2, client, guest));
-        System.out.println("Users created.");
-
-        // --- RESTAURANT TABLES ---
-        TableRestaurant table1 = new TableRestaurant();
-        table1.setNumeroTable(1);
-        table1.setNombrePersonne(2);
-
-        TableRestaurant table2 = new TableRestaurant();
-        table2.setNumeroTable(2);
-        table2.setNombrePersonne(4);
-
-        TableRestaurant table3 = new TableRestaurant();
-        table3.setNumeroTable(3);
-        table3.setNombrePersonne(6);
-
-        TableRestaurant table4 = new TableRestaurant();
-        table4.setNumeroTable(4);
-        table4.setNombrePersonne(8);
-
-        tableRepository.saveAll(Arrays.asList(table1, table2, table3, table4));
-        System.out.println("Tables created.");
+        userRepository.saveAll(Arrays.asList(admin, chef, serveur1, serveur2, serveur3));
+        userRepository.saveAll(clients);
+        System.out.println("Utilisateurs (Serveurs et Clients) créés.");
 
         // =================================================================
-        // 1. CREATE PRODUCTS (Mis à jour avec quantite et unite)
+        // --- RESTAURANT TABLES (10 Tables)
         // =================================================================
-        Produit tomate = new Produit();
-        tomate.setNom("Tomate");
-        tomate.setType(TypeProduit.LEGUME);
-        tomate.setQuantite(1.0);
-        tomate.setUnite("kg");
-        tomate.setImage("https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500&q=80");
-
-        Produit salade = new Produit();
-        salade.setNom("Salade Laitue");
-        salade.setType(TypeProduit.LEGUME);
-        salade.setQuantite(1.0);
-        salade.setUnite("Pièce");
-        salade.setImage("https://images.unsplash.com/photo-1556801712-67c8c279a093?w=500&q=80");
-
-        Produit patePizza = new Produit();
-        patePizza.setNom("Pâte à Pizza");
-        patePizza.setType(TypeProduit.BOULANGERIE);
-        patePizza.setQuantite(5.0);
-        patePizza.setUnite("kg");
-        patePizza.setImage("https://images.unsplash.com/photo-1598155523122-38423bb4d6c1?w=500&q=80");
-
-        Produit mozzarella = new Produit();
-        mozzarella.setNom("Mozzarella");
-        mozzarella.setType(TypeProduit.CREMERIE);
-        mozzarella.setQuantite(1.0);
-        mozzarella.setUnite("kg");
-        mozzarella.setImage("https://images.unsplash.com/photo-1588612571212-320d7ee82596?w=500&q=80");
-
-        Produit eauPlateProduit = new Produit();
-        eauPlateProduit.setNom("Eau Plate 50cl");
-        eauPlateProduit.setType(TypeProduit.BOISSON);
-        eauPlateProduit.setQuantite(1.0);
-        eauPlateProduit.setUnite("Bouteille");
-        eauPlateProduit.setImage("https://images.unsplash.com/photo-1564419320461-6870880221ad?w=500&q=80");
-
-        Produit chocolatNoir = new Produit();
-        chocolatNoir.setNom("Chocolat Noir 70%");
-        chocolatNoir.setType(TypeProduit.DESSERT);
-        chocolatNoir.setQuantite(1.0);
-        chocolatNoir.setUnite("kg");
-        chocolatNoir.setImage("https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=500&q=80");
-
-        Produit penne = new Produit();
-        penne.setNom("Pâtes Penne");
-        penne.setType(TypeProduit.EPICERIE_SECHE);
-        penne.setQuantite(5.0);
-        penne.setUnite("kg");
-        penne.setImage("https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&q=80");
-
-        Produit cremeGlacee = new Produit();
-        cremeGlacee.setNom("Crème Glacée Vanille");
-        cremeGlacee.setType(TypeProduit.DESSERT);
-        cremeGlacee.setQuantite(2.5);
-        cremeGlacee.setUnite("Litre");
-        cremeGlacee.setImage("https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=500&q=80");
-
-        Produit mascarpone = new Produit();
-        mascarpone.setNom("Mascarpone");
-        mascarpone.setType(TypeProduit.CREMERIE);
-        mascarpone.setQuantite(1.0);
-        mascarpone.setUnite("kg");
-        mascarpone.setImage("https://images.unsplash.com/photo-1585671720293-1994627d7045?w=500&q=80");
-
-        Produit cafe = new Produit();
-        cafe.setNom("Café Grain");
-        cafe.setType(TypeProduit.BOISSON);
-        cafe.setQuantite(1.0);
-        cafe.setUnite("kg");
-        cafe.setImage("https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=500&q=80");
-
-        Produit boeuf = new Produit();
-        boeuf.setNom("Steak Haché de Boeuf");
-        boeuf.setType(TypeProduit.VIANDE);
-        boeuf.setQuantite(1.0);
-        boeuf.setUnite("kg");
-        boeuf.setImage("https://images.unsplash.com/photo-1551028150-64b9f398f678?w=500&q=80");
-
-        Produit saumon = new Produit();
-        saumon.setNom("Filet de Saumon");
-        saumon.setType(TypeProduit.POISSON);
-        saumon.setQuantite(1.0);
-        saumon.setUnite("kg");
-        saumon.setImage("https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=500&q=80");
-
-        Produit pomme = new Produit();
-        pomme.setNom("Pomme");
-        pomme.setType(TypeProduit.FRUIT);
-        pomme.setQuantite(1.0);
-        pomme.setUnite("kg");
-        pomme.setImage("https://images.unsplash.com/photo-1560806887-1e4cd0b6fac6?w=500&q=80");
-
-        Produit emballage = new Produit();
-        emballage.setNom("Boîte à Pizza");
-        emballage.setType(TypeProduit.AUTRE);
-        emballage.setQuantite(100.0);
-        emballage.setUnite("Pièces");
-        emballage.setImage("https://images.unsplash.com/photo-1587280510058-fdb9bc2d7877?w=500&q=80");
-
-        // Save all products first to get their IDs
-        List<Produit> produits = Arrays.asList(tomate, salade, patePizza, mozzarella, eauPlateProduit, chocolatNoir, penne, cremeGlacee, mascarpone, cafe, boeuf, saumon, pomme, emballage);
-        produitRepository.saveAll(produits);
+        for (int i = 1; i <= 10; i++) {
+            TableRestaurant table = new TableRestaurant();
+            table.setNumeroTable(i);
+            // Capacité aléatoire entre 2 et 8 personnes (chiffre pair)
+            table.setNombrePersonne((i % 4 + 1) * 2);
+            tableRepository.save(table);
+        }
+        List<TableRestaurant> allTables = tableRepository.findAll();
+        System.out.println("10 Tables créées.");
 
         // =================================================================
-        // 2. CREATE THE STOCK ASSOCIATED WITH EACH PRODUCT
+        // 1 & 2. CREATE PRODUCTS & STOCKS
         // =================================================================
-        StockProduit stockTomate = new StockProduit();
-        stockTomate.setProduit(tomate);
-        stockTomate.setStockActuel(50.0);
-        stockTomate.setStockMinimum(10.0);
+        Produit pommeTerre = produitRepository.save(createProduit("Pommes de terre (Frites)", TypeProduit.LEGUME, 20.0, "kg", "/assets/images/frites.jpg"));
+        Produit boeuf = produitRepository.save(createProduit("Viande de Boeuf", TypeProduit.VIANDE, 15.0, "kg", "/assets/images/boeuf.jpg"));
+        Produit biereBrune = produitRepository.save(createProduit("Bière d'Abbaye", TypeProduit.BOISSON, 50.0, "Bouteille", "/assets/images/biere.jpg"));
+        Produit oignon = produitRepository.save(createProduit("Oignons", TypeProduit.LEGUME, 10.0, "kg", "/assets/images/oignon.jpg"));
+        Produit pateGaufre = produitRepository.save(createProduit("Pâte à Gaufre", TypeProduit.BOULANGERIE, 5.0, "kg", "/assets/images/pate.jpg"));
+        Produit chocolatNoir = produitRepository.save(createProduit("Chocolat Noir 70%", TypeProduit.DESSERT, 5.0, "kg", "/assets/images/chocolat.jpg"));
+        Produit eauPlate = produitRepository.save(createProduit("Eau Plate 50cl", TypeProduit.BOISSON, 100.0, "Bouteille", "/assets/images/eau.jpg"));
+        Produit limonade = produitRepository.save(createProduit("Limonade Artisanale", TypeProduit.BOISSON, 50.0, "Bouteille", "/assets/images/limonade.jpg"));
+        Produit salade = produitRepository.save(createProduit("Mélange Salade", TypeProduit.LEGUME, 5.0, "kg", "/assets/images/salade.jpg"));
+        Produit glaceVanille = produitRepository.save(createProduit("Glace Vanille", TypeProduit.DESSERT, 10.0, "Litre", "/assets/images/glace.jpg"));
+        Produit fromage = produitRepository.save(createProduit("Fromage à croquettes", TypeProduit.CREMERIE, 8.0, "kg", "/assets/images/fromage.jpg"));
 
-        StockProduit stockSalade = new StockProduit();
-        stockSalade.setProduit(salade);
-        stockSalade.setStockActuel(20.0);
-        stockSalade.setStockMinimum(5.0);
+// On garde la liste pour faire la boucle des stocks juste après
+        List<Produit> produits = Arrays.asList(pommeTerre, boeuf, biereBrune, oignon, pateGaufre, chocolatNoir, eauPlate, limonade, salade, glaceVanille, fromage);
 
-        StockProduit stockPatePizza = new StockProduit();
-        stockPatePizza.setProduit(patePizza);
-        stockPatePizza.setStockActuel(20.0);
-        stockPatePizza.setStockMinimum(4.0);
-
-        StockProduit stockMozzarella = new StockProduit();
-        stockMozzarella.setProduit(mozzarella);
-        stockMozzarella.setStockActuel(15.0);
-        stockMozzarella.setStockMinimum(3.0);
-
-        StockProduit stockEau = new StockProduit();
-        stockEau.setProduit(eauPlateProduit);
-        stockEau.setStockActuel(100.0);
-        stockEau.setStockMinimum(24.0);
-
-        StockProduit stockChocolat = new StockProduit();
-        stockChocolat.setProduit(chocolatNoir);
-        stockChocolat.setStockActuel(10.0);
-        stockChocolat.setStockMinimum(2.0);
-
-        StockProduit stockPenne = new StockProduit();
-        stockPenne.setProduit(penne);
-        stockPenne.setStockActuel(30.0);
-        stockPenne.setStockMinimum(5.0);
-
-        StockProduit stockGlace = new StockProduit();
-        stockGlace.setProduit(cremeGlacee);
-        stockGlace.setStockActuel(10.0);
-        stockGlace.setStockMinimum(2.0);
-
-        StockProduit stockMascarpone = new StockProduit();
-        stockMascarpone.setProduit(mascarpone);
-        stockMascarpone.setStockActuel(8.0);
-        stockMascarpone.setStockMinimum(2.0);
-
-        StockProduit stockCafe = new StockProduit();
-        stockCafe.setProduit(cafe);
-        stockCafe.setStockActuel(5.0);
-        stockCafe.setStockMinimum(1.0);
-
-        StockProduit stockBoeuf = new StockProduit();
-        stockBoeuf.setProduit(boeuf);
-        stockBoeuf.setStockActuel(10.0);
-        stockBoeuf.setStockMinimum(2.0);
-
-        StockProduit stockSaumon = new StockProduit();
-        stockSaumon.setProduit(saumon);
-        stockSaumon.setStockActuel(5.0);
-        stockSaumon.setStockMinimum(1.0);
-
-        StockProduit stockPomme = new StockProduit();
-        stockPomme.setProduit(pomme);
-        stockPomme.setStockActuel(15.0);
-        stockPomme.setStockMinimum(3.0);
-
-        StockProduit stockEmballage = new StockProduit();
-        stockEmballage.setProduit(emballage);
-        stockEmballage.setStockActuel(100.0);
-        stockEmballage.setStockMinimum(20.0);
-
-        List<StockProduit> stocks = Arrays.asList(stockTomate, stockSalade, stockPatePizza, stockMozzarella, stockEau, stockChocolat, stockPenne, stockGlace, stockMascarpone, stockCafe, stockBoeuf, stockSaumon, stockPomme, stockEmballage);
-        stockProduitRepository.saveAll(stocks);
+        // Sauvegarde des stocks (simplifié pour l'exemple)
+        for (Produit p : produits) {
+            StockProduit stock = new StockProduit();
+            stock.setProduit(p);
+            stock.setStockActuel(p.getQuantite());
+            stock.setStockMinimum(5.0);
+            stockProduitRepository.save(stock);
+        }
 
         // =================================================================
-        // 3. CREATE DISHES (which use the products as ingredients)
+        // 3. CREATE DISHES (6 plats, 3 desserts, 3 boissons)
         // =================================================================
-        Plat saladeVerte = new Plat();
-        saladeVerte.setNom("Salade Verte Simple");
-        saladeVerte.setDescription("Une salade fraîche de saison avec vinaigrette balsamique.");
-        saladeVerte.setPrix(7.50);
-        saladeVerte.setCategorie(CategoriePlat.ENTREE);
-        saladeVerte.setImage("https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&q=80");
-        platRepository.save(saladeVerte);
+        Plat burgerMaison = platRepository.save(createPlat("Burger du Chef", "Steak haché pur boeuf, oignons caramélisés et frites.", 16.00, CategoriePlat.PLAT_PRINCIPAL, "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500"));
+        Plat boulets = platRepository.save(createPlat("Boulets à la Liégeoise", "Boulettes de viande sauce sirop de Liège et frites.", 15.50, CategoriePlat.PLAT_PRINCIPAL, "https://images.unsplash.com/photo-1529042410759-befb1204b468?w=500"));
+        Plat saladeVerte = platRepository.save(createPlat("Salade Mixte", "Salade fraîche de saison avec vinaigrette balsamique.", 7.50, CategoriePlat.ENTREE, "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500"));
 
-        Ingredient ingSalade = new Ingredient();
-        ingSalade.setPlat(saladeVerte);
-        ingSalade.setProduit(salade);
-        ingSalade.setQuantite(0.150);
-        ingredientRepository.save(ingSalade);
+        Plat dameBlanche = platRepository.save(createPlat("Dame Blanche", "Glace vanille, sauce chocolat chaud.", 6.00, CategoriePlat.DESSERT, "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=500"));
 
-        Ingredient ingTomateSalade = new Ingredient();
-        ingTomateSalade.setPlat(saladeVerte);
-        ingTomateSalade.setProduit(tomate);
-        ingTomateSalade.setQuantite(0.080);
-        ingredientRepository.save(ingTomateSalade);
+        Plat boissonEau = platRepository.save(createPlat("Eau Plate 50cl", "Bouteille d'eau minérale.", 2.50, CategoriePlat.BOISSON, "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=500"));
+        Plat boissonLimonade = platRepository.save(createPlat("Limonade", "Limonade artisanale au citron.", 3.50, CategoriePlat.BOISSON, "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=500"));
+        Plat carbonnade = platRepository.save(createPlat("Carbonnade Flamande", "Mijoté de boeuf à la bière d'abbaye et frites maison.", 18.50, CategoriePlat.PLAT_PRINCIPAL, "https://loremflickr.com/500/500/beef,stew"));
+        Plat croquettes = platRepository.save(createPlat("Croquettes au Fromage", "Duo de croquettes artisanales et persil frit.", 9.00, CategoriePlat.ENTREE, "https://loremflickr.com/500/500/croquette,cheese"));
+        Plat carpaccio = platRepository.save(createPlat("Carpaccio de Boeuf", "Fines tranches de boeuf, parmesan et roquette.", 12.00, CategoriePlat.ENTREE, "https://loremflickr.com/500/500/carpaccio,beef"));
 
-        Plat pizzaMargherita = new Plat();
-        pizzaMargherita.setNom("Pizza Margherita");
-        pizzaMargherita.setDescription("Sauce tomate, mozzarella fondante et basilic frais sur pâte fine.");
-        pizzaMargherita.setPrix(12.00);
-        pizzaMargherita.setCategorie(CategoriePlat.PLAT_PRINCIPAL);
-        pizzaMargherita.setImage("https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=500&q=80");
-        platRepository.save(pizzaMargherita);
+        Plat mousseChoco = platRepository.save(createPlat("Mousse au Chocolat", "Mousse onctueuse au chocolat noir.", 6.50, CategoriePlat.DESSERT, "https://loremflickr.com/500/500/chocolate,mousse"));
+        Plat gaufre = platRepository.save(createPlat("Gaufre de Bruxelles", "Gaufre croustillante, sucre impalpable et chantilly.", 7.00, CategoriePlat.DESSERT, "https://loremflickr.com/500/500/waffle,dessert"));
 
-        Ingredient ingPate = new Ingredient();
-        ingPate.setPlat(pizzaMargherita);
-        ingPate.setProduit(patePizza);
-        ingPate.setQuantite(0.250);
-        ingredientRepository.save(ingPate);
+        Plat boissonBiere = platRepository.save(createPlat("Bière d'Abbaye", "Bière pression 33cl.", 4.50, CategoriePlat.BOISSON, "https://loremflickr.com/500/500/beer,glass"));
+        List<Plat> allPlats = Arrays.asList(carbonnade, burgerMaison, boulets, saladeVerte, croquettes, carpaccio, mousseChoco, gaufre, dameBlanche, boissonEau, boissonBiere, boissonLimonade);
 
-        Ingredient ingMozzaPizza = new Ingredient();
-        ingMozzaPizza.setPlat(pizzaMargherita);
-        ingMozzaPizza.setProduit(mozzarella);
-        ingMozzaPizza.setQuantite(0.120);
-        ingredientRepository.save(ingMozzaPizza);
-
-        Ingredient ingTomatePizza = new Ingredient();
-        ingTomatePizza.setPlat(pizzaMargherita);
-        ingTomatePizza.setProduit(tomate);
-        ingTomatePizza.setQuantite(0.100);
-        ingredientRepository.save(ingTomatePizza);
-
-        Plat boissonEau = new Plat();
-        boissonEau.setNom("Eau Plate");
-        boissonEau.setDescription("Bouteille d'eau minérale de 50cl.");
-        boissonEau.setPrix(3.00);
-        boissonEau.setCategorie(CategoriePlat.BOISSON);
-        boissonEau.setImage("https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=500&q=80");
-        platRepository.save(boissonEau);
-
-        Ingredient ingEau = new Ingredient();
-        ingEau.setPlat(boissonEau);
-        ingEau.setProduit(eauPlateProduit);
-        ingEau.setQuantite(1.0);
-        ingredientRepository.save(ingEau);
-
-        // NEW PLATS
-        Plat patesTomate = new Plat();
-        patesTomate.setNom("Pennes à la Tomate");
-        patesTomate.setDescription("Pâtes penne avec une sauce tomate maison et basilic.");
-        patesTomate.setPrix(11.00);
-        patesTomate.setCategorie(CategoriePlat.PLAT_PRINCIPAL);
-        patesTomate.setImage("https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=500&q=80");
-        platRepository.save(patesTomate);
-
-        Ingredient ingPenne = new Ingredient();
-        ingPenne.setPlat(patesTomate);
-        ingPenne.setProduit(penne);
-        ingPenne.setQuantite(0.200);
-        ingredientRepository.save(ingPenne);
-
-        Ingredient ingTomatePenne = new Ingredient();
-        ingTomatePenne.setPlat(patesTomate);
-        ingTomatePenne.setProduit(tomate);
-        ingTomatePenne.setQuantite(0.150);
-        ingredientRepository.save(ingTomatePenne);
-
-        Plat tiramisu = new Plat();
-        tiramisu.setNom("Tiramisu Maison");
-        tiramisu.setDescription("Le classique italien au mascarpone et café.");
-        tiramisu.setPrix(6.50);
-        tiramisu.setCategorie(CategoriePlat.DESSERT);
-        tiramisu.setImage("https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=500&q=80");
-        platRepository.save(tiramisu);
-
-        Ingredient ingMascarpone = new Ingredient();
-        ingMascarpone.setPlat(tiramisu);
-        ingMascarpone.setProduit(mascarpone);
-        ingMascarpone.setQuantite(0.100);
-        ingredientRepository.save(ingMascarpone);
-
-        Ingredient ingCafe = new Ingredient();
-        ingCafe.setPlat(tiramisu);
-        ingCafe.setProduit(cafe);
-        ingCafe.setQuantite(0.020);
-        ingredientRepository.save(ingCafe);
-
-        Ingredient ingChocolat = new Ingredient();
-        ingChocolat.setPlat(tiramisu);
-        ingChocolat.setProduit(chocolatNoir);
-        ingChocolat.setQuantite(0.010);
-        ingredientRepository.save(ingChocolat);
-
-        Plat glaceVanille = new Plat();
-        glaceVanille.setNom("Coupe Glace Vanille");
-        glaceVanille.setDescription("Deux boules de glace vanille artisanale.");
-        glaceVanille.setPrix(5.00);
-        glaceVanille.setCategorie(CategoriePlat.DESSERT);
-        glaceVanille.setImage("https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=500&q=80");
-        platRepository.save(glaceVanille);
-
-        Ingredient ingGlace = new Ingredient();
-        ingGlace.setPlat(glaceVanille);
-        ingGlace.setProduit(cremeGlacee);
-        ingGlace.setQuantite(0.150);
-        ingredientRepository.save(ingGlace);
 
         // =================================================================
-        // 4. CREATE MENUS (which group dishes)
+        // 4. CREATE MENUS (3 Menus)
         // =================================================================
-        Menu menuDuJour = new Menu();
-        menuDuJour.setNom("Menu Italien");
-        menuDuJour.setDescription("Un voyage en Italie avec salade et pizza.");
-        menuDuJour.setPrix(18.50);
-        menuDuJour.setActif(true);
-        menuDuJour.setPlats(new HashSet<>(Arrays.asList(saladeVerte, pizzaMargherita)));
-        menuDuJour.setImage("https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80");
-        menuRepository.save(menuDuJour);
+        Menu menuTerroir = new Menu();
+        menuTerroir.setNom("Menu du Terroir");
+        menuTerroir.setDescription("Entrée au choix, Plat traditionnel et Dessert.");
+        menuTerroir.setPrix(32.00);
+        menuTerroir.setActif(true);
+        menuTerroir.setPlats(new HashSet<>(Arrays.asList(croquettes, carbonnade, mousseChoco)));
+        menuTerroir.setImage("https://loremflickr.com/500/500/meat,traditional");
+        menuRepository.save(menuTerroir);
+
+        Menu menuBrasserie = new Menu();
+        menuBrasserie.setNom("Menu Brasserie");
+        menuBrasserie.setDescription("Le classique : Burger Maison et boisson au choix.");
+        menuBrasserie.setPrix(19.00);
+        menuBrasserie.setActif(true);
+        menuBrasserie.setPlats(new HashSet<>(Arrays.asList(burgerMaison, boissonBiere)));
+        menuBrasserie.setImage("https://loremflickr.com/500/500/burger,pub");
+        menuRepository.save(menuBrasserie);
 
         Menu menuEnfant = new Menu();
-        menuEnfant.setNom("Menu Enfant");
-        menuEnfant.setDescription("Pâtes à la tomate et une glace pour les petits.");
-        menuEnfant.setPrix(14.00);
+        menuEnfant.setNom("Menu P'tit Chef");
+        menuEnfant.setDescription("Boulets sauce tomate, boisson et glace.");
+        menuEnfant.setPrix(12.00);
         menuEnfant.setActif(true);
-        menuEnfant.setPlats(new HashSet<>(Arrays.asList(patesTomate, glaceVanille)));
-        menuEnfant.setImage("https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=500&q=80");
+        menuEnfant.setPlats(new HashSet<>(Arrays.asList(boulets, dameBlanche, boissonLimonade)));
+        menuEnfant.setImage("https://loremflickr.com/500/500/meatballs,fries");
         menuRepository.save(menuEnfant);
 
-        Menu menuGourmand = new Menu();
-        menuGourmand.setNom("Menu Gourmand");
-        menuGourmand.setDescription("Pizza et Tiramisu pour les gourmands.");
-        menuGourmand.setPrix(17.50);
-        menuGourmand.setActif(true);
-        menuGourmand.setPlats(new HashSet<>(Arrays.asList(pizzaMargherita, tiramisu)));
-        menuGourmand.setImage("https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=500&q=80");
-        menuRepository.save(menuGourmand);
-
-        Menu menuSaintValentin = new Menu();
-        menuSaintValentin.setNom("Menu Saint-Valentin");
-        menuSaintValentin.setDescription("Menu exceptionnel pour la Saint-Valentin.");
-        menuSaintValentin.setPrix(45.00);
-        menuSaintValentin.setActif(true);
-        menuSaintValentin.setDateDebut(LocalDate.now().minusDays(1));
-        menuSaintValentin.setDateFin(LocalDate.now().plusDays(2));
-        menuSaintValentin.setPlats(new HashSet<>(Arrays.asList(pizzaMargherita, tiramisu)));
-        menuSaintValentin.setImage("https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=500&q=80");
-        menuRepository.save(menuSaintValentin);
+        List<Menu> allMenus = Arrays.asList(menuTerroir, menuBrasserie, menuEnfant);
 
         // =================================================================
-        // 5. NOUVEAUX CLIENTS
+// 3.5 CREATE INGREDIENTS (Fiches techniques pour gestion de stock)
+// =================================================================
+        List<Ingredient> tousLesIngredients = Arrays.asList(
+                // Carbonnade Flamande
+                createIngredient(carbonnade, boeuf, 0.250),      // 250g de boeuf
+                createIngredient(carbonnade, biereBrune, 1.0),   // 1 bouteille
+                createIngredient(carbonnade, oignon, 0.100),     // 100g d'oignons
+                createIngredient(carbonnade, pommeTerre, 0.300), // 300g de frites
+
+                // Burger Maison
+                createIngredient(burgerMaison, boeuf, 0.250),
+                createIngredient(burgerMaison, oignon, 0.050),
+                createIngredient(burgerMaison, pommeTerre, 0.300),
+
+                // Boulets Liégeois
+                createIngredient(boulets, boeuf, 0.300),
+                createIngredient(boulets, pommeTerre, 0.300),
+
+                // Entrées
+                createIngredient(saladeVerte, salade, 0.150),
+                createIngredient(croquettes, fromage, 0.150),
+                createIngredient(carpaccio, boeuf, 0.150),
+                createIngredient(carpaccio, salade, 0.050),
+
+                // Desserts
+                createIngredient(mousseChoco, chocolatNoir, 0.080),
+                createIngredient(gaufre, pateGaufre, 0.150),
+                createIngredient(dameBlanche, glaceVanille, 0.200), // 200ml de glace
+                createIngredient(dameBlanche, chocolatNoir, 0.050), // 50g de chocolat fondu
+
+                // Boissons (1 plat boisson = 1 produit déduit)
+                createIngredient(boissonEau, eauPlate, 1.0),
+                createIngredient(boissonBiere, biereBrune, 1.0),
+                createIngredient(boissonLimonade, limonade, 1.0)
+        );
+
+        ingredientRepository.saveAll(tousLesIngredients);
+        System.out.println("Ingrédients et fiches techniques générés avec succès.");
+
         // =================================================================
-        User client1 = new User();
-        client1.setFullName("Alice Martin");
-        client1.setEmail("alice@resto.com");
-        client1.setPassword(passwordEncoder.encode("client123"));
-        client1.setRole(Role.CLIENT);
-
-        User client2 = new User();
-        client2.setFullName("Bob L'éponge");
-        client2.setEmail("bob@resto.com");
-        client2.setPassword(passwordEncoder.encode("client123"));
-        client2.setRole(Role.CLIENT);
-
-        User client3 = new User();
-        client3.setFullName("Charlie Chaplin");
-        client3.setEmail("charlie@resto.com");
-        client3.setPassword(passwordEncoder.encode("client123"));
-        client3.setRole(Role.CLIENT);
-
-        User client4 = new User();
-        client4.setFullName("samira");
-        client4.setEmail("samirahammoubxl@gmail.com");
-        client4.setPassword(passwordEncoder.encode("samira123"));
-        client4.setRole(Role.CLIENT);
-
-        userRepository.saveAll(Arrays.asList(client1, client2, client3, client4));
-        System.out.println("Nouveaux clients créés.");
-
+        // 5. GÉNÉRATION DE L'HISTORIQUE DES COMMANDES (30 pour les Stats)
         // =================================================================
-        // 6. GÉNÉRATION DE L'HISTORIQUE DES COMMANDES (STATISTIQUES)
-        // =================================================================
-        List<User> allClients = Arrays.asList(client, guest, client1, client2, client3);
-        List<TableRestaurant> allTables = Arrays.asList(table1, table2, table3, table4);
-        List<Plat> allPlats = Arrays.asList(pizzaMargherita, patesTomate, saladeVerte, tiramisu, glaceVanille, boissonEau);
-        List<Menu> allMenus = Arrays.asList(menuDuJour, menuGourmand, menuEnfant);
-
         Random random = new Random();
+        List<User> serveurs = Arrays.asList(serveur1, serveur2, serveur3);
 
-        // On crée 15 fausses commandes
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 30; i++) {
             Commande cmd = new Commande();
-            cmd.setClient(allClients.get(random.nextInt(allClients.size())));
-            cmd.setEtat(EtatCommande.PAYEE); // Commandes terminées pour les stats
+            cmd.setClient(clients.get(random.nextInt(clients.size())));
+            cmd.setEtat(EtatCommande.PAYEE);
 
-            // Date aléatoire sur les 7 derniers jours
-            int daysAgo = random.nextInt(7);
-            cmd.setDateHeure(LocalDateTime.now().minusDays(daysAgo).minusHours(random.nextInt(12)));
+            // Répartir les commandes sur les 30 derniers jours pour des graphiques riches
+            int daysAgo = random.nextInt(30);
+            cmd.setDateHeure(LocalDateTime.now().minusDays(daysAgo).minusHours(random.nextInt(10)));
 
-            boolean isEmporter = random.nextBoolean();
+            boolean isEmporter = random.nextInt(10) > 7; // 30% à emporter
             cmd.setIsEmporter(isEmporter);
+
             if (!isEmporter) {
                 cmd.setTable(allTables.get(random.nextInt(allTables.size())));
-                cmd.setServeur(serveur);
-            } else {
-                cmd.setClient(cmd.getClient());
+                cmd.setServeur(serveurs.get(random.nextInt(serveurs.size())));
             }
 
             double total = 0.0;
-            int nbItems = random.nextInt(3) + 1; // Entre 1 et 3 articles par commande
+            int nbItems = random.nextInt(4) + 1; // 1 à 4 articles par commande
 
             for (int j = 0; j < nbItems; j++) {
                 LigneCommande ligne = new LigneCommande();
                 ligne.setCommande(cmd);
-                ligne.setEtat(EtatLigneCommande.SERVIE); // ou PAYEE selon ton Enum
-                ligne.setQuantite(random.nextInt(2) + 1); // 1 ou 2 fois le même article
+                ligne.setEtat(EtatLigneCommande.SERVIE);
+                ligne.setQuantite(random.nextInt(2) + 1);
 
-                // 70% de chance d'acheter un plat, 30% un menu (pour varier les stats)
-                if (random.nextInt(100) < 70) {
+                if (random.nextInt(100) < 60) { // 60% Plats purs
                     Plat p = allPlats.get(random.nextInt(allPlats.size()));
                     ligne.setPlat(p);
                     ligne.setTypeLigne(TypeLigneCommande.PLAT);
                     total += p.getPrix() * ligne.getQuantite();
-                } else {
+                } else { // 40% Menus
                     Menu m = allMenus.get(random.nextInt(allMenus.size()));
                     ligne.setMenu(m);
                     ligne.setTypeLigne(TypeLigneCommande.MENU);
                     total += m.getPrix() * ligne.getQuantite();
                 }
-
                 cmd.getLignesCommande().add(ligne);
             }
 
             cmd.setMontantTotal(total);
-            commandeRepository.save(cmd); // Grâce au CascadeType.ALL, ça sauvegarde les lignes aussi !
+            commandeRepository.save(cmd);
         }
-        System.out.println("Historique des commandes généré avec succès !");
+        System.out.println("30 Commandes historiques générées pour les statistiques !");
 
-        System.out.println("Test data loaded successfully!");
+        // =================================================================
+        // 6. GÉNÉRATION DES FEEDBACKS (Commentaires pour statistiques)
+        // =================================================================
+
+
+        List<String> commentairesPositifs = Arrays.asList(
+            "Superbe expérience, la viande était excellente !",
+            "Service rapide et serveur très souriant.",
+            "Le meilleur restaurant du coin. Menu parfait.",
+            "Cadre très agréable, je recommande la mousse au chocolat."
+        );
+        List<String> commentairesMoyens = Arrays.asList(
+            "C'était bon mais un peu bruyant ce soir-là.",
+            "Attente un peu longue, mais la qualité des plats rattrape tout."
+        );
+
+        // On récupère toutes les commandes qu'on vient de créer
+        List<Commande> toutesLesCommandes = commandeRepository.findAll();
+
+// On s'assure de ne pas créer plus de feedbacks qu'il n'y a de commandes disponibles
+        int nombreDeFeedbacks = Math.min(15, toutesLesCommandes.size());
+
+        for (int i = 0; i < nombreDeFeedbacks; i++) {
+            Feedback avis = new Feedback();
+
+            // Au lieu de l'aléatoire, on prend la commande à l'index 'i'.
+            // Ainsi, la commande 0 a le feedback 0, la commande 1 a le feedback 1, etc. -> Aucune duplication !
+            Commande commandeUnique = toutesLesCommandes.get(i);
+            avis.setCommande(commandeUnique);
+
+            // On peut récupérer le client directement depuis la commande pour que ce soit logique
+            avis.setClient(commandeUnique.getClient());
+
+            int note = random.nextInt(3) + 3; // Notes entre 3 et 5
+            avis.setNote(note);
+
+            if (note == 5) {
+                avis.setCommentaire(commentairesPositifs.get(random.nextInt(commentairesPositifs.size())));
+            } else {
+                avis.setCommentaire(commentairesMoyens.get(random.nextInt(commentairesMoyens.size())));
+            }
+
+            // On met la date de l'avis juste après la date de la commande
+            avis.setDateSubmitted(commandeUnique.getDateHeure().plusHours(random.nextInt(48)));
+
+            feedbackRepository.save(avis);
+        }
+        System.out.println("Feedbacks générés !");
+
+
+        System.out.println("=== TOUTES LES DONNÉES DE DÉMONSTRATION SONT CHARGÉES ===");
+    }
+
+    // --- Méthodes utilitaires pour alléger le code ---
+
+    private User createUser(String fullName, String email, Role role) {
+        User user = new User();
+        user.setFullName(fullName);
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode("password123")); // Mot de passe standard
+        user.setRole(role);
+        return user;
+    }
+
+    private Produit createProduit(String nom, TypeProduit type, double quantite, String unite, String image) {
+        Produit p = new Produit();
+        p.setNom(nom);
+        p.setType(type);
+        p.setQuantite(quantite);
+        p.setUnite(unite);
+        p.setImage(image);
+        return p;
+    }
+
+    private Plat createPlat(String nom, String description, double prix, CategoriePlat categorie, String image) {
+        Plat plat = new Plat();
+        plat.setNom(nom);
+        plat.setDescription(description);
+        plat.setPrix(prix);
+        plat.setCategorie(categorie);
+        plat.setImage(image);
+        return plat;
+    }
+
+    private Ingredient createIngredient(Plat plat, Produit produit, double quantite) {
+        Ingredient ingredient = new Ingredient();
+        ingredient.setPlat(plat);
+        ingredient.setProduit(produit);
+        ingredient.setQuantite(quantite);
+        return ingredient;
     }
 }

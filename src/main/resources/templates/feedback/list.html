@@ -18,7 +18,7 @@
     </thead>
     <tbody>
     <tr th:each="feedback : ${feedbacks}">
-        <td th:text="${feedback.commande.client.nom}"></td>
+        <td th:text="${feedback.commande?.client?.fullName ?: 'Client inconnu'}"></td>
         <td th:text="${feedback.note}"></td>
         <td th:text="${feedback.commentaire}"></td>
         <td th:text="${#temporals.format(feedback.dateSubmitted, 'dd/MM/yyyy HH:mm')}"></td>
